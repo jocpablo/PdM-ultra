@@ -27,13 +27,31 @@ function findFreePort(startPort) {
     });
 }
 
-const pool = new Pool({
-    user:     envStr('DB_USER'),
-    host:     envStr('DB_HOST'),
-    database: envStr('DB_DATABASE'),
-    password: envStr('DB_PASSWORD'),
-    port:     parseInt(envStr('DB_PORT')) || 5432,
-});
+// ════════════════════════════════════════════════════════════════
+// CONFIGURACIÓN DE BASE DE DATOS (NUBE vs LOCAL)
+// ════════════════════════════════════════════════════════════════
+let poolConfig;
+
+if (process.env.DATABASE_URL) {
+    // Configuración para RENDER (Nube)
+    poolConfig = {
+        connectionString: process.env.DATABASE_URL,
+        ssl: {
+            rejectUnauthorized: false // Requerido para conectar a Render Postgres
+        }
+    };
+} else {
+    // Configuración para PC LOCAL
+    poolConfig = {
+        user:     envStr('DB_USER'),
+        host:     envStr('DB_HOST'),
+        database: envStr('DB_DATABASE'),
+        password: envStr('DB_PASSWORD'),
+        port:     parseInt(envStr('DB_PORT')) || 5432,
+    };
+}
+
+const pool = new Pool(poolConfig);
 
 pool.connect((err) => {
     if (err) console.error('⚠️  Error BD:', err.message);
@@ -328,8 +346,8 @@ app.put('/api/usuarios/:id', requireAuth, roleAtLeast('admin'), async (req, res)
 
     try {
         const updates = [], vals = [];
-        if (nombre)         { updates.push(`nombre=$${vals.push(nombre.trim())}`); }
-        if (rol)            { updates.push(`rol=$${vals.push(rol)}`); }
+        if (nombre)          { updates.push(`nombre=$${vals.push(nombre.trim())}`); }
+        if (rol)             { updates.push(`rol=$${vals.push(rol)}`); }
         if (activo !== undefined) { updates.push(`activo=$${vals.push(!!activo)}`); }
         if (password?.trim()) { updates.push(`password_hash=$${vals.push(hashPassword(password))}`); }
         if (updates.length) {
@@ -511,15 +529,15 @@ app.post('/api/equipos', requireAuth, roleAtLeast('admin'), async (req, res) => 
             s(asset_id), s(descripcion), s(criticidad), s(marca), s(modelo),
             ubicacionFull,                                      // $6  ubicacion (planta + zona)
             n(potencia_hp), s(voltaje), n(rpm), n(amperaje),   // $7–$10
-            s(frame), s(clase_aislamiento),                     // $11–$12
+            s(frame), s(clase_aislamiento),                       // $11–$12
             s(rodamiento_de), s(rodamiento_ode),                // $13–$14
             s(tipo_sistema), s(transmision_tipo), s(modelo_faja), // $15–$17
             n(diametro_turbina), n(diametro_polea_conductora), n(diametro_polea_conducida), // $18–$20
             nAlabesTurb, s(orientacion), s(tipo_acople), nAlabesImp, // $21–$24
-            s(foto1), s(foto2), s(foto3), s(foto4),            // $25–$28
+            s(foto1), s(foto2), s(foto3), s(foto4),             // $25–$28
             s(mes_inspeccion),                                  // $29
             c1(ultimo_estado_vibraciones), c1(ultimo_estado_termografia), c1(ultimo_estado_ultrasonido), // $30–$32
-            s(notas),                                           // $33
+            s(notas),                                            // $33
             aplyVib, aplyTer, aplyUlt,                         // $34–$36
             s(caudal_nominal), s(presion_nominal), s(tipo_sello), // $37–$39
             s(tipo_compresor), s(presion_max_comp), s(caudal_comp), s(refrig_comp), s(aceite_comp), s(cap_aceite_comp), // $40–$45
@@ -957,7 +975,7 @@ const ISO10816 = {
     '2': { desc: 'Grupo 2 — Máq. medianas ≥15kW, montaje flexible',     A: 3.5, B: 7.1, C: 11.0 },
     '3': { desc: 'Grupo 3 — Bombas >15kW, montaje rígido',              A: 2.3, B: 4.5, C: 7.1 },
     '4': { desc: 'Grupo 4 — Bombas >15kW, montaje flexible',            A: 3.5, B: 7.1, C: 11.0 },
-    '5': { desc: 'Grupo 5 — Máq. pequeñas <15kW montaje rígido',        A: 1.4, B: 2.8, C: 4.5 },
+    '5': { desc: 'Grupo 5 — Máq. pequeñas <15kW montaje rígido',         A: 1.4, B: 2.8, C: 4.5 },
     '6': { desc: 'Grupo 6 — Máq. pequeñas <15kW montaje flexible',      A: 2.3, B: 4.5, C: 7.1 },
 };
 
@@ -979,9 +997,7 @@ app.get('/api/condicion/iso10816/:grupo', requireAuth, (req, res) => {
     res.json({ grupo: req.params.grupo, descripcion: g.desc, limites_vel, zonas: { A: g.A, B: g.B, C: g.C } });
 });
 
-// ── Cálculo estadístico de alarmas por historial ───────────────
-// Método 1: Media ± 2 desviaciones estándar
-// Método 2: Percentiles 75 / 90 / 95
+// Calcula límites estadísticos de alarmas por historial
 app.get('/api/condicion/alarmas-estadisticas/:asset_id', requireAuth, async (req, res) => {
     const { metodo = 'stddev', min_lecturas = 10 } = req.query;
     try {
@@ -1260,10 +1276,10 @@ function calcularEstadoTermo(comp, tempAmb, fases) {
             const dt = temp - tempAmb;
             if (dtAlarma != null && dt >= dtAlarma)      estado = 'C';
             else if (dtAlerta != null && dt >= dtAlerta) estado = 'A';
-            else                                          estado = 'B';
+            else                                         estado = 'B';
         } else if (criterio === 'absoluta') {
             if (tempMaxAbs != null) {
-                if (temp >= tempMaxAbs)                              estado = 'C';
+                if (temp >= tempMaxAbs)                                   estado = 'C';
                 else if (temp >= tempMaxAbs - (tempRiseRated || 10)) estado = 'A';
                 else                                                  estado = 'B';
             }
@@ -1275,7 +1291,7 @@ function calcularEstadoTermo(comp, tempAmb, fases) {
                 else if (temp >= tmaxCorr * 0.85) estado = 'A';
                 else                              estado = 'B';
             } else if (tempMaxAbs != null) {
-                if (temp >= tempMaxAbs)                              estado = 'C';
+                if (temp >= tempMaxAbs)                                   estado = 'C';
                 else if (temp >= tempMaxAbs - (tempRiseRated || 10)) estado = 'A';
                 else                                                  estado = 'B';
             }
@@ -1862,15 +1878,15 @@ app.get('/api/condicion/similares/:asset_id', requireAuth, async (req, res) => {
             const nums = Object.values(vals).map(v => parseFloat(v)).filter(v => !isNaN(v));
             const prom = nums.length ? +(nums.reduce((a,v) => a+v, 0) / nums.length).toFixed(3) : null;
             return {
-                asset_id:       e.asset_id,
-                descripcion:    e.descripcion,
-                ubicacion:      e.ubicacion,
-                potencia_hp:    e.potencia_hp,
-                estado:         e.ultimo_estado_vibraciones,
-                prom_vel:       prom,
+                asset_id:        e.asset_id,
+                descripcion:     e.descripcion,
+                ubicacion:       e.ubicacion,
+                potencia_hp:     e.potencia_hp,
+                estado:          e.ultimo_estado_vibraciones,
+                prom_vel:        prom,
                 ultima_lectura: e.fecha_medicion ? String(e.fecha_medicion).split('T')[0] : null,
-                valores:        vals,
-                es_actual:      !!e.es_actual,
+                valores:         vals,
+                es_actual:       !!e.es_actual,
             };
         });
 
@@ -2651,8 +2667,8 @@ app.get('/api/admin/backups', requireAuth, roleAtLeast('sysadmin'), (req, res) =
 app.post('/api/admin/backup', requireAuth, roleAtLeast('sysadmin'), (req, res) => {
     const backupDir = getBackupDir();
     const pgBin     = getPgBin();
-    const now       = new Date();
-    const stamp     = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+    const now        = new Date();
+    const stamp      = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
     const outFile   = require('path').join(backupDir, `pdm_${stamp}.backup`);
 
     try {

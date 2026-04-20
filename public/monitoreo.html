@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoreo de Condición — Suite PdM</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="monitoreo.css">
+    <link rel="stylesheet" href="monitoreo_print.css" media="print">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+</head>
+<body data-theme="default">
+
+    <header>
+        <h1>Suite de Mantenimiento Predictivo</h1>
+        <p class="intro-text">Sistema integral de gestión de activos y monitoreo predictivo.</p>
+    </header>
+
+    <div class="page-wrapper">
+        <aside id="left-sidebar">
+            <h3><i class="fa-solid fa-toolbox"></i> Suite PdM</h3>
+            <nav class="sidebar-nav">
+                <a href="hojas-de-vida.html" class="nav-link"><i class="fa-solid fa-industry"></i> Gestión de Activos</a>
+                <a href="monitoreo.html" class="nav-link active"><i class="fa-solid fa-desktop"></i> Monitoreo de Condición</a>
+                <a href="condicion.html" class="nav-link"><i class="fa-solid fa-wave-square"></i> Tendencias de Condición</a>
+                <a href="analitica.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> Analítica</a>
+                <div class="nav-separator">Gestión</div>
+            <a href="ordenes-trabajo.html" class="nav-link" data-feature="ot"><i class="fa-solid fa-clipboard-list"></i> Órdenes de Trabajo</a>
+            <a href="lubricacion.html" class="nav-link" data-feature="lubricacion"><i class="fa-solid fa-droplet"></i> Lubricación</a>
+            <div class="nav-separator">Reportes</div>
+                <a href="vibraciones.html" class="nav-link"><i class="fa-solid fa-wave-square"></i> Reporte Vibraciones</a>
+                <a href="termografia.html" class="nav-link"><i class="fa-solid fa-fire"></i> Reporte Termografía</a>
+                <a href="ultrasonido.html" class="nav-link"><i class="fa-solid fa-satellite-dish"></i> Reporte Ultrasonido</a>
+                <a href="reportes-generales.html" class="nav-link"><i class="fa-solid fa-file-contract"></i> Reportes Generales</a>
+                <div class="nav-separator">Anexos</div>
+                <a href="anexo-termo.html" class="nav-link"><i class="fa-solid fa-images"></i> Anexo Termografía</a>
+                <a href="anexo-ultra.html" class="nav-link"><i class="fa-solid fa-ear-listen"></i> Anexo Ultrasonido</a>
+                <div class="nav-separator">Sistema</div>
+                <a href="usuarios.html" class="nav-link" data-min-rol="admin"><i class="fa-solid fa-users-gear"></i> Gestión de Usuarios</a>
+                <a href="ayuda.html" class="nav-link"><i class="fa-solid fa-circle-question"></i> Ayuda</a>
+                <button id="btn-open-config" class="nav-link config-btn"><i class="fa-solid fa-gear"></i> Configuración</button>
+                <button id="btn-logout" class="nav-link config-btn" style="color:#dc3545;"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</button>
+            </nav>
+            <div class="sidebar-footer">
+                <button onclick="window.print();" class="control-button print-main-btn">
+                    <i class="fa-solid fa-print"></i> Imprimir PDF
+                </button>
+            </div>
+        </aside>
+
+        <main class="content-container">
+
+            <div class="breadcrumb no-print">
+                <a href="index.html"><i class="fa-solid fa-arrow-left"></i> Volver al Inicio</a>
+            </div>
+
+            <!-- Logos y título -->
+            <div id="report-header">
+                <div id="logo-left-container" class="logo-container">
+                    <img src="" alt="Logo Izquierdo" class="static-logo" style="display:none;">
+                </div>
+                <h2 class="report-title"><i class="fa-solid fa-desktop"></i> Monitoreo de Condición</h2>
+                <div id="logo-right-container" class="logo-container">
+                    <img src="" alt="Logo Derecho" class="static-logo" style="display:none;">
+                </div>
+            </div>
+
+            <!-- ── Información General ── -->
+            <section id="info-general">
+                <h3>Información General</h3>
+                <table id="info-table">
+                    <tbody>
+                        <tr>
+                            <td><label for="fecha-reporte-monitoreo">Fecha Reporte:</label></td>
+                            <td><input type="date" id="fecha-reporte-monitoreo"></td>
+                            <td><label for="responsable-monitoreo">Responsable:</label></td>
+                            <td><input type="text" id="responsable-monitoreo" placeholder="Nombre del responsable"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="planta-monitoreo">Planta / Área:</label></td>
+                            <td>
+                                <select id="planta-monitoreo" style="width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:6px; font-family:inherit; font-size:0.9em;">
+                                    <option value="">— Seleccionar planta —</option>
+                                </select>
+                            </td>
+                            <td><label for="periodo-monitoreo">Periodo Cubierto:</label></td>
+                            <td><input type="text" id="periodo-monitoreo" placeholder="Ej: Mayo 2025"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            <hr class="section-separator">
+
+            <!-- ── Estado de Equipos ── -->
+            <section id="monitoreo-equipos">
+                <h3>Estado de Equipos</h3>
+
+                <!-- Controles (no imprimir) -->
+                <div class="monitoreo-controls no-print" id="mon-controles" style="display:none;">
+                    <button id="monitoreo-save-btn" class="monitoreo-button save-button">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+                    </button>
+                    <button id="btn-refresh-mon" class="monitoreo-button import-button">
+                        <i class="fa-solid fa-rotate"></i> Actualizar
+                    </button>
+                </div>
+
+                <!-- Mensaje de espera -->
+                <div id="mon-espera" style="padding:32px;text-align:center;color:var(--text-muted);font-size:.9em;">
+                    <i class="fa-solid fa-hand-pointer" style="font-size:1.5em;opacity:.3;display:block;margin-bottom:8px;"></i>
+                    Selecciona una Planta/Área en Información General para cargar los equipos
+                </div>
+
+                <!-- Tabla de equipos -->
+                <div id="mon-tabla-wrap" style="display:none;">
+                    <table id="monitoreo-table">
+                        <thead>
+                            <tr>
+                                <th>Asset ID</th>
+                                <th>Descripción</th>
+                                <th>Ubicación</th>
+                                <th>Última Medición</th>
+                                <th>Ultra</th>
+                                <th>Vib</th>
+                                <th>Termo</th>
+                                <th>Comentarios</th>
+                            </tr>
+                        </thead>
+                        <tbody id="monitoreo-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
+            <hr class="section-separator">
+
+            <!-- ── Firmas ── -->
+            <section id="firmas">
+                <h3>Firmas y Validación</h3>
+                <div class="firmas-container page-content">
+                    <div class="firma-box">
+                        <div class="firma-img-slot" style="min-height:64px;display:flex;align-items:flex-end;justify-content:center;margin-bottom:4px;">
+                            <img class="firma-img-preview" src="" style="display:none;max-height:60px;max-width:180px;object-fit:contain;">
+                        </div>
+                        <div class="linea-firma"></div>
+                        <p class="nombre-analista"><strong>Analista</strong></p>
+                        <input type="text" class="cargo-analista" placeholder="Nombre / Cargo">
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Config modal -->
+    <div id="config-modal" class="modal-overlay">
+        <div class="modal-content config-modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-sliders"></i> Configuración del Sistema</h3>
+                <span class="close-modal-config">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="config-group">
+                    <div class="config-sub-title"><i class="fa-solid fa-stamp"></i> Datos Predeterminados</div>
+                    <div style="display:flex;justify-content:space-between;gap:10px;">
+                        <div style="flex:1;text-align:center;">
+                            <label style="font-size:.85em;font-weight:bold;display:block;">Logo Izquierdo:</label>
+                            <img id="preview-cfg-left" class="config-logo-preview" src="" alt="">
+                            <label class="monitoreo-button import-button" style="padding:4px 8px;font-size:.8em;margin-top:5px;cursor:pointer;display:inline-block;">
+                                Subir <input type="file" id="cfg-logo-left" accept="image/*" hidden>
+                            </label>
+                        </div>
+                        <div style="flex:1;text-align:center;">
+                            <label style="font-size:.85em;font-weight:bold;display:block;">Logo Derecho:</label>
+                            <img id="preview-cfg-right" class="config-logo-preview" src="" alt="">
+                            <label class="monitoreo-button import-button" style="padding:4px 8px;font-size:.8em;margin-top:5px;cursor:pointer;display:inline-block;">
+                                Subir <input type="file" id="cfg-logo-right" accept="image/*" hidden>
+                            </label>
+                        </div>
+                    </div>
+                    <label style="font-size:.9em;font-weight:bold;margin-top:15px;display:block;">Nombre del Analista:</label>
+                    <input type="text" id="cfg-analyst-name" placeholder="Ej: Ing. Juan Pérez" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">
+                    <label style="font-size:.9em;font-weight:bold;margin-top:10px;display:block;">Cargo / Certificación:</label>
+                    <input type="text" id="cfg-analyst-role" placeholder="Ej: Analista Nivel II" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">
+                </div>
+                <div class="config-group">
+                    <div class="config-sub-title"><i class="fa-solid fa-signature"></i> Firmas</div>
+                    <p style="font-size:.82em;color:var(--text-muted);margin-bottom:10px;">Crea las firmas de los analistas. Podrás seleccionarlas en cada reporte.</p>
+                    <div id="firmas-manager-container"></div>
+                </div>
+                <div class="config-group">
+                    <div class="config-sub-title"><i class="fa-solid fa-palette"></i> Apariencia</div>
+                    <label for="themeSelect" style="font-weight:bold;font-size:.9em;">Tema de Color:</label>
+                    <select id="themeSelect" style="width:100%;padding:8px;margin-top:5px;margin-bottom:10px;">
+                        <option value="default">Predeterminado</option>
+                        <option value="dark-1">Oscuro - Océano</option>
+                        <option value="dark-2">Oscuro - Pizarra</option>
+                        <option value="dark-12">Oscuro - Grafito</option>
+                        <option value="custom">Personalizado</option>
+                    </select>
+                    <input type="color" id="customColorPicker" style="display:none;width:100%;margin-bottom:10px;">
+                    <label for="fontSelect" style="font-weight:bold;font-size:.9em;">Fuente Global:</label>
+                    <select id="fontSelect" style="width:100%;padding:8px;margin-top:5px;">
+                        <option value="system">System UI</option>
+                        <option value="sans-serif">Segoe UI</option>
+                        <option value="arial">Arial</option>
+                        <option value="monospace">Courier New</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 Edwards PdM Suite</p></footer>
+    <div id="toast-container"></div>
+    <script src="js/script.js"></script>
+    <script src="js/monitoreo.js"></script>
+</body>
+</html>

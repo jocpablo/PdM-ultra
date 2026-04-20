@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio — Suite PdM</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <style>
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--brand-900) 0%, var(--brand-700) 100%);
+            border-radius: 16px;
+            padding: 28px 32px;
+            margin-bottom: 28px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .welcome-banner::after {
+            content: '⚙';
+            position: absolute;
+            right: 28px;
+            font-size: 7em;
+            opacity: .06;
+            line-height: 1;
+        }
+        .welcome-banner h2 {
+            margin: 0 0 6px;
+            font-size: 1.4em;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+        .welcome-banner p {
+            margin: 0;
+            font-size: 0.88em;
+            opacity: .75;
+            max-width: 480px;
+        }
+        .welcome-actions {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+        .welcome-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 0.85em;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            transition: all .18s;
+            white-space: nowrap;
+        }
+        .welcome-btn-primary {
+            background: white;
+            color: var(--brand-800);
+        }
+        .welcome-btn-primary:hover { opacity: .9; transform: translateY(-1px); }
+        .welcome-btn-secondary {
+            background: rgba(255,255,255,.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,.25);
+        }
+        .welcome-btn-secondary:hover { background: rgba(255,255,255,.22); }
+
+        .section-label {
+            font-size: 0.72em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+    </style>
+</head>
+<body data-theme="default">
+    <header>
+        <h1>Suite de Mantenimiento Predictivo</h1>
+        <p class="intro-text">Sistema integral de gestión de activos y monitoreo predictivo.</p>
+    </header>
+
+    <div class="page-wrapper dashboard-wrapper">
+        <main class="content-container" style="background:transparent; border:none; box-shadow:none; padding:28px 0;">
+
+            <!-- Banner de bienvenida -->
+            <div class="welcome-banner">
+                <div>
+                    <h2>Bienvenido a Suite PdM</h2>
+                    <p>Gestiona activos industriales, registra inspecciones y genera reportes de mantenimiento predictivo desde un solo lugar.</p>
+                </div>
+                <div class="welcome-actions">
+                    <a href="analitica.html" class="welcome-btn welcome-btn-primary">
+                        <i class="fa-solid fa-chart-line"></i> Ver Analítica
+                    </a>
+                    <a href="monitoreo.html" class="welcome-btn welcome-btn-secondary">
+                        <i class="fa-solid fa-desktop"></i> Monitoreo
+                    </a>
+                </div>
+            </div>
+
+            <!-- Módulos principales -->
+            <div class="section-label"><i class="fa-solid fa-th-large"></i> Módulos</div>
+            <div class="dashboard-grid" style="margin-bottom:28px;">
+                <a href="hojas-de-vida.html" class="dashboard-card card-activos">
+                    <i class="fa-solid fa-industry"></i>
+                    <h3>Gestión de Activos</h3>
+                    <p>Inventario, fichas técnicas y registro de máquinas.</p>
+                </a>
+                <a href="monitoreo.html" class="dashboard-card card-monitoreo">
+                    <i class="fa-solid fa-desktop"></i>
+                    <h3>Monitoreo de Condición</h3>
+                    <p>Tablero de estado general y semáforos B/A/C.</p>
+                </a>
+                <a href="condicion.html" class="dashboard-card" style="--card-accent:#0891b2;">
+                    <i class="fa-solid fa-wave-square" style="color:#0891b2;"></i>
+                    <h3>Tendencias de Condición</h3>
+                    <p>Overall, Envelope/Demod y Factor de Cresta por activo.</p>
+                </a>
+                <a href="analitica.html" class="dashboard-card" style="--card-accent:#7c3aed;">
+                    <i class="fa-solid fa-chart-line" style="color:#7c3aed;"></i>
+                    <h3>Analítica</h3>
+                    <p>Gráficos interactivos y métricas de flota en tiempo real.</p>
+                </a>
+            </div>
+
+            <!-- Gestión -->
+            <div class="section-label" data-feature="ot" id="idx-gestión-label"><i class="fa-solid fa-tasks"></i> Gestión</div>
+            <div class="dashboard-grid" id="idx-gestión-grid">
+                <a href="ordenes-trabajo.html" class="dashboard-card" style="--card-accent:#d97706;" data-feature="ot">
+                    <i class="fa-solid fa-clipboard-list" style="color:#d97706;"></i>
+                    <h3>Órdenes de Trabajo</h3>
+                    <p>Gestión interna de OTs correctivas, preventivas y predictivas.</p>
+                </a>
+                <a href="lubricacion.html" class="dashboard-card" style="--card-accent:#0891b2;" data-feature="lubricacion">
+                    <i class="fa-solid fa-droplet" style="color:#0891b2;"></i>
+                    <h3>Lubricación</h3>
+                    <p>Control de puntos de lubricación, intervalos y vencimientos.</p>
+                </a>
+            </div>
+
+            <!-- Reportes -->
+            <div class="section-label"><i class="fa-solid fa-file-lines"></i> Reportes</div>
+            <div class="dashboard-grid" style="margin-bottom:28px;">
+                <a href="vibraciones.html" class="dashboard-card card-vib">
+                    <i class="fa-solid fa-wave-square"></i>
+                    <h3>Análisis de Vibraciones</h3>
+                    <p>Reportes detallados, espectros y normas ISO.</p>
+                </a>
+                <a href="termografia.html" class="dashboard-card card-termo">
+                    <i class="fa-solid fa-fire"></i>
+                    <h3>Termografía</h3>
+                    <p>Análisis térmico y detección de puntos calientes.</p>
+                </a>
+                <a href="ultrasonido.html" class="dashboard-card card-ultra">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                    <h3>Ultrasonido</h3>
+                    <p>Detección de fugas y lubricación asistida por dBµV.</p>
+                </a>
+                <a href="reportes-generales.html" class="dashboard-card card-rep-gen">
+                    <i class="fa-solid fa-file-contract"></i>
+                    <h3>Reportes Generales</h3>
+                    <p>Informes multiparamétricos y eléctricos.</p>
+                </a>
+            </div>
+
+            <!-- Anexos -->
+            <div class="section-label"><i class="fa-solid fa-paperclip"></i> Anexos</div>
+            <div class="dashboard-grid" style="margin-bottom:28px;">
+                <a href="anexo-termo.html" class="dashboard-card card-anexo-termo">
+                    <i class="fa-solid fa-images"></i>
+                    <h3>Anexo Termografía</h3>
+                    <p>Carga masiva de imágenes y análisis detallado.</p>
+                </a>
+                <a href="anexo-ultra.html" class="dashboard-card card-anexo-ultra">
+                    <i class="fa-solid fa-ear-listen"></i>
+                    <h3>Anexo Ultrasonido</h3>
+                    <p>Espectros, archivos de audio y notas.</p>
+                </a>
+            </div>
+
+            <!-- Sistema -->
+            <div class="section-label"><i class="fa-solid fa-gear"></i> Sistema</div>
+            <div class="dashboard-grid">
+                <a href="usuarios.html" class="dashboard-card" style="--card-accent:#7c3aed;" data-min-rol="admin">
+                    <i class="fa-solid fa-users-gear" style="color:#7c3aed;"></i>
+                    <h3>Usuarios y Accesos</h3>
+                    <p>Gestión de usuarios, roles y plantas del sistema.</p>
+                </a>
+                <a href="ayuda.html" class="dashboard-card" style="--card-accent:#0369a1;">
+                    <i class="fa-solid fa-circle-question" style="color:#0369a1;"></i>
+                    <h3>Ayuda</h3>
+                    <p>Manual de usuario y guía completa del sistema.</p>
+                </a>
+                <button id="btn-open-config" class="dashboard-card card-config" style="cursor:pointer; width:100%; text-align:center;">
+                    <i class="fa-solid fa-sliders"></i>
+                    <h3>Configuración</h3>
+                    <p>Temas, fuentes, logos y opciones del sistema.</p>
+                </button>
+                <button id="btn-logout" class="dashboard-card" style="cursor:pointer; width:100%; --card-accent:#dc2626; text-align:center;">
+                    <i class="fa-solid fa-right-from-bracket" style="color:#dc2626;"></i>
+                    <h3 style="color:#dc2626;">Cerrar Sesión</h3>
+                    <p>Salir del sistema de forma segura.</p>
+                </button>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="config-modal" class="modal-overlay">
+        <div class="modal-content config-modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-sliders"></i> Configuración del Sistema</h3>
+                <span class="close-modal-config">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="config-group">
+                    <div class="config-sub-title"><i class="fa-solid fa-stamp"></i> Datos Predeterminados</div>
+                    <p style="font-size:0.85em; color:#666; margin-bottom:15px;">Estos datos aparecerán automáticamente en tus reportes.</p>
+                    <div style="display:flex; justify-content:space-between; gap:10px;">
+                        <div style="flex:1; text-align:center;">
+                            <label style="font-size:0.85em; font-weight:bold; display:block;">Logo Izquierdo:</label>
+                            <img id="preview-cfg-left" class="config-logo-preview" src="" alt="Vacío">
+                            <label class="monitoreo-button import-button" style="padding:4px 8px; font-size:0.8em; margin-top:5px; cursor:pointer; display:inline-block;">
+                                Subir <input type="file" id="cfg-logo-left" accept="image/*" hidden>
+                            </label>
+                        </div>
+                        <div style="flex:1; text-align:center;">
+                            <label style="font-size:0.85em; font-weight:bold; display:block;">Logo Derecho:</label>
+                            <img id="preview-cfg-right" class="config-logo-preview" src="" alt="Vacío">
+                            <label class="monitoreo-button import-button" style="padding:4px 8px; font-size:0.8em; margin-top:5px; cursor:pointer; display:inline-block;">
+                                Subir <input type="file" id="cfg-logo-right" accept="image/*" hidden>
+                            </label>
+                        </div>
+                    </div>
+                    <label style="font-size:0.9em; font-weight:bold; margin-top:15px; display:block;">Nombre del Analista:</label>
+                    <input type="text" id="cfg-analyst-name" placeholder="Ej: Ing. Juan Pérez" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;">
+                    <label style="font-size:0.9em; font-weight:bold; margin-top:10px; display:block;">Cargo / Certificación:</label>
+                    <input type="text" id="cfg-analyst-role" placeholder="Ej: Analista Nivel II" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;">
+                </div>
+
+                <div class="config-group">
+                    <div class="config-sub-title"><i class="fa-solid fa-signature"></i> Firmas</div>
+                    <p style="font-size:0.82em; color:var(--text-muted); margin-bottom:10px;">
+                        Crea las firmas de los analistas. Podrás seleccionarlas en cada reporte.
+                    </p>
+                    <div id="firmas-manager-container"></div>
+                </div>
+                <div class="config-group">
+                    <div class="config-sub-title"><i class="fa-solid fa-palette"></i> Apariencia</div>
+                    <label for="themeSelect" style="font-weight:bold; font-size:0.9em;">Tema de Color:</label>
+                    <select id="themeSelect" style="width:100%; padding:8px; margin-top:5px; margin-bottom:10px;">
+                        <option value="default">Predeterminado</option>
+                        <option value="dark-1">Oscuro - Océano</option>
+                        <option value="dark-2">Oscuro - Pizarra</option>
+                        <option value="dark-12">Oscuro - Grafito</option>
+                        <option value="custom">Personalizado</option>
+                    </select>
+                    <input type="color" id="customColorPicker" style="display:none; width:100%; margin-bottom:10px;">
+                    <label for="fontSelect" style="font-weight:bold; font-size:0.9em;">Fuente Global:</label>
+                    <select id="fontSelect" style="width:100%; padding:8px; margin-top:5px;">
+                        <option value="system">System UI (Default)</option>
+                        <option value="sans-serif">Segoe UI</option>
+                        <option value="arial">Arial</option>
+                        <option value="monospace">Courier New (Mono)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 Edwards PdM Suite</p></footer>
+    <div id="toast-container"></div>
+    <script src="js/script.js"></script>
+</body>
+</html>

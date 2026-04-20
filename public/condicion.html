@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoreo de Condición — Suite PdM</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="condicion.css">
+</head>
+<body data-theme="default">
+
+<!-- Barra superior móvil (solo visible en pantallas pequeñas) -->
+<div class="cond-topbar" id="cond-topbar">
+    <button class="cond-sidebar-toggle-top" id="sidebar-toggle-top">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+    <span class="cond-topbar-title"><i class="fa-solid fa-wave-square"></i> Tendencias de Condición</span>
+    <a href="index.html" class="cond-topbar-back" title="Volver al menú">
+        <i class="fa-solid fa-house"></i>
+    </a>
+</div>
+
+<!-- ══════════════ LAYOUT PRINCIPAL ══════════════ -->
+<div class="cond-layout">
+
+    <!-- ── Sidebar árbol de activos ── -->
+    <aside class="cond-sidebar" id="sidebar">
+        <div class="cond-sidebar-header">
+            <div class="cond-sidebar-title">
+                <i class="fa-solid fa-wave-square"></i>
+                <span>Monitoreo</span>
+            </div>
+            <div class="cond-sidebar-tabs">
+                <button class="cond-tab active" data-tab="vibraciones" title="Vibraciones">
+                    <i class="fa-solid fa-wave-square"></i>
+                </button>
+                <button class="cond-tab" data-tab="termografia" title="Termografía">
+                    <i class="fa-solid fa-fire"></i>
+                </button>
+                <button class="cond-tab" data-tab="ultrasonido" title="Ultrasonido">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="cond-search-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="sidebar-search" placeholder="Buscar activo..." autocomplete="off">
+        </div>
+
+        <div class="cond-tree" id="asset-tree">
+            <div class="cond-tree-loading">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <span>Cargando activos...</span>
+            </div>
+        </div>
+
+        <div class="cond-sidebar-footer">
+            <a href="index.html" class="cond-back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Menú Principal
+            </a>
+            <div id="sidebar-equipo-count" class="cond-sidebar-count"></div>
+        </div>
+    </aside>
+
+
+    <!-- ── TERMOGRAFÍA SIDEBAR ── -->
+    <aside class="cond-sidebar" id="termo-sidebar" style="display:none;">
+        <div class="cond-sidebar-header">
+            <div class="cond-sidebar-title">
+                <i class="fa-solid fa-wave-square"></i>
+                <span>Monitoreo</span>
+            </div>
+            <div class="cond-sidebar-tabs">
+                <button class="cond-tab" data-tab="vibraciones" title="Vibraciones">
+                    <i class="fa-solid fa-wave-square"></i>
+                </button>
+                <button class="cond-tab active" data-tab="termografia" title="Termografía">
+                    <i class="fa-solid fa-fire"></i>
+                </button>
+                <button class="cond-tab" data-tab="ultrasonido" title="Ultrasonido">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="cond-search-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="termo-sidebar-search" placeholder="Buscar activo..." autocomplete="off">
+        </div>
+
+        <div class="cond-tree" id="termo-asset-tree">
+            <div class="cond-tree-loading">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <span>Cargando activos...</span>
+            </div>
+        </div>
+
+        <div class="cond-sidebar-footer">
+            <a href="index.html" class="cond-back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Menú Principal
+            </a>
+            <div class="cond-sidebar-count"></div>
+        </div>
+    </aside>
+
+
+    <!-- ── ULTRASONIDO SIDEBAR ── -->
+    <aside class="cond-sidebar" id="ultra-sidebar" style="display:none;">
+        <div class="cond-sidebar-header">
+            <div class="cond-sidebar-title">
+                <i class="fa-solid fa-wave-square"></i>
+                <span>Monitoreo</span>
+            </div>
+            <div class="cond-sidebar-tabs">
+                <button class="cond-tab" data-tab="vibraciones" title="Vibraciones">
+                    <i class="fa-solid fa-wave-square"></i>
+                </button>
+                <button class="cond-tab" data-tab="termografia" title="Termografía">
+                    <i class="fa-solid fa-fire"></i>
+                </button>
+                <button class="cond-tab active" data-tab="ultrasonido" title="Ultrasonido">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                </button>
+            </div>
+        </div>
+        <div class="cond-search-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="ultra-sidebar-search" placeholder="Buscar activo..." autocomplete="off">
+        </div>
+        <div class="cond-tree" id="ultra-asset-tree">
+            <div class="cond-tree-loading">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <span>Cargando activos...</span>
+            </div>
+        </div>
+        <div class="cond-sidebar-footer">
+            <a href="index.html" class="cond-back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Menú Principal
+            </a>
+            <div class="cond-sidebar-count"></div>
+        </div>
+    </aside>
+
+    <!-- ── Toggle sidebar en móvil ── -->
+    <button class="cond-sidebar-toggle" id="sidebar-toggle" title="Ocultar/Mostrar panel">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <!-- ── Panel principal ── -->
+    <main class="cond-main" id="main-panel">
+
+        <!-- Estado vacío -->
+        <div class="cond-empty" id="panel-empty">
+            <div class="cond-empty-icon">
+                <i class="fa-solid fa-wave-square"></i>
+            </div>
+            <h2>Monitoreo de Vibraciones</h2>
+            <p>Selecciona un activo en el árbol de la izquierda para ver su historial de mediciones y tendencias de condición.</p>
+            <div class="cond-empty-tips">
+                <div><i class="fa-solid fa-circle-info"></i> Solo aparecen activos con vibraciones habilitadas</div>
+                <div><i class="fa-solid fa-circle-info"></i> Configura puntos y límites desde el equipo seleccionado</div>
+            </div>
+        </div>
+
+        <!-- Panel de equipo (oculto hasta selección) -->
+        <div class="cond-equipo-panel" id="panel-equipo" style="display:none;">
+
+            <!-- Ficha técnica -->
+            <div class="cond-ficha" id="ficha-tecnica">
+                <div class="cond-ficha-header">
+                    <div class="cond-ficha-id-wrap">
+                        <div class="cond-ficha-badge" id="ficha-criticidad-badge">—</div>
+                        <div>
+                            <div class="cond-ficha-asset-id" id="ficha-asset-id">—</div>
+                            <div class="cond-ficha-desc" id="ficha-descripcion">—</div>
+                        </div>
+                    </div>
+                    <div class="cond-ficha-estado-wrap">
+                        <div class="cond-semaforo-dot" id="ficha-semaforo" title="Estado vibraciones"></div>
+                        <div class="cond-ficha-actions">
+                            <button class="cond-btn cond-btn-outline" id="btn-config-equipo" title="Configurar puntos y límites">
+                                <i class="fa-solid fa-sliders"></i> Configurar
+                            </button>
+                            <button class="cond-btn cond-btn-primary" id="btn-add-lectura">
+                                <i class="fa-solid fa-plus"></i> Nueva Lectura
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cond-ficha-grid">
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-location-dot"></i> Planta / Zona</span>
+                        <span class="cond-field-value" id="ficha-ubicacion">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-tag"></i> Marca</span>
+                        <span class="cond-field-value" id="ficha-marca">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-barcode"></i> Modelo</span>
+                        <span class="cond-field-value" id="ficha-modelo">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-cogs"></i> Tipo de Sistema</span>
+                        <span class="cond-field-value" id="ficha-tipo-sistema">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-link"></i> Tipo de Acople</span>
+                        <span class="cond-field-value" id="ficha-tipo-acople">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-bolt"></i> Potencia (HP)</span>
+                        <span class="cond-field-value" id="ficha-potencia">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-rotate"></i> RPM</span>
+                        <span class="cond-field-value" id="ficha-rpm">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-circle-nodes"></i> Rodamiento DE</span>
+                        <span class="cond-field-value" id="ficha-rod-de">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-circle-nodes"></i> Rodamiento ODE</span>
+                        <span class="cond-field-value" id="ficha-rod-ode">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-calendar-check"></i> Frecuencia Insp.</span>
+                        <span class="cond-field-value" id="ficha-frecuencia">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-ruler"></i> Sistema de Unidades</span>
+                        <span class="cond-field-value" id="ficha-system-unit">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-shield-halved"></i> Clase ISO</span>
+                        <span class="cond-field-value" id="ficha-iso-class">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gap de inspección -->
+            <div id="gap-banner" style="display:none;"></div>
+
+            <!-- Gráfico de tendencia -->
+            <div id="chart-container" style="display:none;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <span style="font-weight:700;font-size:.9em;color:var(--text-primary);"><i class="fa-solid fa-chart-line" style="color:var(--primary);"></i> Tendencia de Vibraciones</span>
+                    <span id="chart-trend-banner" style="font-size:.75em;color:var(--text-muted);font-style:italic;"></span>
+                </div>
+                <div style="height:220px;position:relative;">
+                    <canvas id="tendencia-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Comparación con similares -->
+            <div id="similares-wrap" class="cond-tabla-wrap" style="display:none;margin-bottom:16px;"></div>
+
+            <!-- Tabla de tendencias -->
+            <div class="cond-tabla-wrap" id="tabla-wrap">
+                <div class="cond-tabla-toolbar">
+                    <div class="cond-tabla-info">
+                        <i class="fa-solid fa-table-list"></i>
+                        <span id="lecturas-count">0 mediciones registradas</span>
+                    </div>
+                    <div class="cond-tabla-toolbar-right">
+                        <label class="cond-toggle-label">
+                            <input type="checkbox" id="toggle-env" checked>
+                            <span>Env/Demod</span>
+                        </label>
+                        <label class="cond-toggle-label">
+                            <input type="checkbox" id="toggle-crest">
+                            <span>Factor de Cresta</span>
+                        </label>
+                        <div class="cond-rows-selector">
+                            <label>Ver últimas</label>
+                            <select id="rows-limit">
+                                <option value="20" selected>20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="0">Todas</option>
+                            </select>
+                        </div>
+                        <button class="cond-btn cond-btn-ghost" id="btn-globales" title="Configurar límites globales">
+                            <i class="fa-solid fa-globe"></i> Límites Globales
+                        </button>
+                        <button class="cond-btn cond-btn-ghost" id="btn-export-csv">
+                            <i class="fa-solid fa-file-csv"></i> CSV
+                        </button>
+                    </div>
+                </div>
+
+                <div class="cond-tabla-scroll" id="tabla-scroll">
+                    <table class="cond-table" id="cond-table">
+                        <thead id="cond-thead"></thead>
+                        <tbody id="cond-tbody"></tbody>
+                    </table>
+                </div>
+
+                <div class="cond-empty-rows" id="empty-rows" style="display:none;">
+                    <i class="fa-solid fa-database"></i>
+                    <p>No hay mediciones registradas para este equipo.<br>
+                    Haz clic en <strong>Nueva Lectura</strong> para comenzar.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+
+    <!-- ══════════════════════════════════════════════════════════
+         PANEL TERMOGRAFÍA
+    ══════════════════════════════════════════════════════════ -->
+    <main class="cond-main" id="termo-main-panel" style="display:none;">
+
+        <!-- Estado vacío -->
+        <div class="cond-empty" id="termo-panel-empty">
+            <div class="cond-empty-icon"><i class="fa-solid fa-fire"></i></div>
+            <h2>Monitoreo de Termografía</h2>
+            <p>Selecciona un activo en el árbol para ver sus componentes y lecturas de temperatura.</p>
+            <div class="cond-empty-tips">
+                <div><i class="fa-solid fa-circle-info"></i> Solo aparecen activos con termografía habilitada</div>
+                <div><i class="fa-solid fa-circle-info"></i> Crea componentes y registra lecturas de temperatura por fase</div>
+            </div>
+        </div>
+
+        <!-- Panel de equipo -->
+        <div class="cond-equipo-panel" id="termo-panel-equipo" style="display:none;">
+
+            <!-- Ficha técnica (mismo estilo que vibraciones) -->
+            <div class="cond-ficha" id="termo-ficha-tecnica">
+                <div class="cond-ficha-header">
+                    <div class="cond-ficha-id-wrap">
+                        <div class="cond-ficha-badge" id="termo-ficha-criticidad-badge">—</div>
+                        <div>
+                            <div class="cond-ficha-asset-id" id="termo-ficha-id">—</div>
+                            <div class="cond-ficha-desc" id="termo-ficha-desc">—</div>
+                        </div>
+                    </div>
+                    <div class="cond-ficha-estado-wrap">
+                        <div class="cond-semaforo-dot" id="termo-ficha-semaforo" title="Estado termografía"></div>
+                        <div class="cond-ficha-actions">
+                            <button class="cond-btn cond-btn-primary no-print" id="termo-btn-add-comp">
+                                <i class="fa-solid fa-plus"></i> Añadir Componente
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cond-ficha-grid">
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-location-dot"></i> Planta / Zona</span>
+                        <span class="cond-field-value" id="termo-ficha-ubicacion">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-tag"></i> Marca</span>
+                        <span class="cond-field-value" id="termo-ficha-marca">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-barcode"></i> Modelo</span>
+                        <span class="cond-field-value" id="termo-ficha-modelo">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-cogs"></i> Tipo de Sistema</span>
+                        <span class="cond-field-value" id="termo-ficha-tipo-sistema">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-bolt"></i> Potencia (HP)</span>
+                        <span class="cond-field-value" id="termo-ficha-potencia">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-rotate"></i> RPM</span>
+                        <span class="cond-field-value" id="termo-ficha-rpm">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-plug"></i> Voltaje / Amperaje</span>
+                        <span class="cond-field-value" id="termo-ficha-elec">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-shield-halved"></i> Clase Aislamiento</span>
+                        <span class="cond-field-value" id="termo-ficha-clase-aisl">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-circle-nodes"></i> Rodamiento DE / ODE</span>
+                        <span class="cond-field-value" id="termo-ficha-rodamientos">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-link"></i> Acople / Transmisión</span>
+                        <span class="cond-field-value" id="termo-ficha-acople">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-fire"></i> Estado Termografía</span>
+                        <span class="cond-field-value" id="termo-ficha-estado-txt">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-circle-info"></i> Criticidad</span>
+                        <span class="cond-field-value" id="termo-ficha-crit-txt">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gap banner -->
+            <div id="termo-gap-banner" style="display:none;"></div>
+
+            <!-- Gráfico de tendencia termografía -->
+            <div id="termo-chart-container" style="display:none;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <span style="font-weight:700;font-size:.9em;color:var(--text-primary);"><i class="fa-solid fa-chart-line" style="color:var(--primary);"></i> Tendencia de Temperatura</span>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span id="termo-chart-banner" style="font-size:.75em;color:var(--text-muted);font-style:italic;"></span>
+                        <button class="cond-btn cond-btn-ghost no-print" id="termo-btn-export" style="font-size:.8em;padding:4px 10px;">
+                            <i class="fa-solid fa-file-excel"></i> Excel
+                        </button>
+                    </div>
+                </div>
+                <div style="height:220px;position:relative;">
+                    <canvas id="termo-tendencia-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Lista de componentes -->
+            <section class="cond-section">
+                <h3 class="cond-section-title"><i class="fa-solid fa-list"></i> Componentes</h3>
+                <div id="termo-componentes-wrap"></div>
+            </section>
+
+            <!-- Tabla global de lecturas recientes -->
+            <section class="cond-section">
+                <h3 class="cond-section-title"><i class="fa-solid fa-table-list"></i> Lecturas Recientes (últimas 50)</h3>
+                <div class="cond-tabla-scroll">
+                    <table class="cond-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Componente</th>
+                                <th>Tipo</th>
+                                <th>T. Amb. / ε / Dist.</th>
+                                <th>Temp. / Corriente por Fase (ΔT)</th>
+                                <th>Estado</th>
+                                <th>Imágenes / Notas</th>
+                                <th class="no-print"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="termo-tabla-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div><!-- /termo-panel-equipo -->
+    </main><!-- /termo-main-panel -->
+
+
+
+    <!-- ══════════════════════════════════════════════════════════
+         PANEL ULTRASONIDO
+    ══════════════════════════════════════════════════════════ -->
+    <main class="cond-main" id="ultra-main-panel" style="display:none;">
+
+        <div class="cond-empty" id="ultra-panel-empty">
+            <div class="cond-empty-icon"><i class="fa-solid fa-satellite-dish"></i></div>
+            <h2>Monitoreo de Ultrasonido</h2>
+            <p>Selecciona un activo en el árbol para ver sus puntos de medición y lecturas.</p>
+            <div class="cond-empty-tips">
+                <div><i class="fa-solid fa-circle-info"></i> Solo aparecen activos con ultrasonido habilitado</div>
+                <div><i class="fa-solid fa-circle-info"></i> Crea puntos de medición y registra niveles dBµV periódicamente</div>
+            </div>
+        </div>
+
+        <div class="cond-equipo-panel" id="ultra-panel-equipo" style="display:none;">
+
+            <!-- Ficha técnica -->
+            <div class="cond-ficha" id="ultra-ficha-tecnica">
+                <div class="cond-ficha-header">
+                    <div class="cond-ficha-id-wrap">
+                        <div class="cond-ficha-badge" id="ultra-ficha-criticidad-badge">—</div>
+                        <div>
+                            <div class="cond-ficha-asset-id" id="ultra-ficha-id">—</div>
+                            <div class="cond-ficha-desc" id="ultra-ficha-desc">—</div>
+                        </div>
+                    </div>
+                    <div class="cond-ficha-estado-wrap">
+                        <div class="cond-semaforo-dot" id="ultra-ficha-semaforo" title="Estado ultrasonido"></div>
+                        <div class="cond-ficha-actions">
+                            <button class="cond-btn cond-btn-primary no-print" id="ultra-btn-add-comp">
+                                <i class="fa-solid fa-plus"></i> Añadir Punto
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="cond-ficha-grid">
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-location-dot"></i> Planta / Zona</span>
+                        <span class="cond-field-value" id="ultra-ficha-ubicacion">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-tag"></i> Marca</span>
+                        <span class="cond-field-value" id="ultra-ficha-marca">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-barcode"></i> Modelo</span>
+                        <span class="cond-field-value" id="ultra-ficha-modelo">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-cogs"></i> Tipo de Sistema</span>
+                        <span class="cond-field-value" id="ultra-ficha-tipo-sistema">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-bolt"></i> Potencia (HP)</span>
+                        <span class="cond-field-value" id="ultra-ficha-potencia">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-rotate"></i> RPM</span>
+                        <span class="cond-field-value" id="ultra-ficha-rpm">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-circle-nodes"></i> Rodamientos DE / ODE</span>
+                        <span class="cond-field-value" id="ultra-ficha-rodamientos">—</span>
+                    </div>
+                    <div class="cond-ficha-field">
+                        <span class="cond-field-label"><i class="fa-solid fa-satellite-dish"></i> Estado Ultrasonido</span>
+                        <span class="cond-field-value" id="ultra-ficha-estado-txt">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gap banner -->
+            <div id="ultra-gap-banner" style="display:none;"></div>
+
+            <!-- Gráfico de tendencia ultrasonido -->
+            <div id="ultra-chart-container" style="display:none;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <span style="font-weight:700;font-size:.9em;color:var(--text-primary);"><i class="fa-solid fa-chart-line" style="color:var(--primary);"></i> Tendencia de Nivel dBµV</span>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span id="ultra-chart-banner" style="font-size:.75em;color:var(--text-muted);font-style:italic;"></span>
+                        <button class="cond-btn cond-btn-ghost no-print" id="ultra-btn-export" style="font-size:.8em;padding:4px 10px;">
+                            <i class="fa-solid fa-file-excel"></i> Excel
+                        </button>
+                    </div>
+                </div>
+                <div style="height:220px;position:relative;">
+                    <canvas id="ultra-tendencia-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Puntos de medición -->
+            <section class="cond-section">
+                <h3 class="cond-section-title"><i class="fa-solid fa-list"></i> Puntos de Medición</h3>
+                <div id="ultra-componentes-wrap"></div>
+            </section>
+
+            <!-- Tabla global -->
+            <section class="cond-section">
+                <h3 class="cond-section-title"><i class="fa-solid fa-table-list"></i> Lecturas Recientes (últimas 50)</h3>
+                <div class="cond-tabla-scroll">
+                    <table class="cond-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Punto</th>
+                                <th>Tipo</th>
+                                <th>Nivel (dBµV)</th>
+                                <th>ΔdB</th>
+                                <th>RPM / Carga / Temp.</th>
+                                <th>Estado</th>
+                                <th class="no-print"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="ultra-tabla-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+    </main>
+</div>
+
+<!-- ══════════ MODAL: LÍMITES GLOBALES ══════════ -->
+<div class="cond-modal-overlay" id="modal-globales" style="display:none;">
+    <div class="cond-modal cond-modal-lg">
+        <div class="cond-modal-header">
+            <h3><i class="fa-solid fa-globe"></i> Límites Globales por Defecto</h3>
+            <button class="cond-modal-close" id="close-globales">&times;</button>
+        </div>
+        <div class="cond-modal-body">
+            <p class="cond-config-hint">
+                Estos límites se aplican a todos los equipos que tengan activa la opción "Usar límites globales como base". 
+                Los valores específicos por equipo tienen prioridad sobre estos.
+            </p>
+
+            <div class="cond-config-section">
+                <div class="cond-config-title">Configuración General</div>
+                <div class="cond-config-row">
+                    <div class="cond-config-field">
+                        <label>Sistema de Unidades por Defecto</label>
+                        <select id="glob-system-unit">
+                            <option value="mm/seg">mm/s (métrico)</option>
+                            <option value="in/seg">in/s (imperial)</option>
+                        </select>
+                    </div>
+                    <div class="cond-config-field">
+                        <label>Clase ISO 10816-3 por Defecto</label>
+                        <select id="glob-iso-class">
+                            <option value="">— Sin clase —</option>
+                            <option value="G1">G1 — Flexible</option>
+                            <option value="G2&4F">G2&4F — Rígido/Flexible</option>
+                            <option value="G3">G3 — Máquinas grandes</option>
+                            <option value="G4">G4 — Turbinas/Generadores</option>
+                            <option value="Custom">Custom</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cond-config-section">
+                <div class="cond-config-title">Límites Globales — Velocidad Overall</div>
+                <p class="cond-config-hint">Aplican a todos los puntos que no tengan límites específicos definidos por equipo.</p>
+                <div class="cond-config-row" style="grid-template-columns: 1fr 1fr 1fr;">
+                    <div class="cond-config-field">
+                        <label style="color:#b81414;">ULC (Alarma Alta)</label>
+                        <input type="number" step="0.01" min="0" id="glob-vel-ulc" placeholder="—">
+                    </div>
+                    <div class="cond-config-field">
+                        <label style="color:#ca8a04;">Median (Referencia)</label>
+                        <input type="number" step="0.01" min="0" id="glob-vel-med" placeholder="—">
+                    </div>
+                    <div class="cond-config-field">
+                        <label style="color:#16a34a;">LCL (Alarma Baja)</label>
+                        <input type="number" step="0.01" min="0" id="glob-vel-lcl" placeholder="—">
+                    </div>
+                </div>
+            </div>
+
+            <div class="cond-config-section">
+                <div class="cond-config-title">Límites Globales — Envelope / Demod G's rms</div>
+                <div class="cond-config-row" style="grid-template-columns: 1fr 1fr 1fr;">
+                    <div class="cond-config-field">
+                        <label style="color:#b81414;">ULC (Alarma Alta)</label>
+                        <input type="number" step="0.001" min="0" id="glob-env-ulc" placeholder="—">
+                    </div>
+                    <div class="cond-config-field">
+                        <label style="color:#ca8a04;">Median (Referencia)</label>
+                        <input type="number" step="0.001" min="0" id="glob-env-med" placeholder="—">
+                    </div>
+                    <div class="cond-config-field">
+                        <label style="color:#16a34a;">LCL (Alarma Baja)</label>
+                        <input type="number" step="0.001" min="0" id="glob-env-lcl" placeholder="—">
+                    </div>
+                </div>
+            </div>
+
+            <div class="cond-config-section">
+                <div class="cond-config-title">Límites Globales — Factor de Cresta</div>
+                <div class="cond-config-row" style="grid-template-columns: 1fr 1fr 1fr;">
+                    <div class="cond-config-field">
+                        <label style="color:#b81414;">ULC (Alarma Alta)</label>
+                        <input type="number" step="0.1" min="0" id="glob-crest-ulc" placeholder="—">
+                    </div>
+                    <div class="cond-config-field">
+                        <label style="color:#ca8a04;">Median (Referencia)</label>
+                        <input type="number" step="0.1" min="0" id="glob-crest-med" placeholder="—">
+                    </div>
+                    <div class="cond-config-field">
+                        <label style="color:#16a34a;">LCL (Alarma Baja)</label>
+                        <input type="number" step="0.1" min="0" id="glob-crest-lcl" placeholder="—">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="cond-modal-footer">
+            <button class="cond-btn cond-btn-ghost" id="cancel-globales">Cancelar</button>
+            <button class="cond-btn cond-btn-primary" id="save-globales">
+                <i class="fa-solid fa-floppy-disk"></i> Guardar Límites Globales
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════ MODAL: CONFIGURAR EQUIPO ══════════ -->
+<div class="cond-modal-overlay" id="modal-config" style="display:none;">
+    <div class="cond-modal">
+        <div class="cond-modal-header">
+            <h3><i class="fa-solid fa-sliders"></i> Configurar Puntos de Medición</h3>
+            <button class="cond-modal-close" id="close-config">&times;</button>
+        </div>
+        <div class="cond-modal-body">
+
+            <!-- Acceso rápido a alarmas automáticas -->
+            <div class="cond-config-section">
+                <div class="cond-config-title">⚡ Alarmas Automáticas</div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:220px;">
+                        <div style="font-size:.82em;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">
+                            <i class="fa-solid fa-book"></i> Norma ISO 10816-3
+                        </div>
+                        <div style="display:flex;gap:8px;align-items:center;">
+                            <select id="cfg-iso-grupo" style="flex:1;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:.85em;font-family:inherit;">
+                                <option value="">— Seleccionar grupo —</option>
+                            </select>
+                            <button class="cond-btn cond-btn-sm cond-btn-primary" id="btn-aplicar-iso">
+                                <i class="fa-solid fa-download"></i> Aplicar
+                            </button>
+                        </div>
+                        <div id="iso-desc" style="font-size:.75em;color:var(--text-muted);margin-top:5px;font-style:italic;"></div>
+                    </div>
+                    <div style="flex:1;min-width:220px;">
+                        <div style="font-size:.82em;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">
+                            <i class="fa-solid fa-chart-line"></i> Calcular por Historial
+                        </div>
+                        <div style="display:flex;gap:8px;align-items:center;">
+                            <select id="cfg-stats-metodo" style="flex:1;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:.85em;font-family:inherit;">
+                                <option value="stddev">Media ± σ (estadístico)</option>
+                                <option value="percentil">Percentiles P75/P90/P95</option>
+                            </select>
+                            <button class="cond-btn cond-btn-sm cond-btn-primary" id="btn-aplicar-stats">
+                                <i class="fa-solid fa-calculator"></i> Calcular
+                            </button>
+                        </div>
+                        <div id="stats-info" style="font-size:.75em;color:var(--text-muted);margin-top:5px;font-style:italic;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cond-config-section">
+                <div class="cond-config-title">Información de Monitoreo</div>
+                <div class="cond-config-row">
+                    <div class="cond-config-field">
+                        <label>Sistema de Unidades</label>
+                        <select id="cfg-system-unit">
+                            <option value="mm/seg">mm/s (métrico)</option>
+                            <option value="in/seg">in/s (imperial)</option>
+                        </select>
+                    </div>
+                    <div class="cond-config-field">
+                        <label>Clase ISO 10816-3</label>
+                        <select id="cfg-iso-class">
+                            <option value="">— Sin clase —</option>
+                            <option value="G1">G1 — Flexible</option>
+                            <option value="G2&4F">G2&4F — Rígido/Flexible</option>
+                            <option value="G3">G3 — Máquinas grandes</option>
+                            <option value="G4">G4 — Turbinas/Generadores</option>
+                            <option value="Custom">Custom</option>
+                        </select>
+                    </div>
+                    <div class="cond-config-field">
+                        <label>Frecuencia de Inspección</label>
+                        <select id="cfg-frecuencia">
+                            <option value="Semanal">Semanal</option>
+                            <option value="Quincenal">Quincenal</option>
+                            <option value="Mensual">Mensual</option>
+                            <option value="Bi-mensual">Bi-mensual</option>
+                            <option value="Trimestral">Trimestral</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="margin-top:12px;">
+                    <label class="cond-toggle-label" style="gap:10px; cursor:pointer;">
+                        <input type="checkbox" id="cfg-usar-globales" checked style="width:16px;height:16px;">
+                        <div>
+                            <div style="font-weight:700; font-size:0.88em; color:var(--text-primary);">Usar límites globales como base</div>
+                            <div style="font-size:0.78em; color:var(--text-muted); margin-top:2px;">Los límites definidos en "Límites Globales" se usarán si no hay valores específicos para este equipo.</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="cond-config-section">
+                <div class="cond-config-title-row">
+                    <div class="cond-config-title">Puntos de Medición</div>
+                    <button class="cond-btn cond-btn-sm cond-btn-primary" id="btn-add-punto">
+                        <i class="fa-solid fa-plus"></i> Agregar Punto
+                    </button>
+                </div>
+                <div id="puntos-list" class="cond-puntos-list"></div>
+            </div>
+
+            <div class="cond-config-section">
+                <div class="cond-config-title">Límites — Velocidad Overall (por punto)</div>
+                <p class="cond-config-hint">Configura ULC (Alarma Alta), Median (Referencia) y LCL (Alarma Baja). Deja vacío para usar el valor global.</p>
+                <div id="limites-vel-list" class="cond-limites-grid"></div>
+            </div>
+
+            <div class="cond-config-section">
+                <div class="cond-config-title">Límites — Envelope / Demod G's (por punto)</div>
+                <p class="cond-config-hint">Deja vacío para usar el valor global.</p>
+                <div id="limites-env-list" class="cond-limites-grid"></div>
+            </div>
+
+            <div class="cond-config-section">
+                <div class="cond-config-title">Límites — Factor de Cresta (por punto)</div>
+                <p class="cond-config-hint">Factor de Cresta = Pico / RMS. Deja vacío para usar el valor global.</p>
+                <div id="limites-crest-list" class="cond-limites-grid"></div>
+            </div>
+
+        </div>
+        <div class="cond-modal-footer">
+            <button class="cond-btn cond-btn-ghost" id="cancel-config">Cancelar</button>
+            <button class="cond-btn cond-btn-primary" id="save-config">
+                <i class="fa-solid fa-floppy-disk"></i> Guardar Configuración
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════ MODAL: NUEVA / EDITAR LECTURA ══════════ -->
+<div class="cond-modal-overlay" id="modal-lectura" style="display:none;">
+    <div class="cond-modal cond-modal-lg">
+        <div class="cond-modal-header">
+            <h3 id="modal-lectura-title"><i class="fa-solid fa-plus"></i> Nueva Lectura</h3>
+            <button class="cond-modal-close" id="close-lectura">&times;</button>
+        </div>
+        <div class="cond-modal-body">
+            <div class="cond-config-field" style="max-width:220px; margin-bottom:20px;">
+                <label>Fecha de Medición</label>
+                <input type="date" id="lec-fecha">
+            </div>
+            <div id="lec-campos-wrap"></div>
+            <div class="cond-config-field" style="margin-top:16px;">
+                <label>Notas de la medición</label>
+                <textarea id="lec-notas" rows="2" placeholder="Observaciones, condiciones de operación..."></textarea>
+            </div>
+        </div>
+        <div class="cond-modal-footer">
+            <button class="cond-btn cond-btn-ghost" id="cancel-lectura">Cancelar</button>
+            <button class="cond-btn cond-btn-primary" id="save-lectura">
+                <i class="fa-solid fa-floppy-disk"></i> Guardar Lectura
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════ MODAL: CONFIRMAR ELIMINACIÓN ══════════ -->
+<div class="cond-modal-overlay" id="modal-delete" style="display:none;">
+    <div class="cond-modal" style="max-width:420px;">
+        <div class="cond-modal-header">
+            <h3><i class="fa-solid fa-triangle-exclamation" style="color:var(--danger)"></i> Confirmar eliminación</h3>
+            <button class="cond-modal-close" id="close-delete">&times;</button>
+        </div>
+        <div class="cond-modal-body">
+            <p>¿Eliminar esta medición permanentemente? Esta acción no se puede deshacer.</p>
+        </div>
+        <div class="cond-modal-footer">
+            <button class="cond-btn cond-btn-ghost" id="cancel-delete">Cancelar</button>
+            <button class="cond-btn" style="background:var(--danger);color:#fff;" id="confirm-delete">
+                <i class="fa-solid fa-trash"></i> Eliminar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Config modal heredado de script.js -->
+<div id="config-modal" class="modal-overlay">
+    <div class="modal-content config-modal-box">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-sliders"></i> Configuración del Sistema</h3>
+            <span class="close-modal-config">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="config-group">
+                <div class="config-sub-title"><i class="fa-solid fa-palette"></i> Apariencia</div>
+                <label for="themeSelect" style="font-weight:bold; font-size:0.9em;">Tema de Color:</label>
+                <select id="themeSelect" style="width:100%; padding:8px; margin-top:5px; margin-bottom:10px;">
+                    <option value="default">Predeterminado</option>
+                    <option value="dark-1">Oscuro - Océano</option>
+                    <option value="dark-2">Oscuro - Pizarra</option>
+                    <option value="dark-12">Oscuro - Grafito</option>
+                    <option value="custom">Personalizado</option>
+                </select>
+                <input type="color" id="customColorPicker" style="display:none; width:100%; margin-bottom:10px;">
+                <label for="fontSelect" style="font-weight:bold; font-size:0.9em;">Fuente Global:</label>
+                <select id="fontSelect" style="width:100%; padding:8px; margin-top:5px;">
+                    <option value="system">System UI</option>
+                    <option value="sans-serif">Segoe UI</option>
+                    <option value="arial">Arial</option>
+                    <option value="monospace">Courier New</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="js/script.js"></script>
+<script src="js/condicion.js"></script>
+
+    <!-- ══ MODAL: Crear/Editar Componente ══ -->
+    <div class="modal-overlay" id="termo-modal-comp" style="display:none;">
+        <div class="modal-content config-modal-box" style="max-width:700px;width:96%;max-height:92vh;overflow-y:auto;">
+            <div class="modal-header">
+                <h3 id="tmc-titulo">Nuevo Componente</h3>
+                <span id="tmc-btn-close-x" style="cursor:pointer;font-size:1.4em;color:var(--text-muted);">&times;</span>
+            </div>
+            <div class="modal-body" style="display:grid;gap:14px;">
+
+                <!-- Nombre -->
+                <div class="config-group">
+                    <label class="cfg-label">Nombre del componente *</label>
+                    <input type="text" id="tmc-nombre" placeholder="Ej: Rodamiento DE Motor, Conexiones Eléctricas L1-L2-L3" class="cfg-input">
+                </div>
+
+                <!-- Tipo -->
+                <div class="config-group">
+                    <label class="cfg-label">Tipo de componente (estándar Infraspection) *</label>
+                    <select id="tmc-tipo" class="cfg-input" style="height:auto;"></select>
+                    <div id="tmc-tipo-hint" style="font-size:.78em;color:var(--text-muted);margin-top:4px;padding:6px 8px;background:var(--bg-surface);border-radius:6px;border:1px solid var(--border);display:none;"></div>
+                </div>
+
+                <!-- Criterio y norma ΔT -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="config-group">
+                        <label class="cfg-label">Criterio de evaluación *</label>
+                        <select id="tmc-criterio" class="cfg-input">
+                            <option value="delta_t">ΔT — Delta de temperatura</option>
+                            <option value="absoluta">Temperatura absoluta</option>
+                            <option value="absoluta_corr">Abs. + corrección de carga (Tmaxcorr)</option>
+                        </select>
+                        <div style="font-size:.75em;color:var(--text-muted);margin-top:3px;" id="tmc-criterio-hint"></div>
+                    </div>
+                    <div class="config-group" id="tmc-row-norma">
+                        <label class="cfg-label">Norma ΔT de referencia</label>
+                        <select id="tmc-norma-dt" class="cfg-input">
+                            <option value="">— Seleccionar norma —</option>
+                            <option value="neta_similar">NETA — Entre similares (Alerta 4°C / Alarma 15°C)</option>
+                            <option value="neta_amb">NETA — Sobre ambiente (Alerta 11°C / Alarma 40°C)</option>
+                            <option value="militar">Militar MIL-STD-2194 (Alerta 25°C / Alarma 70°C)</option>
+                            <option value="experiencia">Experiencia (Alerta 10°C / Alarma 40°C)</option>
+                            <option value="motor_core">Motor cores en banco (Alerta 10°C / Alarma 20°C)</option>
+                            <option value="custom">Personalizado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Fases y corriente nominal por fase -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="config-group">
+                        <label class="cfg-label">Número de fases</label>
+                        <select id="tmc-fases" class="cfg-input">
+                            <option value="1">1 — Monofásico / Sin fases</option>
+                            <option value="2">2 — Bifásico (L1, L2)</option>
+                            <option value="3">3 — Trifásico (R, S, T)</option>
+                        </select>
+                    </div>
+                    <div class="config-group">
+                        <label class="cfg-label">Corriente nominal (A) <span id="tmc-corr-por-fase-label" style="font-size:.8em;color:var(--text-muted);">— total</span></label>
+                        <input type="number" step="0.01" id="tmc-corriente-nom" placeholder="Ej: 48.5" class="cfg-input">
+                        <div style="font-size:.75em;color:var(--text-muted);margin-top:3px;">Para corrección de carga y detección de desequilibrio de fases</div>
+                    </div>
+                </div>
+
+                <!-- Corrientes nominales por fase (trifásico) -->
+                <div id="tmc-row-fases-nom" style="display:none;">
+                    <div class="config-group">
+                        <label class="cfg-label">Corriente nominal por fase (A) — para detectar desequilibrio</label>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:4px;">
+                            <div>
+                                <div style="font-size:.78em;font-weight:600;color:var(--primary);margin-bottom:3px;">Fase R</div>
+                                <input type="number" step="0.01" id="tmc-corr-r" placeholder="A" class="cfg-input">
+                            </div>
+                            <div>
+                                <div style="font-size:.78em;font-weight:600;color:var(--primary);margin-bottom:3px;">Fase S</div>
+                                <input type="number" step="0.01" id="tmc-corr-s" placeholder="A" class="cfg-input">
+                            </div>
+                            <div>
+                                <div style="font-size:.78em;font-weight:600;color:var(--primary);margin-bottom:3px;">Fase T</div>
+                                <input type="number" step="0.01" id="tmc-corr-t" placeholder="A" class="cfg-input">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fila ΔT límites -->
+                <div id="tmc-row-dt" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="config-group">
+                        <label class="cfg-label">ΔT Alerta (°C)</label>
+                        <input type="number" step="0.1" id="tmc-dt-alerta" placeholder="Ej: 10" class="cfg-input">
+                        <div style="font-size:.75em;color:var(--text-muted);margin-top:3px;">Condición de Alerta — investigar</div>
+                    </div>
+                    <div class="config-group">
+                        <label class="cfg-label">ΔT Alarma (°C)</label>
+                        <input type="number" step="0.1" id="tmc-dt-alarma" placeholder="Ej: 40" class="cfg-input">
+                        <div style="font-size:.75em;color:var(--text-muted);margin-top:3px;">Condición de Alarma — acción inmediata</div>
+                    </div>
+                </div>
+
+                <!-- Fila absoluta -->
+                <div id="tmc-row-abs" style="display:none;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="config-group">
+                        <label class="cfg-label">T<sub>max</sub> absoluta (°C)</label>
+                        <input type="number" step="0.1" id="tmc-temp-max" placeholder="Ej: 90" class="cfg-input">
+                        <div style="font-size:.75em;color:var(--text-muted);margin-top:3px;">Temperatura máxima permitida (del estándar)</div>
+                    </div>
+                    <div class="config-group">
+                        <label class="cfg-label">T<sub>rise</sub> rated (°C)</label>
+                        <input type="number" step="0.1" id="tmc-temp-rise" placeholder="Ej: 50" class="cfg-input">
+                        <div style="font-size:.75em;color:var(--text-muted);margin-top:3px;">Elevación de temperatura nominal</div>
+                    </div>
+                </div>
+
+                <!-- Fila corrección carga -->
+                <div id="tmc-row-corr" style="display:none;">
+                    <div class="config-group">
+                        <label class="cfg-label">T<sub>amb</sub> rated (°C) — Temperatura ambiente de referencia del estándar</label>
+                        <input type="number" step="0.1" id="tmc-temp-amb-rated" placeholder="40" class="cfg-input" value="40">
+                        <div style="font-size:.75em;color:var(--text-muted);margin-top:3px;">
+                            Fórmula: T<sub>maxcorr</sub> = (I<sub>med</sub>/I<sub>nom</sub>)² × T<sub>rise</sub> + T<sub>amb_medida</sub>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emisividad por defecto -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="config-group">
+                        <label class="cfg-label">Emisividad (ε) por defecto</label>
+                        <input type="number" step="0.01" min="0.01" max="1.00" id="tmc-emisividad" placeholder="0.95" class="cfg-input" value="0.95">
+                        <div style="font-size:.75em;color:var(--text-muted);margin-top:3px;">Metals oxidados ≈ 0.85 · Pintura/barniz ≈ 0.95 · Metal pulido ≈ 0.10–0.30</div>
+                    </div>
+                    <div class="config-group">
+                        <label class="cfg-label">Distancia típica de medición (m)</label>
+                        <input type="number" step="0.01" min="0.01" id="tmc-distancia" placeholder="Ej: 0.50" class="cfg-input">
+                        <div style="font-size:.75em;color:var(--text-muted);margin-top:3px;">Requerido por estándar Infraspection §9.3.1</div>
+                    </div>
+                </div>
+
+                <!-- Notas de configuración -->
+                <div class="config-group">
+                    <label class="cfg-label">Notas de configuración / nameplate data</label>
+                    <textarea id="tmc-notas" class="cfg-input" rows="3"
+                        placeholder="Ej: Motor WEG 30HP · Clase F · FLA 48.5A · Rodamiento SKF 6312 · Grasa Mobilux EP2..."></textarea>
+                </div>
+
+                <div style="display:flex;gap:10px;justify-content:flex-end;">
+                    <button class="cond-btn" id="tmc-btn-cancel">Cancelar</button>
+                    <button class="cond-btn cond-btn-primary" id="tmc-btn-save">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar Componente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ MODAL: Nueva / Editar Lectura ══ -->
+    <div class="modal-overlay" id="termo-modal-lectura" style="display:none;">
+        <div class="modal-content config-modal-box" style="max-width:620px;width:96%;max-height:92vh;overflow-y:auto;">
+            <div class="modal-header">
+                <h3 id="tml-titulo">Nueva Lectura</h3>
+                <span id="tml-btn-close-x" style="cursor:pointer;font-size:1.4em;color:var(--text-muted);">&times;</span>
+            </div>
+            <div class="modal-body" style="display:grid;gap:14px;">
+                <div style="font-size:.88em;font-weight:600;color:var(--primary);" id="tml-comp-nombre"></div>
+
+                <!-- Fecha y temperatura ambiente -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="config-group">
+                        <label class="cfg-label">Fecha de medición *</label>
+                        <input type="date" id="tml-fecha" class="cfg-input">
+                    </div>
+                    <div class="config-group">
+                        <label class="cfg-label">Temperatura ambiente (°C) *</label>
+                        <input type="number" step="0.1" id="tml-temp-amb" placeholder="Ej: 28.5" class="cfg-input">
+                    </div>
+                </div>
+
+                <!-- Emisividad y distancia por lectura -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="config-group">
+                        <label class="cfg-label">Emisividad (ε) — esta medición</label>
+                        <input type="number" step="0.01" min="0.01" max="1.00" id="tml-emisividad" placeholder="0.95" class="cfg-input">
+                        <div style="font-size:.75em;color:var(--text-muted);margin-top:3px;">Precargada del componente · editar si cambió</div>
+                    </div>
+                    <div class="config-group">
+                        <label class="cfg-label">Distancia de medición (m)</label>
+                        <input type="number" step="0.01" min="0.01" id="tml-distancia" placeholder="Ej: 0.50" class="cfg-input">
+                        <div style="font-size:.75em;color:var(--text-muted);margin-top:3px;">Requerido por estándar §9.3.1</div>
+                    </div>
+                </div>
+
+                <!-- Números de imagen -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="config-group">
+                        <label class="cfg-label">No. Imagen IR</label>
+                        <input type="text" id="tml-img-ir" placeholder="Ej: IMG_0142" class="cfg-input">
+                        <div style="font-size:.75em;color:var(--text-muted);margin-top:3px;">Requerido por estándar §9.2.4</div>
+                    </div>
+                    <div class="config-group">
+                        <label class="cfg-label">No. Imagen Visual</label>
+                        <input type="text" id="tml-img-vis" placeholder="Ej: IMG_0143" class="cfg-input">
+                        <div style="font-size:.75em;color:var(--text-muted);margin-top:3px;">Imagen visible de referencia</div>
+                    </div>
+                </div>
+
+                <!-- Temperaturas y corrientes por fase -->
+                <div class="config-group">
+                    <label class="cfg-label">Temperaturas y corrientes por fase *</label>
+                    <div id="tml-fases-wrap"></div>
+                </div>
+
+                <!-- Preview en tiempo real -->
+                <div id="tml-preview" style="background:var(--bg-muted);border-radius:8px;padding:10px;font-size:.85em;min-height:32px;"></div>
+
+                <!-- Notas -->
+                <div class="config-group">
+                    <label class="cfg-label">Notas / condiciones de medición</label>
+                    <textarea id="tml-notas" class="cfg-input" rows="2"
+                        placeholder="Ej: Carga al 85%, viento moderado, equipo bajo carga normal de operación..."></textarea>
+                </div>
+
+                <div style="display:flex;gap:10px;justify-content:flex-end;">
+                    <button class="cond-btn" id="tml-btn-cancel">Cancelar</button>
+                    <button class="cond-btn cond-btn-primary" id="tml-btn-save">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar Lectura
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ MODAL: Tabla lecturas por componente ══ -->
+    <div class="modal-overlay" id="termo-modal-tabla-lec" style="display:none;">
+        <div class="modal-content config-modal-box" style="max-width:780px;width:96%;max-height:90vh;overflow-y:auto;">
+            <div class="modal-header">
+                <h3 id="tmtl-titulo">Lecturas del Componente</h3>
+                <span id="tmtl-btn-close" style="cursor:pointer;font-size:1.4em;color:var(--text-muted);">&times;</span>
+            </div>
+            <div style="overflow-x:auto;padding:12px;">
+                <table class="cond-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>T. Amb. / ε / Dist.</th>
+                            <th>Temp. / Corriente (ΔT)</th>
+                            <th>Estado</th>
+                            <th>Imágenes / Notas</th>
+                            <th class="no-print"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tmtl-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- ══ MODAL: Crear/Editar Punto ══ -->
+    <div class="modal-overlay" id="ultra-modal-comp" style="display:none;">
+        <div class="modal-content config-modal-box" style="max-width:620px;width:96%;max-height:90vh;overflow-y:auto;">
+            <div class="modal-header">
+                <h3 id="umc-titulo">Nuevo Punto de Medición</h3>
+                <span id="umc-btn-close-x" style="cursor:pointer;font-size:1.4em;color:var(--text-muted);">&times;</span>
+            </div>
+            <div class="modal-body" style="display:grid;gap:14px;">
+
+                <div class="config-group">
+                    <label class="cfg-label">Nombre del punto *</label>
+                    <input type="text" id="umc-nombre" placeholder="Ej: Rodamiento DE Motor, Válvula V-101, Cable L1-L2" class="cfg-input">
+                </div>
+
+                <div class="config-group">
+                    <label class="cfg-label">Tipo de defecto a monitorear *</label>
+                    <select id="umc-tipo" class="cfg-input" style="height:auto;"></select>
+                    <div id="umc-tipo-hint" style="font-size:.78em;color:var(--text-muted);margin-top:4px;padding:6px 8px;background:var(--bg-surface);border-radius:6px;border:1px solid var(--border);"></div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+                    <div class="config-group">
+                        <label class="cfg-label">Nivel Base (dBµV)</label>
+                        <input type="number" step="0.1" id="umc-nivel-base" placeholder="Ej: 28.0" class="cfg-input">
+                        <div style="font-size:.75em;color:var(--text-muted);margin-top:3px;">Valor de referencia en buen estado</div>
+                    </div>
+                    <div class="config-group">
+                        <label class="cfg-label">Nivel Alerta (dBµV)</label>
+                        <input type="number" step="0.1" id="umc-nivel-alerta" placeholder="Ej: 36.0" class="cfg-input">
+                        <div style="font-size:.75em;color:var(--text-muted);margin-top:3px;">Base +8 dB (ISO 29821)</div>
+                    </div>
+                    <div class="config-group">
+                        <label class="cfg-label">Nivel Alarma (dBµV)</label>
+                        <input type="number" step="0.1" id="umc-nivel-alarma" placeholder="Ej: 44.0" class="cfg-input">
+                        <div style="font-size:.75em;color:var(--text-muted);margin-top:3px;">Base +16 dB (ISO 29821)</div>
+                    </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="config-group">
+                        <label class="cfg-label">Frecuencia del sensor</label>
+                        <select id="umc-frecuencia" class="cfg-input">
+                            <option value="40 kHz">40 kHz — General (rodamientos, fugas)</option>
+                            <option value="100 kHz">100 kHz — Alta frecuencia (válvulas)</option>
+                            <option value="25 kHz">25 kHz — Baja frecuencia (eléctrico)</option>
+                            <option value="Ultrasónico parabólico">Parabólico — Larga distancia</option>
+                            <option value="Variable">Variable</option>
+                        </select>
+                    </div>
+                    <div class="config-group">
+                        <label class="cfg-label">Tipo de sensor / adaptador</label>
+                        <input type="text" id="umc-sensor" placeholder="Ej: Magnético, De contacto, Parabólico" class="cfg-input">
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <label class="cfg-label">Notas / descripción del punto</label>
+                    <textarea id="umc-notas" class="cfg-input" rows="3"
+                        placeholder="Ej: Rodamiento SKF 6312, acceso por panel lateral, lubricar con Mobilux EP2..."></textarea>
+                </div>
+
+                <div style="display:flex;gap:10px;justify-content:flex-end;">
+                    <button class="cond-btn" id="umc-btn-cancel">Cancelar</button>
+                    <button class="cond-btn cond-btn-primary" id="umc-btn-save">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar Punto
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ MODAL: Nueva / Editar Lectura ══ -->
+    <div class="modal-overlay" id="ultra-modal-lectura" style="display:none;">
+        <div class="modal-content config-modal-box" style="max-width:580px;width:96%;max-height:92vh;overflow-y:auto;">
+            <div class="modal-header">
+                <h3 id="uml-titulo">Nueva Lectura</h3>
+                <span id="uml-btn-close-x" style="cursor:pointer;font-size:1.4em;color:var(--text-muted);">&times;</span>
+            </div>
+            <div class="modal-body" style="display:grid;gap:14px;">
+                <div style="font-weight:600;font-size:.88em;color:var(--primary);" id="uml-comp-nombre"></div>
+                <div style="font-size:.78em;color:var(--text-muted);" id="uml-comp-base"></div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="config-group">
+                        <label class="cfg-label">Fecha de medición *</label>
+                        <input type="date" id="uml-fecha" class="cfg-input">
+                    </div>
+                    <div class="config-group">
+                        <label class="cfg-label">Nivel medido (dBµV) *</label>
+                        <input type="number" step="0.1" id="uml-nivel-db" placeholder="Ej: 42.5" class="cfg-input">
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <label class="cfg-label">Nivel base en esta medición (dBµV)</label>
+                    <input type="number" step="0.1" id="uml-nivel-base" placeholder="Precargado del punto — editar si cambió" class="cfg-input">
+                    <div style="font-size:.75em;color:var(--text-muted);margin-top:3px;">ΔdB = Nivel medido − Nivel base. ISO 29821: +8 dB = Alerta, +16 dB = Alarma.</div>
+                </div>
+
+                <!-- Preview -->
+                <div id="uml-preview" style="background:var(--bg-muted);border-radius:8px;padding:10px;font-size:.85em;min-height:32px;"></div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+                    <div class="config-group">
+                        <label class="cfg-label">RPM del equipo</label>
+                        <input type="number" step="1" id="uml-rpm" placeholder="Ej: 1770" class="cfg-input">
+                    </div>
+                    <div class="config-group">
+                        <label class="cfg-label">Carga (%)</label>
+                        <input type="number" step="0.1" min="0" max="100" id="uml-carga" placeholder="Ej: 85" class="cfg-input">
+                    </div>
+                    <div class="config-group">
+                        <label class="cfg-label">Temperatura (°C)</label>
+                        <input type="number" step="0.1" id="uml-temp" placeholder="Ej: 45.2" class="cfg-input">
+                    </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="config-group">
+                        <label class="cfg-label">Ruido ambiente (dBµV)</label>
+                        <input type="number" step="0.1" id="uml-ruido" placeholder="Ej: 10.0" class="cfg-input">
+                    </div>
+                    <div class="config-group">
+                        <label class="cfg-label">No. Imagen / Espectro</label>
+                        <input type="text" id="uml-imagen" placeholder="Ej: IMG_0142" class="cfg-input">
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <label class="cfg-label">Características del sonido</label>
+                    <input type="text" id="uml-carac" placeholder="Ej: Siseo continuo, Chisporroteo intermitente, Rugido periódico" class="cfg-input">
+                </div>
+
+                <div class="config-group">
+                    <label class="cfg-label">Notas / condiciones de medición</label>
+                    <textarea id="uml-notas" class="cfg-input" rows="2"
+                        placeholder="Ej: Equipo bajo carga normal, sensor de contacto en alojamiento..."></textarea>
+                </div>
+
+                <div style="display:flex;gap:10px;justify-content:flex-end;">
+                    <button class="cond-btn" id="uml-btn-cancel">Cancelar</button>
+                    <button class="cond-btn cond-btn-primary" id="uml-btn-save">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar Lectura
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ MODAL: Tabla lecturas ══ -->
+    <div class="modal-overlay" id="ultra-modal-tabla-lec" style="display:none;">
+        <div class="modal-content config-modal-box" style="max-width:760px;width:96%;max-height:90vh;overflow-y:auto;">
+            <div class="modal-header">
+                <h3 id="umtl-titulo">Lecturas del Punto</h3>
+                <span id="umtl-btn-close" style="cursor:pointer;font-size:1.4em;color:var(--text-muted);">&times;</span>
+            </div>
+            <div style="overflow-x:auto;padding:12px;">
+                <table class="cond-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Nivel (dBµV)</th>
+                            <th>ΔdB</th>
+                            <th>RPM / Carga / Temp.</th>
+                            <th>Características</th>
+                            <th>Estado</th>
+                            <th class="no-print"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="umtl-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/termo_condicion.js"></script>
+    <script src="js/ultra_condicion.js"></script>
+</body>
+</html>

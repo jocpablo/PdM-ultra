@@ -1,0 +1,70 @@
+/* anexos_shared.css — Anexos de Termografía y Ultrasonido */
+
+.anexo-image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 16px;
+}
+.anexo-image-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--transition);
+}
+.anexo-image-card:hover { box-shadow: var(--shadow-lg); }
+.anexo-image-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+    background: var(--gray-100);
+}
+.anexo-image-card .card-body { padding: 12px; }
+.anexo-image-card input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.85em;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-family: inherit;
+}
+
+/* Resultado table in anexos */
+.anexo-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875em;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+.anexo-table thead th {
+    background: var(--gray-800);
+    color: #e2e8f0;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.82em;
+    text-transform: uppercase;
+}
+.anexo-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+.anexo-table input, .anexo-table textarea {
+    width: 100%;
+    padding: 5px 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.88em;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-family: inherit;
+}

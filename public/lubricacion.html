@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lubricación — Suite PdM</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous"/>
+    <style>
+        /* ── Estado vencimiento ── */
+        .lub-estado { display:inline-flex;align-items:center;gap:5px;padding:3px 10px;
+                      border-radius:20px;font-size:.78em;font-weight:700;white-space:nowrap; }
+        .lub-ok       { background:#dcfce7;color:#166534; }
+        .lub-proximo  { background:#fef3c7;color:#92400e; }
+        .lub-vencido  { background:#FFFF00;color:#6b5a00; }
+        .lub-critico  { background:#fee2e2;color:#991b1b; }
+        .lub-sin_datos{ background:#f3f4f6;color:#6b7280; }
+
+        /* ── Progress bar vencimiento ── */
+        .lub-progress-wrap { width:80px;height:8px;background:var(--bg-muted);border-radius:4px;overflow:hidden;display:inline-block; }
+        .lub-progress-bar  { height:100%;border-radius:4px;transition:width .3s; }
+
+        /* ── Layout tabs ── */
+        .lub-tabs  { display:flex;gap:4px;margin-bottom:20px;border-bottom:2px solid var(--border);padding-bottom:0; }
+        .lub-tab   { padding:8px 18px;font-size:.87em;font-weight:600;cursor:pointer;border:none;background:none;
+                     color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s; }
+        .lub-tab.active { color:var(--primary);border-bottom-color:var(--primary); }
+        .lub-panel { display:none; }
+        .lub-panel.active { display:block; }
+
+        /* ── Cards de puntos ── */
+        .lub-card { background:var(--bg-surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);
+                    padding:14px 16px;margin-bottom:10px; }
+        .lub-card-header { display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px; }
+        .lub-card-title  { font-weight:700;font-size:.95em;display:flex;align-items:center;gap:8px; }
+        .lub-card-meta   { display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:8px;font-size:.8em;color:var(--text-muted); }
+        .lub-card-meta span { display:flex;align-items:center;gap:4px; }
+
+        /* ── Modal ── */
+        .lub-grid-2 { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+        .lub-grid-3 { display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px; }
+        .lub-field label { display:block;font-size:.8em;font-weight:700;color:var(--text-secondary);margin-bottom:4px; }
+        .lub-field input, .lub-field select, .lub-field textarea {
+            width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;
+            font-size:.87em;font-family:inherit;background:var(--bg-surface);color:var(--text-primary);box-sizing:border-box;
+        }
+
+        /* ── Tabla registros ── */
+        .lub-table { width:100%;border-collapse:collapse;font-size:.86em; }
+        .lub-table th { background:var(--bg-muted);padding:9px 12px;text-align:left;font-weight:700;
+                        color:var(--text-secondary);border-bottom:2px solid var(--border); }
+        .lub-table td { padding:9px 12px;border-bottom:1px solid var(--border); }
+        .lub-table tr:hover td { background:var(--gray-50); }
+    </style>
+</head>
+<body data-theme="default">
+<header>
+    <h1>Suite de Mantenimiento Predictivo</h1>
+    <p class="intro-text" id="current-user-display"></p>
+</header>
+<div class="page-wrapper">
+    <aside id="left-sidebar">
+        <h3><i class="fa-solid fa-toolbox"></i> Suite PdM</h3>
+        <nav class="sidebar-nav">
+            <a href="hojas-de-vida.html" class="nav-link"><i class="fa-solid fa-industry"></i> Gestión de Activos</a>
+            <a href="monitoreo.html" class="nav-link"><i class="fa-solid fa-desktop"></i> Monitoreo de Condición</a>
+            <a href="condicion.html" class="nav-link"><i class="fa-solid fa-wave-square"></i> Tendencias de Condición</a>
+            <a href="analitica.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> Analítica</a>
+            <div class="nav-separator">Gestión</div>
+            <a href="ordenes-trabajo.html" class="nav-link" data-feature="ot"><i class="fa-solid fa-clipboard-list"></i> Órdenes de Trabajo</a>
+            <a href="lubricacion.html" class="nav-link active" data-feature="lubricacion"><i class="fa-solid fa-droplet"></i> Lubricación</a>
+            <div class="nav-separator">Reportes</div>
+            <a href="vibraciones.html" class="nav-link"><i class="fa-solid fa-wave-square"></i> Reporte Vibraciones</a>
+            <a href="termografia.html" class="nav-link"><i class="fa-solid fa-fire"></i> Reporte Termografía</a>
+            <a href="ultrasonido.html" class="nav-link"><i class="fa-solid fa-satellite-dish"></i> Reporte Ultrasonido</a>
+            <a href="reportes-generales.html" class="nav-link"><i class="fa-solid fa-file-contract"></i> Reportes Generales</a>
+            <div class="nav-separator">Anexos</div>
+            <a href="anexo-termo.html" class="nav-link"><i class="fa-solid fa-images"></i> Anexo Termografía</a>
+            <a href="anexo-ultra.html" class="nav-link"><i class="fa-solid fa-ear-listen"></i> Anexo Ultrasonido</a>
+            <div class="nav-separator">Sistema</div>
+            <a href="usuarios.html" class="nav-link" data-min-rol="admin"><i class="fa-solid fa-users-gear"></i> Gestión de Usuarios</a>
+            <a href="ayuda.html" class="nav-link"><i class="fa-solid fa-circle-question"></i> Ayuda</a>
+            <button id="btn-open-config" class="nav-link config-btn"><i class="fa-solid fa-gear"></i> Configuración</button>
+            <button id="btn-logout" class="nav-link config-btn" style="color:#dc3545;"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</button>
+        </nav>
+    </aside>
+
+    <main class="content-container">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+            <div>
+                <h2 style="margin:0;font-size:1.2em;"><i class="fa-solid fa-droplet" style="color:var(--primary);"></i> Gestión de Lubricación</h2>
+                <p style="margin:4px 0 0;font-size:.83em;color:var(--text-muted);">Control de puntos de lubricación, intervalos y registro de servicios</p>
+            </div>
+            <div style="display:flex;gap:8px;">
+                <select id="lub-filtro-equipo" style="padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-size:.85em;font-family:inherit;background:var(--bg-surface);color:var(--text-primary);">
+                    <option value="">Todos los equipos</option>
+                </select>
+                <button class="termografia-button save-button" id="btn-nuevo-punto">
+                    <i class="fa-solid fa-plus"></i> Nuevo Punto
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="lub-tabs">
+            <button class="lub-tab active" data-panel="vencimientos">
+                <i class="fa-solid fa-calendar-exclamation"></i> Vencimientos
+            </button>
+            <button class="lub-tab" data-panel="puntos">
+                <i class="fa-solid fa-list"></i> Puntos Configurados
+            </button>
+            <button class="lub-tab" data-panel="historial">
+                <i class="fa-solid fa-clock-rotate-left"></i> Historial de Servicios
+            </button>
+        </div>
+
+        <!-- Panel: Vencimientos -->
+        <div class="lub-panel active" id="panel-vencimientos">
+            <div id="venc-wrap">
+                <div style="text-align:center;padding:32px;color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Cargando...</div>
+            </div>
+        </div>
+
+        <!-- Panel: Puntos configurados -->
+        <div class="lub-panel" id="panel-puntos">
+            <div id="puntos-wrap">
+                <div style="text-align:center;padding:32px;color:var(--text-muted);">
+                    <i class="fa-solid fa-circle-info"></i> Selecciona un equipo en el filtro superior para ver sus puntos
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel: Historial -->
+        <div class="lub-panel" id="panel-historial">
+            <div class="ot-table-wrap">
+                <table class="lub-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th><th>Equipo</th><th>Punto</th><th>Lubricante</th>
+                            <th>Cantidad</th><th>Técnico</th><th>dB Antes</th><th>dB Después</th><th>Observaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historial-tbody">
+                        <tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-muted);">Sin registros</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Modal: Nuevo/Editar Punto -->
+<div class="modal-overlay" id="punto-modal" style="display:none;">
+    <div class="modal-content config-modal-box" style="max-width:620px;width:96%;max-height:90vh;overflow-y:auto;">
+        <div class="modal-header">
+            <h3 id="punto-modal-titulo">Nuevo Punto de Lubricación</h3>
+            <span id="punto-modal-close" style="cursor:pointer;font-size:1.4em;color:var(--text-muted);">&times;</span>
+        </div>
+        <div class="modal-body" style="display:grid;gap:14px;">
+            <div class="lub-grid-2">
+                <div class="lub-field">
+                    <label>Asset ID del equipo *</label>
+                    <input type="text" id="p-asset-id" list="lub-equipos-list" placeholder="Ej: M-101">
+                    <datalist id="lub-equipos-list"></datalist>
+                </div>
+                <div class="lub-field">
+                    <label>Nombre del punto *</label>
+                    <input type="text" id="p-punto" placeholder="Ej: Rodamiento DE, Caja reductora">
+                </div>
+            </div>
+            <div class="lub-grid-2">
+                <div class="lub-field">
+                    <label>Tipo de lubricante</label>
+                    <input type="text" id="p-lubricante" list="lub-tipos-list" placeholder="Ej: Mobilux EP2, ISO VG 46">
+                    <datalist id="lub-tipos-list">
+                        <option value="Mobilux EP2"></option>
+                        <option value="Mobilux EP1"></option>
+                        <option value="Mobil SHC 639"></option>
+                        <option value="Mobil SHC 626"></option>
+                        <option value="Shell Gadus S3 V220C"></option>
+                        <option value="SKF LGEP 2"></option>
+                        <option value="Aceite ISO VG 46"></option>
+                        <option value="Aceite ISO VG 68"></option>
+                        <option value="Aceite ISO VG 100"></option>
+                        <option value="Aceite ISO VG 150"></option>
+                        <option value="Aceite ISO VG 220"></option>
+                        <option value="Aceite de turbina ISO VG 32"></option>
+                    </datalist>
+                </div>
+                <div class="lub-field">
+                    <label>Cantidad (cc / ml)</label>
+                    <input type="number" step="0.5" min="0" id="p-cantidad" placeholder="Ej: 10">
+                </div>
+            </div>
+            <div class="lub-grid-3">
+                <div class="lub-field">
+                    <label>Intervalo (días)</label>
+                    <select id="p-intervalo">
+                        <option value="7">Semanal (7 días)</option>
+                        <option value="14">Quincenal (14 días)</option>
+                        <option value="30" selected>Mensual (30 días)</option>
+                        <option value="60">Bimestral (60 días)</option>
+                        <option value="90">Trimestral (90 días)</option>
+                        <option value="180">Semestral (180 días)</option>
+                        <option value="365">Anual (365 días)</option>
+                    </select>
+                </div>
+                <div class="lub-field">
+                    <label>Intervalo (horas máquina)</label>
+                    <input type="number" step="100" min="0" id="p-horas" placeholder="Ej: 2000">
+                </div>
+                <div class="lub-field">
+                    <label>Método</label>
+                    <select id="p-metodo">
+                        <option value="Manual">Manual — pistola</option>
+                        <option value="Automático">Automático — lubricador</option>
+                        <option value="Circulación">Sistema circulación</option>
+                        <option value="Baño de aceite">Baño de aceite</option>
+                        <option value="Cambio">Cambio completo</option>
+                    </select>
+                </div>
+            </div>
+            <div class="lub-field">
+                <label>Último servicio realizado</label>
+                <input type="date" id="p-ultimo">
+            </div>
+            <div class="lub-field">
+                <label>Notas / instrucciones de lubricación</label>
+                <textarea id="p-notas" rows="3" placeholder="Ej: Aplicar con pistola de alta presión, limpiar boquilla antes, temperatura mínima 15°C..."></textarea>
+            </div>
+            <div style="display:flex;gap:10px;justify-content:flex-end;">
+                <button class="termografia-button filter-button" id="punto-modal-cancel">Cancelar</button>
+                <button class="termografia-button save-button" id="punto-modal-save">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar Punto
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Registrar Servicio -->
+<div class="modal-overlay" id="serv-modal" style="display:none;">
+    <div class="modal-content config-modal-box" style="max-width:560px;width:96%;max-height:90vh;overflow-y:auto;">
+        <div class="modal-header">
+            <h3 id="serv-modal-titulo">Registrar Servicio de Lubricación</h3>
+            <span id="serv-modal-close" style="cursor:pointer;font-size:1.4em;color:var(--text-muted);">&times;</span>
+        </div>
+        <div class="modal-body" style="display:grid;gap:14px;">
+            <div style="font-size:.88em;font-weight:600;color:var(--primary);" id="serv-punto-nombre"></div>
+            <div class="lub-grid-2">
+                <div class="lub-field">
+                    <label>Fecha del servicio</label>
+                    <input type="date" id="s-fecha">
+                </div>
+                <div class="lub-field">
+                    <label>Técnico</label>
+                    <input type="text" id="s-tecnico" placeholder="Nombre del técnico">
+                </div>
+            </div>
+            <div class="lub-grid-2">
+                <div class="lub-field">
+                    <label>Lubricante utilizado</label>
+                    <input type="text" id="s-lubricante" placeholder="Puede diferir del configurado">
+                </div>
+                <div class="lub-field">
+                    <label>Cantidad real (cc)</label>
+                    <input type="number" step="0.5" min="0" id="s-cantidad" placeholder="Ej: 10">
+                </div>
+            </div>
+            <div class="lub-grid-3">
+                <div class="lub-field">
+                    <label>Temperatura (°C)</label>
+                    <input type="number" step="0.1" id="s-temp" placeholder="Ej: 45.2">
+                </div>
+                <div class="lub-field">
+                    <label>Nivel ruido ANTES (dBµV)</label>
+                    <input type="number" step="0.1" id="s-db-antes" placeholder="Ej: 42.5">
+                    <div style="font-size:.72em;color:var(--text-muted);margin-top:3px;">Medición ultrasonido pre-lubricación</div>
+                </div>
+                <div class="lub-field">
+                    <label>Nivel ruido DESPUÉS (dBµV)</label>
+                    <input type="number" step="0.1" id="s-db-despues" placeholder="Ej: 28.0">
+                    <div style="font-size:.72em;color:var(--text-muted);margin-top:3px;">Medición post-lubricación</div>
+                </div>
+            </div>
+            <div class="lub-field">
+                <label>Observaciones</label>
+                <textarea id="s-obs" rows="2" placeholder="Condición del lubricante viejo, anormalidades observadas..."></textarea>
+            </div>
+            <div style="display:flex;gap:10px;justify-content:flex-end;">
+                <button class="termografia-button filter-button" id="serv-modal-cancel">Cancelar</button>
+                <button class="termografia-button save-button" id="serv-modal-save">
+                    <i class="fa-solid fa-floppy-disk"></i> Registrar Servicio
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="js/script.js"></script>
+<script>
+(function() {
+    'use strict';
+    const toast = (m, t='info') => window.PdM.showToast(m, t);
+    const api   = (...a) => window.PdM.apiFetch(...a);
+
+    let allEquipos = [], todosVencimientos = [], editingPuntoId = null, servConfigId = null;
+
+    const M = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    const fmtD = s => { if (!s) return '—'; const [y,m,d] = String(s).split('T')[0].split('-'); return `${d}-${M[+m-1]}-${y.slice(-2)}`; };
+
+    const ESTADO_CLS = { ok:'lub-ok', proximo:'lub-proximo', vencido:'lub-vencido', critico:'lub-critico', sin_datos:'lub-sin_datos' };
+    const ESTADO_LBL = { ok:'Al día', proximo:'Próximo', vencido:'Vencido', critico:'Crítico', sin_datos:'Sin datos' };
+
+    async function init() {
+        await loadEquipos();
+        await loadVencimientos();
+        setupListeners();
+    }
+
+    async function loadEquipos() {
+        const r = await api('/api/equipos');
+        if (!r?.ok) return;
+        allEquipos = await r.json();
+        const sel = document.getElementById('lub-filtro-equipo');
+        const dl1 = document.getElementById('lub-equipos-list');
+        allEquipos.forEach(e => {
+            const opt = document.createElement('option');
+            opt.value = e.asset_id;
+            opt.textContent = `${e.asset_id} — ${e.descripcion || ''}`;
+            sel.appendChild(opt);
+                        const dlOpt = document.createElement('option'); dlOpt.value = e.asset_id; dl1.appendChild(dlOpt);
+        });
+    }
+
+    async function loadVencimientos() {
+        const r = await api('/api/lubricacion/vencimientos');
+        if (!r?.ok) return;
+        todosVencimientos = await r.json();
+        renderVencimientos();
+    }
+
+    function renderVencimientos(filtroAsset = '') {
+        const datos = filtroAsset ? todosVencimientos.filter(v => v.asset_id === filtroAsset) : todosVencimientos;
+        const wrap = document.getElementById('venc-wrap');
+        if (!datos.length) {
+            wrap.innerHTML = `<div style="text-align:center;padding:32px;color:var(--text-muted);">
+                <i class="fa-solid fa-circle-info"></i> No hay puntos de lubricación configurados.
+                Usa <b>Nuevo Punto</b> para agregar.</div>`;
+            return;
+        }
+        // Ordenar: crítico > vencido > próximo > sin_datos > ok
+        const ORDEN = { critico:0, vencido:1, proximo:2, sin_datos:3, ok:4 };
+        const sorted = [...datos].sort((a,b) => (ORDEN[a.estado_vencimiento]||9) - (ORDEN[b.estado_vencimiento]||9));
+        wrap.innerHTML = sorted.map(v => {
+            const pct = v.dias_desde_servicio != null && v.intervalo_dias
+                ? Math.min(100, Math.round(v.dias_desde_servicio / v.intervalo_dias * 100)) : 0;
+            const barColor = { critico:'#dc2626', vencido:'#d97706', proximo:'#f59e0b', ok:'#16a34a', sin_datos:'#94a3b8' }[v.estado_vencimiento] || '#94a3b8';
+            return `<div class="lub-card">
+                <div class="lub-card-header">
+                    <div class="lub-card-title">
+                        <i class="fa-solid fa-droplet" style="color:${barColor};"></i>
+                        <span>${v.punto}</span>
+                        <span style="font-size:.75em;font-weight:400;color:var(--text-muted);">— ${v.asset_id}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <div class="lub-progress-wrap"><div class="lub-progress-bar" style="width:${pct}%;background:${barColor};"></div></div>
+                        <span class="lub-estado ${ESTADO_CLS[v.estado_vencimiento]}">${ESTADO_LBL[v.estado_vencimiento]}</span>
+                        <button class="termografia-button save-button" style="font-size:.78em;padding:4px 10px;" onclick="abrirServModal(${v.id})">
+                            <i class="fa-solid fa-oil-can"></i> Lubricar
+                        </button>
+                        <button class="termo-btn-icon" onclick="abrirPuntoModal(${v.id})" title="Editar punto"><i class="fa-solid fa-pen"></i></button>
+                    </div>
+                </div>
+                <div class="lub-card-meta">
+                    <span><i class="fa-solid fa-calendar-check"></i> Último: ${fmtD(v.ultimo_servicio)}</span>
+                    <span><i class="fa-solid fa-rotate"></i> Intervalo: ${v.intervalo_dias} días</span>
+                    ${v.dias_desde_servicio != null ? `<span><i class="fa-solid fa-clock"></i> Hace ${v.dias_desde_servicio} días</span>` : ''}
+                    ${v.proximo_servicio ? `<span><i class="fa-solid fa-calendar-arrow-up"></i> Próximo: ${fmtD(v.proximo_servicio)}</span>` : ''}
+                    ${v.tipo_lubricante ? `<span><i class="fa-solid fa-flask"></i> ${v.tipo_lubricante}${v.cantidad_cc ? ` · ${v.cantidad_cc} cc` : ''}</span>` : ''}
+                    ${v.metodo ? `<span><i class="fa-solid fa-wrench"></i> ${v.metodo}</span>` : ''}
+                    <span style="color:var(--text-secondary);">${v.equipo_desc || ''}</span>
+                </div>
+                ${v.notas ? `<div style="font-size:.78em;color:var(--text-muted);margin-top:6px;padding:6px 8px;background:var(--bg-muted);border-radius:6px;">${v.notas}</div>` : ''}
+            </div>`;
+        }).join('');
+    }
+
+    async function renderPuntosPorEquipo(assetId) {
+        if (!assetId) { document.getElementById('puntos-wrap').innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-muted);">Selecciona un equipo</div>'; return; }
+        const r = await api(`/api/lubricacion/config/${assetId}`);
+        const puntos = r?.ok ? await r.json() : [];
+        const wrap = document.getElementById('puntos-wrap');
+        if (!puntos.length) {
+            wrap.innerHTML = `<div style="text-align:center;padding:24px;color:var(--text-muted);">Sin puntos configurados para ${assetId}. <a href="#" onclick="abrirPuntoModal()">Agregar uno</a></div>`;
+            return;
+        }
+        wrap.innerHTML = puntos.map(p => `<div class="lub-card">
+            <div class="lub-card-header">
+                <div class="lub-card-title"><i class="fa-solid fa-crosshairs"></i> ${p.punto}</div>
+                <div style="display:flex;gap:6px;">
+                    <button class="termografia-button save-button" style="font-size:.78em;padding:4px 10px;" onclick="abrirServModal(${p.id})">
+                        <i class="fa-solid fa-oil-can"></i> Lubricar
+                    </button>
+                    <button class="termo-btn-icon" onclick="abrirPuntoModal(${p.id})" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                    <button class="termo-btn-icon" onclick="deletePunto(${p.id})" style="color:var(--danger);" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>
+            <div class="lub-card-meta">
+                ${p.tipo_lubricante ? `<span><i class="fa-solid fa-flask"></i> ${p.tipo_lubricante}</span>` : ''}
+                ${p.cantidad_cc ? `<span><i class="fa-solid fa-fill-drip"></i> ${p.cantidad_cc} cc</span>` : ''}
+                <span><i class="fa-solid fa-rotate"></i> Cada ${p.intervalo_dias} días</span>
+                <span><i class="fa-solid fa-wrench"></i> ${p.metodo}</span>
+                ${p.ultimo_servicio ? `<span><i class="fa-solid fa-calendar-check"></i> Último: ${fmtD(p.ultimo_servicio)}</span>` : '<span style="color:#d97706;">Sin servicio registrado</span>'}
+            </div>
+        </div>`).join('');
+    }
+
+    async function renderHistorial(assetId = '') {
+        const url = assetId ? `/api/lubricacion/registros/${assetId}` : '';
+        if (!url) { document.getElementById('historial-tbody').innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text-muted);">Selecciona un equipo para ver el historial</td></tr>'; return; }
+        const r = await api(url);
+        const regs = r?.ok ? await r.json() : [];
+        const tbody = document.getElementById('historial-tbody');
+        if (!regs.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text-muted);">Sin registros</td></tr>'; return; }
+        tbody.innerHTML = regs.map(reg => `<tr>
+            <td style="white-space:nowrap;">${fmtD(reg.fecha_servicio)}</td>
+            <td style="font-weight:600;">${reg.asset_id}</td>
+            <td>${reg.punto}</td>
+            <td style="font-size:.83em;">${reg.lubricante_usado || reg.lubricante_config || '—'}</td>
+            <td>${reg.cantidad_real != null ? reg.cantidad_real + ' cc' : '—'}</td>
+            <td style="font-size:.83em;color:var(--text-muted);">${reg.tecnico || '—'}</td>
+            <td>${reg.nivel_ruido_antes != null ? reg.nivel_ruido_antes + ' dB' : '—'}</td>
+            <td>${reg.nivel_ruido_despues != null ? `<span style="${reg.nivel_ruido_despues < reg.nivel_ruido_antes ? 'color:#16a34a;font-weight:700;' : ''}">${reg.nivel_ruido_despues} dB</span>` : '—'}</td>
+            <td style="font-size:.82em;color:var(--text-muted);">${reg.observaciones || ''}</td>
+        </tr>`).join('');
+    }
+
+    window.abrirPuntoModal = function(id = null) {
+        editingPuntoId = id;
+        const p = id ? todosVencimientos.find(v => v.id === id) : null;
+        document.getElementById('punto-modal-titulo').textContent = p ? 'Editar Punto' : 'Nuevo Punto de Lubricación';
+        document.getElementById('p-asset-id').value  = p?.asset_id || '';
+        document.getElementById('p-punto').value     = p?.punto || '';
+        document.getElementById('p-lubricante').value= p?.tipo_lubricante || '';
+        document.getElementById('p-cantidad').value  = p?.cantidad_cc || '';
+        document.getElementById('p-intervalo').value = p?.intervalo_dias || '30';
+        document.getElementById('p-horas').value     = p?.intervalo_horas || '';
+        document.getElementById('p-metodo').value    = p?.metodo || 'Manual';
+        document.getElementById('p-ultimo').value    = p?.ultimo_servicio?.split('T')[0] || '';
+        document.getElementById('p-notas').value     = p?.notas || '';
+        document.getElementById('punto-modal').style.display = 'flex';
+    };
+
+    window.abrirServModal = function(configId) {
+        servConfigId = configId;
+        const punto  = todosVencimientos.find(v => v.id === configId);
+        document.getElementById('serv-punto-nombre').textContent = punto ? `${punto.asset_id} — ${punto.punto}` : '';
+        document.getElementById('s-fecha').value      = new Date().toISOString().split('T')[0];
+        document.getElementById('s-tecnico').value    = '';
+        document.getElementById('s-lubricante').value = punto?.tipo_lubricante || '';
+        document.getElementById('s-cantidad').value   = punto?.cantidad_cc || '';
+        document.getElementById('s-temp').value       = '';
+        document.getElementById('s-db-antes').value   = '';
+        document.getElementById('s-db-despues').value = '';
+        document.getElementById('s-obs').value        = '';
+        document.getElementById('serv-modal').style.display = 'flex';
+    };
+
+    window.deletePunto = async function(id) {
+        if (!confirm('¿Eliminar este punto de lubricación y todos sus registros?')) return;
+        const r = await api(`/api/lubricacion/config/${id}`, { method: 'DELETE' });
+        if (r?.ok) { toast('Punto eliminado.', 'info'); await loadVencimientos(); renderPuntosPorEquipo(document.getElementById('lub-filtro-equipo').value); }
+        else toast('Error al eliminar.', 'error');
+    };
+
+    async function savePunto() {
+        const assetId = document.getElementById('p-asset-id').value.trim();
+        const punto   = document.getElementById('p-punto').value.trim();
+        if (!assetId || !punto) { toast('Asset ID y nombre del punto son obligatorios.', 'error'); return; }
+        const body = {
+            asset_id: assetId, punto,
+            tipo_lubricante: document.getElementById('p-lubricante').value.trim() || null,
+            cantidad_cc: parseFloat(document.getElementById('p-cantidad').value) || null,
+            intervalo_dias: parseInt(document.getElementById('p-intervalo').value) || 30,
+            intervalo_horas: parseInt(document.getElementById('p-horas').value) || null,
+            metodo: document.getElementById('p-metodo').value,
+            ultimo_servicio: document.getElementById('p-ultimo').value || null,
+            notas: document.getElementById('p-notas').value.trim() || null,
+        };
+        const url    = editingPuntoId ? `/api/lubricacion/config/${editingPuntoId}` : '/api/lubricacion/config';
+        const method = editingPuntoId ? 'PUT' : 'POST';
+        const r = await api(url, { method, body: JSON.stringify(body) });
+        if (r?.ok) {
+            toast('✅ Punto guardado.', 'success');
+            document.getElementById('punto-modal').style.display = 'none';
+            await loadVencimientos();
+            renderPuntosPorEquipo(assetId);
+        } else toast('Error al guardar punto.', 'error');
+    }
+
+    async function saveServicio() {
+        if (!servConfigId) return;
+        const punto = todosVencimientos.find(v => v.id === servConfigId);
+        const body  = {
+            config_id: servConfigId,
+            asset_id: punto?.asset_id,
+            fecha_servicio: document.getElementById('s-fecha').value,
+            tecnico: document.getElementById('s-tecnico').value.trim() || null,
+            lubricante_usado: document.getElementById('s-lubricante').value.trim() || null,
+            cantidad_real: parseFloat(document.getElementById('s-cantidad').value) || null,
+            temperatura_c: parseFloat(document.getElementById('s-temp').value) || null,
+            nivel_ruido_antes: parseFloat(document.getElementById('s-db-antes').value) || null,
+            nivel_ruido_despues: parseFloat(document.getElementById('s-db-despues').value) || null,
+            observaciones: document.getElementById('s-obs').value.trim() || null,
+        };
+        const r = await api('/api/lubricacion/registros', { method: 'POST', body: JSON.stringify(body) });
+        if (r?.ok) {
+            toast('✅ Servicio registrado.', 'success');
+            document.getElementById('serv-modal').style.display = 'none';
+            await loadVencimientos();
+        } else toast('Error al registrar servicio.', 'error');
+    }
+
+    function setupListeners() {
+        // Tabs
+        document.querySelectorAll('.lub-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.lub-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.lub-panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+                const equipo = document.getElementById('lub-filtro-equipo').value;
+                if (tab.dataset.panel === 'puntos') renderPuntosPorEquipo(equipo);
+                if (tab.dataset.panel === 'historial') renderHistorial(equipo);
+            });
+        });
+
+        // Filtro equipo
+        document.getElementById('lub-filtro-equipo').addEventListener('change', e => {
+            const v = e.target.value;
+            renderVencimientos(v);
+            const panelActivo = document.querySelector('.lub-tab.active')?.dataset.panel;
+            if (panelActivo === 'puntos') renderPuntosPorEquipo(v);
+            if (panelActivo === 'historial') renderHistorial(v);
+        });
+
+        document.getElementById('btn-nuevo-punto').addEventListener('click', () => abrirPuntoModal());
+        document.getElementById('punto-modal-save').addEventListener('click', savePunto);
+        document.getElementById('punto-modal-cancel').addEventListener('click', () => document.getElementById('punto-modal').style.display = 'none');
+        document.getElementById('punto-modal-close').addEventListener('click', () => document.getElementById('punto-modal').style.display = 'none');
+        document.getElementById('punto-modal').addEventListener('click', e => { if (e.target === document.getElementById('punto-modal')) document.getElementById('punto-modal').style.display = 'none'; });
+
+        document.getElementById('serv-modal-save').addEventListener('click', saveServicio);
+        document.getElementById('serv-modal-cancel').addEventListener('click', () => document.getElementById('serv-modal').style.display = 'none');
+        document.getElementById('serv-modal-close').addEventListener('click', () => document.getElementById('serv-modal').style.display = 'none');
+        document.getElementById('serv-modal').addEventListener('click', e => { if (e.target === document.getElementById('serv-modal')) document.getElementById('serv-modal').style.display = 'none'; });
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+</body>
+</html>

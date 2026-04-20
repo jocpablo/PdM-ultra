@@ -1,0 +1,148 @@
+/* ================================================================
+   MONITOREO.CSS — Monitoreo de Condición (formato reporte tabla)
+   Suite PdM | Edwards
+   ================================================================ */
+
+/* ── Tabla de equipos ─────────────────────────────────────────── */
+#monitoreo-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88em;
+}
+
+#monitoreo-table thead th {
+    background: var(--gray-800);
+    color: #fff;
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-right: 1px solid rgba(255,255,255,.1);
+    white-space: nowrap;
+}
+#monitoreo-table thead th:last-child { border-right: none; }
+
+/* Columnas de estado centradas */
+#monitoreo-table thead th:nth-child(5),
+#monitoreo-table thead th:nth-child(6),
+#monitoreo-table thead th:nth-child(7) {
+    text-align: center;
+    width: 90px;
+}
+#monitoreo-table thead th:nth-child(4) { width: 100px; }
+#monitoreo-table thead th:nth-child(3) { width: 140px; }
+#monitoreo-table thead th:nth-child(1) { width: 100px; }
+
+#monitoreo-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .1s;
+}
+#monitoreo-table tbody tr:last-child { border-bottom: none; }
+#monitoreo-table tbody tr:hover { background: var(--gray-50); }
+
+#monitoreo-table tbody td {
+    padding: 8px 12px;
+    vertical-align: middle;
+    color: var(--text-primary);
+}
+
+/* Celdas de estado: centradas */
+.estado-cell {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+/* ── sev-badge-table — heredado de vibraciones_style.css ─────── */
+/* Sobreescribir para que también funcione en esta tabla */
+.sev-badge-table {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: 700;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    gap: 4px;
+}
+.sev-b     { background: var(--success-light); color: var(--success); border-color: var(--success); }
+.sev-a     { background: #FFFF00; color: #6b5a00; border-color: #ccaa00; }
+.sev-c     { background: var(--danger-light);  color: var(--danger);  border-color: var(--danger);  }
+.sev-empty { background: var(--gray-100); color: var(--text-muted); border-color: var(--border); }
+
+/* ── Input de comentarios ─────────────────────────────────────── */
+.monitoreo-input {
+    width: 100%;
+    padding: 5px 8px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 0.87em;
+    font-family: inherit;
+    color: var(--text-primary);
+    background: var(--bg-surface);
+    transition: border-color .15s;
+}
+.monitoreo-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* ── Controles ────────────────────────────────────────────────── */
+.monitoreo-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.monitoreo-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 7px;
+    font-size: 0.85em;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    transition: all .15s;
+}
+.save-button   { background: var(--primary);  color: #fff; }
+.save-button:hover { background: var(--primary-hover); }
+.import-button { background: var(--gray-700); color: #fff; }
+.import-button:hover { background: var(--gray-600); }
+
+/* ── Estado vacío / espera ────────────────────────────────────── */
+#mon-espera {
+    padding: 40px 24px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9em;
+    line-height: 1.6;
+}
+
+/* ── Print ────────────────────────────────────────────────────── */
+@media print {
+    .no-print { display: none !important; }
+    #monitoreo-table tbody tr:hover { background: transparent; }
+    .monitoreo-input {
+        border: none;
+        background: transparent;
+        padding: 0;
+    }
+    /* Colores de badges en impresión */
+    .sev-b { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .sev-a { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .sev-c { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+/* ── Responsive ───────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    #monitoreo-table { font-size: 0.82em; }
+    #monitoreo-table thead th:nth-child(3) { display: none; }
+    #monitoreo-table tbody td:nth-child(3) { display: none; }
+}

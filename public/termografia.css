@@ -1,0 +1,117 @@
+/* termografia.css — Módulo de Termografía */
+
+/* Table column widths */
+#termografia-results-table { table-layout: fixed; }
+#termografia-results-table th:nth-child(1) { width: 36px; }
+#termografia-results-table th:nth-child(2) { width: auto; }
+#termografia-results-table th:nth-child(3) { width: 120px; }
+#termografia-results-table th:nth-child(4) { width: 140px; }
+#termografia-results-table th:nth-child(5),
+#termografia-results-table th:nth-child(6) { width: 180px; }
+#termografia-results-table th:nth-child(7) { width: 100px; }
+
+
+/* ── Severity badge — idéntico a vibraciones ── */
+.sev-badge-table {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    font-weight: 800;
+    font-size: 0.82em;
+    letter-spacing: 0.3px;
+    border: 2px solid transparent;
+}
+.sev-badge-table.sev-b     { background: var(--success-light); color: var(--success); border-color: var(--success); }
+.sev-badge-table.sev-a     { background: #FFFF00; color: #6b5a00; border-color: #ccaa00; }
+.sev-badge-table.sev-c     { background: var(--danger-light);  color: var(--danger);  border-color: var(--danger);  }
+.sev-badge-table.sev-empty { background: var(--gray-100); color: var(--text-muted); border-color: var(--border); }
+
+/* ── Botones picker de severidad — idéntico a vibraciones ── */
+.sev-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    font-weight: 800;
+    font-size: 0.88em;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all .15s;
+    background: var(--bg-muted);
+    color: var(--text-muted);
+    font-family: inherit;
+}
+.sev-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+.sev-btn.active-b { background: var(--success-light); color: var(--success); border-color: var(--success); }
+.sev-btn.active-a { background: #FFFF00; color: #6b5a00; border-color: #ccaa00; }
+.sev-btn.active-c { background: var(--danger-light);  color: var(--danger);  border-color: var(--danger);  }
+.sev-btn[data-sev="B"]:hover { background: var(--success-light); color: var(--success); }
+.sev-btn[data-sev="A"]:hover { background: #FFFF00; color: #6b5a00; }
+.sev-btn[data-sev="C"]:hover { background: var(--danger-light);  color: var(--danger);  }
+
+/* ── Columnas tabla ── */
+#termografia-results-table { border-collapse: separate; border-spacing: 0; }
+#termografia-results-table th:nth-child(1) { width: 36px; }
+#termografia-results-table th:nth-child(2) { width: auto; }
+#termografia-results-table th:nth-child(3) { width: 110px; }
+#termografia-results-table th:nth-child(4) { width: 130px; }
+#termografia-results-table th:nth-child(5) { width: 200px; }
+#termografia-results-table th:nth-child(6) { width: 120px; text-align: center; }
+
+/* ── Filas de datos ── */
+#termografia-results-table tbody tr {
+    transition: background .12s;
+}
+#termografia-results-table tbody tr:hover {
+    background: var(--bg-muted) !important;
+}
+#termografia-results-table tbody td {
+    padding: 8px 10px !important;
+    border-bottom: 1px solid var(--border) !important;
+    vertical-align: middle !important;
+}
+#termografia-results-table tbody tr:last-child td { border-bottom: none !important; }
+
+/* ── Severity picker wrapper ── */
+.termo-sev-picker {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+}
+.termo-sev-picker .sev-btn {
+    width: 38px !important;
+    height: 32px !important;
+    font-size: 0.83em !important;
+}
+
+/* ── Inputs en tabla ── */
+.termografia-input {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid transparent !important;
+    padding: 3px 4px !important;
+    width: 100% !important;
+    font-family: inherit !important;
+    font-size: 0.9em !important;
+    transition: border-color .15s;
+}
+.termografia-input:focus {
+    outline: none !important;
+    border-bottom-color: var(--primary) !important;
+    background: var(--primary-light) !important;
+    border-radius: 3px !important;
+}
+.termografia-input[type="text"], .termografia-input[type="date"] {
+    color: var(--text-primary) !important;
+}
+textarea.termografia-input {
+    min-height: 40px !important;
+    resize: vertical !important;
+    line-height: 1.4 !important;
+}
+

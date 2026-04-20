@@ -1,0 +1,529 @@
+/* vibraciones_style.css — Módulo de Vibraciones */
+
+/* ═══════════════════════════════════════════════
+   TABLA RESUMEN DE COMPONENTES
+═══════════════════════════════════════════════ */
+#resultado-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875em;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 12px;
+    table-layout: fixed;
+}
+#resultado-table thead th {
+    background: var(--gray-800);
+    color: #e2e8f0;
+    padding: 11px 14px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--gray-700);
+}
+#resultado-table thead th:nth-child(1) { width: 16%; }
+#resultado-table thead th:nth-child(2) { width: 36%; }
+#resultado-table thead th:nth-child(3) { width: 32%; }
+#resultado-table thead th:nth-child(4) { width: 8%;  }
+#resultado-table thead th:nth-child(5) { width: 8%;  }
+
+#resultado-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .12s;
+}
+#resultado-table tbody tr:hover td { background: var(--bg-muted); }
+#resultado-table td {
+    padding: 10px 14px;
+    vertical-align: middle;
+}
+
+/* Input nombre componente en la tabla */
+.component-name-input {
+    width: 100%;
+    padding: 6px 9px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.9em;
+    font-weight: 600;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-family: inherit;
+    transition: border-color .15s;
+}
+.component-name-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(3,105,161,.1);
+}
+
+/* Celdas sincronizadas (texto resumen) */
+.status-cell, .actions-cell {
+    font-size: 0.85em;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+/* Celda de severidad en tabla — solo badge icono */
+.severity-cell {
+    text-align: center;
+    padding: 6px 4px;
+}
+.sev-badge-table {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    font-weight: 800;
+    font-size: 0.82em;
+    letter-spacing: 0.3px;
+    border: 2px solid transparent;
+}
+.sev-badge-table.sev-b { background: var(--success-light); color: var(--success); border-color: var(--success); }
+.sev-badge-table.sev-a { background: #FFFF00; color: #6b5a00; border-color: #ccaa00; }
+.sev-badge-table.sev-c { background: var(--danger-light);  color: var(--danger);  border-color: var(--danger);  }
+.sev-badge-table.sev-empty { background: var(--gray-100); color: var(--text-muted); border-color: var(--border); }
+
+/* ═══════════════════════════════════════════════
+   TARJETA DE DETALLES POR COMPONENTE
+═══════════════════════════════════════════════ */
+.component-details-section {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Header de la tarjeta */
+.comp-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background: var(--gray-800);
+    gap: 12px;
+}
+.comp-card-title {
+    font-size: 0.95em;
+    font-weight: 700;
+    color: #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.comp-card-title i { color: var(--brand-400); font-size: 0.9em; }
+.comp-card-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 26px;
+    border-radius: 6px;
+    font-size: 0.78em;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    padding: 0 8px;
+    border: 1.5px solid transparent;
+    transition: all .2s;
+    cursor: default;
+}
+.comp-badge-b { background: var(--success-light); color: var(--success); border-color: var(--success); }
+.comp-badge-a { background: #FFFF00; color: #6b5a00; border-color: #ccaa00; }
+.comp-badge-c { background: var(--danger-light);  color: var(--danger);  border-color: var(--danger);  }
+.comp-badge-empty { background: var(--gray-100); color: var(--text-muted); border-color: var(--border); }
+
+/* Cuerpo de la tarjeta */
+.comp-card-body {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 24px;
+}
+.comp-card-body.full-width { grid-template-columns: 1fr; }
+
+/* Subsección dentro de la tarjeta */
+.comp-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.comp-field.span2 { grid-column: 1 / -1; }
+.comp-field-label {
+    font-size: 0.72em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.comp-field-label i { color: var(--primary); }
+.comp-field textarea {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 0.9em;
+    font-family: inherit;
+    line-height: 1.5;
+    resize: vertical;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    transition: border-color .15s, box-shadow .15s;
+    min-height: 80px;
+}
+.comp-field textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(3,105,161,.1);
+}
+
+/* Selector de severidad visual */
+.severity-picker {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.sev-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    font-weight: 800;
+    font-size: 0.88em;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all .15s;
+    background: var(--bg-muted);
+    color: var(--text-muted);
+}
+.sev-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+.sev-btn.active-b { background: var(--success-light); color: var(--success); border-color: var(--success); }
+.sev-btn.active-a { background: #FFFF00; color: #6b5a00; border-color: #ccaa00; }
+.sev-btn.active-c { background: var(--danger-light);  color: var(--danger);  border-color: var(--danger);  }
+.sev-btn[data-sev="B"]:hover { background: var(--success-light); color: var(--success); }
+.sev-btn[data-sev="A"]:hover { background: #FFFF00; color: #6b5a00; }
+.sev-btn[data-sev="C"]:hover { background: var(--danger-light);  color: var(--danger);  }
+/* Hidden input to hold the value */
+.sync-severity { display: none; }
+.sev-legend { font-size: 0.75em; color: var(--text-muted); margin-left: 4px; }
+
+/* ═══════════════════════════════════════════════
+   CONTENEDORES DE IMÁGENES / ESPECTROS
+═══════════════════════════════════════════════ */
+
+/* ── Grid espectros (lógica estándar: 1→full, 2→2col, 3→3ra centrada, 4+→2col) ── */
+.espectro-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-top: 10px;
+}
+.espectro-grid[data-count="2"]  { grid-template-columns: 1fr 1fr; }
+.espectro-grid[data-count="3"]  { grid-template-columns: 1fr 1fr; }
+.espectro-grid[data-count="3"] .espectro-card:nth-child(3) {
+    grid-column: span 2;
+    max-width: 50%;
+    margin: 0 auto;
+    width: 100%;
+}
+.espectro-grid[data-count="4"],
+.espectro-grid[data-count="5"],
+.espectro-grid[data-count="6"],
+.espectro-grid[data-count="many"] { grid-template-columns: 1fr 1fr; }
+
+/* ── Grid fotos BD (lógica especial: 1→full, 2→2col, 3→img1 arriba full + img2/3 abajo, 4→2×2) ── */
+.bd-fotos-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 10px;
+}
+/* 2 fotos: lado a lado */
+.bd-fotos-grid[data-count="2"] { grid-template-columns: 1fr 1fr; }
+/* 3 fotos: primera ocupa el ancho completo, las otras 2 debajo lado a lado */
+.bd-fotos-grid[data-count="3"] { grid-template-columns: 1fr 1fr; }
+.bd-fotos-grid[data-count="3"] .bd-foto-card:nth-child(1) { grid-column: span 2; }
+/* 4 fotos: cuadrícula 2×2 */
+.bd-fotos-grid[data-count="4"] { grid-template-columns: 1fr 1fr; }
+
+/* ── Tarjeta foto BD ── */
+.bd-foto-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--bg-surface);
+}
+.bd-foto-card .bd-foto-zona {
+    width: 100%;
+    min-height: 160px;
+    max-height: 280px;
+    overflow: hidden;
+    background: var(--gray-200, #f0f0f0);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/* Cuando es la primera de 3 (ancho completo) permitir más altura */
+.bd-fotos-grid[data-count="3"] .bd-foto-card:nth-child(1) .bd-foto-zona {
+    min-height: 180px;
+    max-height: 320px;
+}
+.bd-foto-card .bd-foto-zona img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    transition: transform .25s;
+}
+.bd-foto-card:hover .bd-foto-zona img { transform: scale(1.02); }
+.bd-foto-card .bd-foto-footer {
+    padding: 7px 10px;
+    background: var(--bg-muted);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.bd-foto-card .bd-foto-label {
+    font-size: 0.78em;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+.bd-foto-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.68em;
+    font-weight: 700;
+    color: var(--primary);
+    background: var(--primary-light);
+    border: 1px solid var(--primary);
+    padding: 2px 7px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.espectro-card {
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: border-color .15s, box-shadow .15s;
+    position: relative;
+}
+.espectro-card:hover {
+    border-color: var(--primary);
+    box-shadow: var(--shadow-md);
+}
+/* Seleccionada (clic) */
+.espectro-card.esp-selected {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(3,105,161,.2);
+    outline: none;
+}
+.espectro-card.esp-selected .espectro-img-zone {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+}
+/* Drag over */
+.espectro-card.esp-drag {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+/* Zona de imagen */
+.espectro-img-zone {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.espectro-img-zone img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    background: #0a0c10;
+    transition: transform .2s;
+}
+.espectro-card:hover .espectro-img-zone img { transform: scale(1.02); }
+.espectro-img-zone .espectro-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 0.85em;
+    font-weight: 600;
+    padding: 20px;
+    text-align: center;
+}
+.espectro-img-zone .espectro-placeholder i {
+    font-size: 2.2em;
+    opacity: .4;
+}
+.espectro-img-zone .espectro-placeholder span {
+    font-size: 0.82em;
+    opacity: .75;
+}
+.espectro-img-zone .espectro-placeholder .esp-hint {
+    font-size: 0.72em;
+    opacity: .5;
+}
+.espectro-img-zone:focus { outline: none; }
+.espectro-img-zone { cursor: pointer; user-select: none; }
+
+/* Overlay al hover sobre imagen */
+.espectro-img-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(3,105,161,.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity .2s;
+    color: white;
+    font-size: 0.85em;
+    font-weight: 600;
+    gap: 6px;
+    pointer-events: none;
+}
+.espectro-card:has(img[src]:not([src=""])):hover .espectro-img-overlay { opacity: 1; }
+
+/* Footer de la tarjeta de espectro */
+.espectro-footer {
+    padding: 10px 12px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.espectro-caption {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 0.85em;
+    color: var(--text-primary);
+    font-family: inherit;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background .15s;
+}
+.espectro-caption:focus {
+    outline: none;
+    background: var(--bg-surface);
+    box-shadow: 0 0 0 2px rgba(3,105,161,.1);
+}
+.espectro-caption::placeholder { color: var(--text-muted); font-style: italic; }
+.espectro-delete-btn {
+    width: 26px; height: 26px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-surface);
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75em;
+    flex-shrink: 0;
+    transition: all .15s;
+}
+.espectro-delete-btn:hover { background: var(--danger-light); color: var(--danger); border-color: var(--danger); }
+
+/* Botón añadir espectro */
+.btn-add-espectro {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 16px;
+    background: var(--bg-muted);
+    color: var(--text-secondary);
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    font-size: 0.85em;
+    font-weight: 600;
+    transition: all .15s;
+    font-family: inherit;
+    margin-top: 10px;
+    width: 100%;
+    justify-content: center;
+}
+.btn-add-espectro:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--primary);
+    border-style: solid;
+}
+
+/* Separador entre sección de detalles */
+.comp-card-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0;
+    grid-column: 1 / -1;
+}
+
+/* Inline code tags */
+.page-content code {
+    display: inline-block;
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+/* Severity colors (compartidas) */
+.severity-b { background: var(--success) !important; color: #fff !important; }
+.severity-a { background: var(--warning) !important; color: #fff !important; }
+.severity-c { background: var(--danger)  !important; color: #fff !important; }
+
+/* Print */
+@media print {
+    .comp-card-header { background: #1e293b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .btn-add-espectro, .espectro-delete-btn, .no-print { display: none !important; }
+    .espectro-card { break-inside: avoid; }
+    .component-details-section { break-inside: avoid; }
+    /* Fondo blanco en espectros */
+    .espectro-img-zone,
+    .espectro-img-zone img,
+    .espectro-card .espectro-img-zone img { background: white !important; background-color: white !important; }
+
+    /* Fondos blancos en tarjetas de componentes */
+    .component-details-section,
+    .comp-card-body,
+    .comp-field,
+    .comp-field textarea,
+    .component-name-input,
+    .sev-legend { background: white !important; background-color: white !important; color: #111 !important; }
+
+    /* Etiquetas de campo en color Edwards para impresión */
+    .comp-field-label { color: #a52019 !important; }
+}

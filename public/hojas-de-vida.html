@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Activos — Suite PdM</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="hojas-de-vida.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+</head>
+<body data-theme="default">
+    <header>
+        <h1>Suite de Mantenimiento Predictivo</h1>
+        <p class="intro-text">Sistema integral de gestión de activos y monitoreo predictivo.</p>
+    </header>
+
+    <div class="page-wrapper">
+
+        <aside id="left-sidebar">
+            <h3><i class="fa-solid fa-toolbox"></i> Suite PdM</h3>
+            <nav class="sidebar-nav">
+                <a href="hojas-de-vida.html" class="nav-link active"><i class="fa-solid fa-industry"></i> Gestión de Activos</a>
+                <a href="monitoreo.html" class="nav-link"><i class="fa-solid fa-desktop"></i> Monitoreo de Condición</a>
+                <a href="condicion.html" class="nav-link"><i class="fa-solid fa-wave-square"></i> Tendencias de Condición</a>
+                <a href="analitica.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> Analítica</a>
+                <div class="nav-separator">Gestión</div>
+            <a href="ordenes-trabajo.html" class="nav-link" data-feature="ot"><i class="fa-solid fa-clipboard-list"></i> Órdenes de Trabajo</a>
+            <a href="lubricacion.html" class="nav-link" data-feature="lubricacion"><i class="fa-solid fa-droplet"></i> Lubricación</a>
+            <div class="nav-separator">Reportes</div>
+                <a href="vibraciones.html" class="nav-link"><i class="fa-solid fa-wave-square"></i> Reporte Vibraciones</a>
+                <a href="termografia.html" class="nav-link"><i class="fa-solid fa-fire"></i> Reporte Termografía</a>
+                <a href="ultrasonido.html" class="nav-link"><i class="fa-solid fa-satellite-dish"></i> Reporte Ultrasonido</a>
+                <a href="reportes-generales.html" class="nav-link"><i class="fa-solid fa-file-contract"></i> Reportes Generales</a>
+                <div class="nav-separator">Anexos</div>
+                <a href="anexo-termo.html" class="nav-link"><i class="fa-solid fa-images"></i> Anexo Termografía</a>
+                <a href="anexo-ultra.html" class="nav-link"><i class="fa-solid fa-ear-listen"></i> Anexo Ultrasonido</a>
+                <div class="nav-separator">Sistema</div>
+                <a href="usuarios.html" class="nav-link" data-min-rol="admin"><i class="fa-solid fa-users-gear"></i> Gestión de Usuarios</a>
+                <a href="ayuda.html" class="nav-link"><i class="fa-solid fa-circle-question"></i> Ayuda</a>
+                <button id="btn-open-config" class="nav-link config-btn"><i class="fa-solid fa-gear"></i> Configuración</button>
+                <button id="btn-logout" class="nav-link config-btn" style="color:#dc3545;"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</button>
+            </nav>
+            <div class="sidebar-footer">
+                <button onclick="window.print();" class="control-button print-main-btn">
+                    <i class="fa-solid fa-print"></i> Imprimir PDF
+                </button>
+            </div>
+        </aside>
+
+        <main class="content-container">
+
+            <div class="breadcrumb">
+                <a href="index.html"><i class="fa-solid fa-arrow-left"></i> Volver al Inicio</a>
+            </div>
+
+            <!-- Barra de acciones -->
+            <div class="hdv-actions-bar">
+                <div class="search-box" style="flex:1; max-width:420px;">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="search-input" placeholder="Buscar por ID, descripción, marca o ubicación...">
+                </div>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <select id="filter-criticidad" class="hdv-filter-select">
+                        <option value="">Toda criticidad</option>
+                        <option value="Alta">Alta</option>
+                        <option value="Media">Media</option>
+                        <option value="Baja">Baja</option>
+                    </select>
+                    <select id="filter-tipo" class="hdv-filter-select">
+                        <option value="">Todo tipo</option>
+                        <option value="motor">Motor Eléctrico</option>
+                        <option value="hvac">HVAC / Manejadora</option>
+                        <option value="bomba">Bomba</option>
+                        <option value="compresor">Compresor</option>
+                        <option value="ventilador">Ventilador</option>
+                        <option value="generador">Generador</option>
+                        <option value="motoreductor">Motoreductor</option>
+                        <option value="banda">Banda Transportadora</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                    <button id="btn-nuevo-equipo" class="primary-btn">
+                        <i class="fa-solid fa-plus"></i> Nuevo Equipo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contador -->
+            <div class="hdv-counter" id="hdv-counter">Cargando equipos...</div>
+
+            <!-- Grid de equipos -->
+            <div id="equipos-grid" class="equipos-grid"></div>
+
+        </main>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         MODAL: Ficha Técnica del Equipo
+    ══════════════════════════════════════════ -->
+    <div id="equipo-modal" class="modal-overlay">
+        <div class="modal-content hdv-modal-box">
+            <div class="modal-header">
+                <h3 id="modal-title"><i class="fa-solid fa-industry"></i> Nueva Ficha Técnica</h3>
+                <button class="close-modal" style="background:none;border:none;font-size:1.4em;cursor:pointer;color:var(--text-muted);">&times;</button>
+            </div>
+
+            <form id="equipo-form" novalidate>
+
+                <!-- ── Información General ── -->
+                <div class="hdv-section-title"><i class="fa-solid fa-id-card"></i> Identificación</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Asset ID <span style="color:var(--danger);">*</span></label>
+                        <input type="text" id="asset_id" placeholder="Ej: M-101" required autocomplete="off">
+                        <div class="field-hint">Identificador único del activo</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción <span style="color:var(--danger);">*</span></label>
+                        <input type="text" id="descripcion" placeholder="Ej: Motor Bomba Agua Fría" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Criticidad</label>
+                        <select id="criticidad">
+                            <option value="Baja">Baja</option>
+                            <option value="Media" selected>Media</option>
+                            <option value="Alta">Alta</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Marca</label>
+                        <input type="text" id="marca" placeholder="Ej: WEG">
+                    </div>
+                    <div class="form-group">
+                        <label>Modelo</label>
+                        <input type="text" id="modelo" placeholder="Ej: W22 Plus">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-industry" style="color:var(--primary);margin-right:4px;font-size:.85em;"></i>Planta <span style="color:var(--danger);">*</span></label>
+                        <input type="text" id="planta" placeholder="Ej: Planta Norte, TLS, Edificio A" list="planta-list" autocomplete="off">
+                        <datalist id="planta-list"></datalist>
+                        <div class="field-hint">Nombre de la planta o área principal — agrupa los activos en el árbol de monitoreo</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Ubicación / Zona específica</label>
+                        <input type="text" id="ubicacion" placeholder="Ej: Sala de Máquinas, Nivel 2">
+                        <div class="field-hint">Zona específica dentro de la planta (opcional)</div>
+                    </div>
+                </div>
+
+                <!-- ── Datos de Placa ── -->
+                <div class="hdv-section-title"><i class="fa-solid fa-bolt"></i> Datos de Placa (Motor)</div>
+                <div class="form-grid four-col">
+                    <div class="form-group"><label>Potencia (HP / kW)</label><input type="text" id="potencia_hp" placeholder="Ej: 25"></div>
+                    <div class="form-group"><label>Voltaje (V)</label><input type="text" id="voltaje" placeholder="Ej: 460"></div>
+                    <div class="form-group"><label>RPM</label><input type="text" id="rpm" placeholder="Ej: 1770"></div>
+                    <div class="form-group"><label>Amperaje FLA (A)</label><input type="text" id="amperaje" placeholder="Ej: 32"></div>
+                    <div class="form-group"><label>Frame</label><input type="text" id="frame" placeholder="Ej: 256T"></div>
+                    <div class="form-group"><label>Clase Aislamiento</label><input type="text" id="clase_aislamiento" placeholder="Ej: F"></div>
+                    <div class="form-group"><label>Rodamiento DE</label><input type="text" id="rodamiento_de" placeholder="Ej: 6309-2Z"></div>
+                    <div class="form-group"><label>Rodamiento ODE</label><input type="text" id="rodamiento_ode" placeholder="Ej: 6308-2Z"></div>
+                </div>
+
+                <!-- ── Configuración Mecánica ── -->
+                <div class="hdv-section-title"><i class="fa-solid fa-gears"></i> Tipo de Máquina / Configuración Mecánica</div>
+                <div class="tipo-sistema-radios">
+                    <label><input type="radio" name="tipo_sistema" value="motor"    onclick="toggleTechnicalFields()"> <i class="fa-solid fa-bolt"            style="color:#3b82f6;"></i> Motor Eléctrico</label>
+                    <label><input type="radio" name="tipo_sistema" value="hvac"     onclick="toggleTechnicalFields()"> <i class="fa-solid fa-snowflake"        style="color:#0ea5e9;"></i> HVAC / Manejadora</label>
+                    <label><input type="radio" name="tipo_sistema" value="bomba"    onclick="toggleTechnicalFields()"> <i class="fa-solid fa-droplet"          style="color:#06b6d4;"></i> Bomba de Agua</label>
+                    <label><input type="radio" name="tipo_sistema" value="compresor" onclick="toggleTechnicalFields()"> <i class="fa-solid fa-wind"            style="color:#8b5cf6;"></i> Compresor</label>
+                    <label><input type="radio" name="tipo_sistema" value="ventilador" onclick="toggleTechnicalFields()"> <i class="fa-solid fa-fan"            style="color:#10b981;"></i> Ventilador / Soplador</label>
+                    <label><input type="radio" name="tipo_sistema" value="generador" onclick="toggleTechnicalFields()"> <i class="fa-solid fa-plug-circle-bolt" style="color:#f59e0b;"></i> Generador / Alternador</label>
+                    <label><input type="radio" name="tipo_sistema" value="motoreductor" onclick="toggleTechnicalFields()"> <i class="fa-solid fa-gears"        style="color:#64748b;"></i> Motoreductor</label>
+                    <label><input type="radio" name="tipo_sistema" value="banda"    onclick="toggleTechnicalFields()"> <i class="fa-solid fa-arrow-right-long" style="color:#f97316;"></i> Banda Transportadora</label>
+                    <label><input type="radio" name="tipo_sistema" value="otro" checked onclick="toggleTechnicalFields()"> <i class="fa-solid fa-cog"          style="color:#94a3b8;"></i> Otro / Genérico</label>
+                </div>
+
+                <!-- Campos HVAC -->
+                <div id="fields-hvac" class="form-grid three-col" style="display:none; margin-top:12px;">
+                    <div class="form-group">
+                        <label>Transmisión</label>
+                        <select id="transmision_tipo">
+                            <option value="Fajas">Poleas y Fajas</option>
+                            <option value="Directo">Acople Directo</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Modelo Faja</label><input type="text" id="modelo_faja" placeholder="Ej: BX68"></div>
+                    <div class="form-group"><label>Ø Turbina (mm)</label><input type="text" id="diametro_turbina" placeholder="Ej: 450"></div>
+                    <div class="form-group"><label>Ø Polea Motora (mm)</label><input type="text" id="diametro_polea_conductora" placeholder="Ej: 150"></div>
+                    <div class="form-group"><label>Ø Polea Conducida (mm)</label><input type="text" id="diametro_polea_conducida" placeholder="Ej: 300"></div>
+                    <div class="form-group"><label># Álabes Turbina</label><input type="number" id="num_alabes_turbina" min="0" placeholder="Ej: 6"></div>
+                </div>
+
+                <!-- Campos Bomba -->
+                <div id="fields-bomba" class="form-grid three-col" style="display:none; margin-top:12px;">
+                    <div class="form-group">
+                        <label>Orientación</label>
+                        <select id="orientacion">
+                            <option value="Horizontal">Horizontal</option>
+                            <option value="Vertical">Vertical</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Tipo de Acople</label><input type="text" id="tipo_acople" placeholder="Ej: Flexible, Rígido"></div>
+                    <div class="form-group"><label># Álabes Impeler</label><input type="number" id="num_alabes_impeler" min="0" placeholder="Ej: 7"></div>
+                    <div class="form-group"><label>Caudal Nominal (GPM)</label><input type="text" id="caudal_nominal" placeholder="Ej: 150"></div>
+                    <div class="form-group"><label>Presión Nominal (PSI)</label><input type="text" id="presion_nominal" placeholder="Ej: 80"></div>
+                    <div class="form-group"><label>Tipo de Sello</label><input type="text" id="tipo_sello" placeholder="Ej: Mecánico, Empaquetadura"></div>
+                </div>
+
+                <!-- Campos Compresor -->
+                <div id="fields-compresor" class="form-grid three-col" style="display:none; margin-top:12px;">
+                    <div class="form-group">
+                        <label>Tipo Compresor</label>
+                        <select id="tipo_compresor">
+                            <option value="Tornillo">Tornillo (Screw)</option>
+                            <option value="Reciprocante">Reciprocante / Pistón</option>
+                            <option value="Centrifugo">Centrífugo</option>
+                            <option value="Scroll">Scroll</option>
+                            <option value="Paletas">Paletas</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Presión Máx. (PSI/bar)</label><input type="text" id="presion_max_comp" placeholder="Ej: 125 PSI"></div>
+                    <div class="form-group"><label>Caudal (CFM / m³/min)</label><input type="text" id="caudal_comp" placeholder="Ej: 25 CFM"></div>
+                    <div class="form-group"><label>Tipo de Refrigeración</label><input type="text" id="refrig_comp" placeholder="Ej: Aire, Agua"></div>
+                    <div class="form-group"><label>Tipo de Aceite</label><input type="text" id="aceite_comp" placeholder="Ej: Sintético 46"></div>
+                    <div class="form-group"><label>Capacidad Aceite (L)</label><input type="text" id="cap_aceite_comp" placeholder="Ej: 4.5"></div>
+                </div>
+
+                <!-- Campos Ventilador -->
+                <div id="fields-ventilador" class="form-grid three-col" style="display:none; margin-top:12px;">
+                    <div class="form-group">
+                        <label>Tipo Ventilador</label>
+                        <select id="tipo_ventilador">
+                            <option value="Axial">Axial</option>
+                            <option value="Centrifugo">Centrífugo</option>
+                            <option value="Helicocentrifugo">Helicocentrífugo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Transmisión</label>
+                        <select id="transmision_tipo_vent">
+                            <option value="Fajas">Poleas y Fajas</option>
+                            <option value="Directo">Acople Directo</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Caudal Nominal (CFM/m³/h)</label><input type="text" id="caudal_vent" placeholder="Ej: 5000 CFM"></div>
+                    <div class="form-group"><label>Presión Estática (inWC/Pa)</label><input type="text" id="presion_vent" placeholder="Ej: 2.5 inWC"></div>
+                    <div class="form-group"><label>Ø Rodete (mm)</label><input type="text" id="diam_rodete" placeholder="Ej: 600"></div>
+                    <div class="form-group"><label># Álabes</label><input type="number" id="num_alabes_vent" min="0" placeholder="Ej: 8"></div>
+                </div>
+
+                <!-- Campos Generador -->
+                <div id="fields-generador" class="form-grid three-col" style="display:none; margin-top:12px;">
+                    <div class="form-group">
+                        <label>Tipo de Motor Primario</label>
+                        <select id="motor_primario">
+                            <option value="Diesel">Motor Diesel</option>
+                            <option value="Gas">Motor a Gas</option>
+                            <option value="Turbina">Turbina de Gas</option>
+                            <option value="Vapor">Turbina de Vapor</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Potencia (kVA)</label><input type="text" id="potencia_kva" placeholder="Ej: 250"></div>
+                    <div class="form-group"><label>Voltaje Salida (V)</label><input type="text" id="voltaje_salida" placeholder="Ej: 480/277"></div>
+                    <div class="form-group"><label>Frecuencia (Hz)</label><input type="text" id="frecuencia_gen" placeholder="Ej: 60"></div>
+                    <div class="form-group"><label>Factor de Potencia</label><input type="text" id="fp_gen" placeholder="Ej: 0.8"></div>
+                    <div class="form-group"><label>Combustible / Capacidad</label><input type="text" id="combustible_gen" placeholder="Ej: Diesel / 200 L"></div>
+                </div>
+
+                <!-- Campos Motoreductor -->
+                <div id="fields-motoreductor" class="form-grid three-col" style="display:none; margin-top:12px;">
+                    <div class="form-group">
+                        <label>Tipo Reductor</label>
+                        <select id="tipo_reductor">
+                            <option value="Helicoidal">Helicoidal</option>
+                            <option value="Cónico-Helicoidal">Cónico-Helicoidal</option>
+                            <option value="Sin-fin Corona">Sin-fin Corona</option>
+                            <option value="Planetario">Planetario</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Relación de Reducción</label><input type="text" id="relacion_reduccion" placeholder="Ej: 1:25"></div>
+                    <div class="form-group"><label>RPM Salida</label><input type="text" id="rpm_salida" placeholder="Ej: 70"></div>
+                    <div class="form-group"><label>Torque Salida (N·m)</label><input type="text" id="torque_salida" placeholder="Ej: 1200"></div>
+                    <div class="form-group"><label>Tipo de Aceite Reductor</label><input type="text" id="aceite_reductor" placeholder="Ej: ISO VG 220"></div>
+                    <div class="form-group"><label>Cap. Aceite Reductor (L)</label><input type="text" id="cap_aceite_red" placeholder="Ej: 2.5"></div>
+                </div>
+
+                <!-- Campos Banda Transportadora -->
+                <div id="fields-banda" class="form-grid three-col" style="display:none; margin-top:12px;">
+                    <div class="form-group"><label>Ancho Banda (mm)</label><input type="text" id="ancho_banda" placeholder="Ej: 600"></div>
+                    <div class="form-group"><label>Longitud Banda (m)</label><input type="text" id="longitud_banda" placeholder="Ej: 25"></div>
+                    <div class="form-group"><label>Velocidad (m/s)</label><input type="text" id="velocidad_banda" placeholder="Ej: 1.5"></div>
+                    <div class="form-group"><label>Capacidad (t/h)</label><input type="text" id="capacidad_banda" placeholder="Ej: 80"></div>
+                    <div class="form-group"><label>Material Transportado</label><input type="text" id="material_banda" placeholder="Ej: Carbón, Arena"></div>
+                    <div class="form-group"><label>Tipo de Accionamiento</label><input type="text" id="accionamiento_banda" placeholder="Ej: Reductor + Motor"></div>
+                </div>
+
+                <!-- ── Fotos ── -->
+                <div class="hdv-section-title"><i class="fa-solid fa-camera"></i> Registro Fotográfico</div>
+                <div class="fotos-grid">
+                    <!-- Foto 1 -->
+                    <div class="foto-slot" id="slot-foto1">
+                        <div class="foto-label-badge">Principal</div>
+                        <div class="foto-preview-wrap" id="wrap-foto1"
+                             onclick="fotoClick('foto1')" ondblclick="fotoFile('foto1')"
+                             title="Clic: pegar portapapeles · Doble clic: buscar archivo">
+                            <img id="preview-foto1" src="" style="display:none;">
+                            <div id="placeholder-foto1" class="foto-placeholder">
+                                <i class="fa-regular fa-image"></i>
+                                <span>Clic — Pegar</span>
+                                <small>Doble clic — Buscar</small>
+                            </div>
+                            <div class="foto-overlay"><i class="fa-solid fa-paste"></i> Pegar | <i class="fa-solid fa-folder-open"></i> Doble clic</div>
+                        </div>
+                        <input type="file" id="input-foto1" accept="image/*" hidden onchange="procesarImagen(this,'foto1')">
+                        <button type="button" class="foto-clear-btn" id="clear-foto1" onclick="limpiarFoto('foto1')" style="display:none;">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                    <!-- Foto 2 -->
+                    <div class="foto-slot" id="slot-foto2">
+                        <div class="foto-label-badge">Placa / Nameplate</div>
+                        <div class="foto-preview-wrap" id="wrap-foto2"
+                             onclick="fotoClick('foto2')" ondblclick="fotoFile('foto2')"
+                             title="Clic: pegar portapapeles · Doble clic: buscar archivo">
+                            <img id="preview-foto2" src="" style="display:none;">
+                            <div id="placeholder-foto2" class="foto-placeholder">
+                                <i class="fa-regular fa-image"></i>
+                                <span>Clic — Pegar</span>
+                                <small>Doble clic — Buscar</small>
+                            </div>
+                            <div class="foto-overlay"><i class="fa-solid fa-paste"></i> Pegar | <i class="fa-solid fa-folder-open"></i> Doble clic</div>
+                        </div>
+                        <input type="file" id="input-foto2" accept="image/*" hidden onchange="procesarImagen(this,'foto2')">
+                        <button type="button" class="foto-clear-btn" id="clear-foto2" onclick="limpiarFoto('foto2')" style="display:none;">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                    <!-- Foto 3 -->
+                    <div class="foto-slot" id="slot-foto3">
+                        <div class="foto-label-badge">Componente</div>
+                        <div class="foto-preview-wrap" id="wrap-foto3"
+                             onclick="fotoClick('foto3')" ondblclick="fotoFile('foto3')"
+                             title="Clic: pegar portapapeles · Doble clic: buscar archivo">
+                            <img id="preview-foto3" src="" style="display:none;">
+                            <div id="placeholder-foto3" class="foto-placeholder">
+                                <i class="fa-regular fa-image"></i>
+                                <span>Clic — Pegar</span>
+                                <small>Doble clic — Buscar</small>
+                            </div>
+                            <div class="foto-overlay"><i class="fa-solid fa-paste"></i> Pegar | <i class="fa-solid fa-folder-open"></i> Doble clic</div>
+                        </div>
+                        <input type="file" id="input-foto3" accept="image/*" hidden onchange="procesarImagen(this,'foto3')">
+                        <button type="button" class="foto-clear-btn" id="clear-foto3" onclick="limpiarFoto('foto3')" style="display:none;">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                    <!-- Foto 4 -->
+                    <div class="foto-slot" id="slot-foto4">
+                        <div class="foto-label-badge">Panorámica</div>
+                        <div class="foto-preview-wrap" id="wrap-foto4"
+                             onclick="fotoClick('foto4')" ondblclick="fotoFile('foto4')"
+                             title="Clic: pegar portapapeles · Doble clic: buscar archivo">
+                            <img id="preview-foto4" src="" style="display:none;">
+                            <div id="placeholder-foto4" class="foto-placeholder">
+                                <i class="fa-regular fa-image"></i>
+                                <span>Clic — Pegar</span>
+                                <small>Doble clic — Buscar</small>
+                            </div>
+                            <div class="foto-overlay"><i class="fa-solid fa-paste"></i> Pegar | <i class="fa-solid fa-folder-open"></i> Doble clic</div>
+                        </div>
+                        <input type="file" id="input-foto4" accept="image/*" hidden onchange="procesarImagen(this,'foto4')">
+                        <button type="button" class="foto-clear-btn" id="clear-foto4" onclick="limpiarFoto('foto4')" style="display:none;">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ── Sección PdM ── -->
+                <div class="hdv-section-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Técnicas PdM Aplicables</div>
+                <div class="pdm-tecnicas-wrap">
+                    <p class="pdm-tecnicas-hint">Activa las técnicas de mantenimiento predictivo que se aplicarán a este activo.</p>
+                    <div class="pdm-tecnicas-grid">
+                        <label class="pdm-tecnica-toggle" id="toggle-vib">
+                            <input type="checkbox" id="aplica_vibraciones" name="aplica_vibraciones">
+                            <div class="pdm-tecnica-card">
+                                <i class="fa-solid fa-wave-square pdm-tecnica-icon" style="color:#3b82f6;"></i>
+                                <span class="pdm-tecnica-name">Vibraciones</span>
+                                <span class="pdm-tecnica-desc">Análisis espectral de vibraciones mecánicas</span>
+                                <div class="pdm-tecnica-check"><i class="fa-solid fa-check"></i></div>
+                            </div>
+                        </label>
+                        <label class="pdm-tecnica-toggle" id="toggle-ter">
+                            <input type="checkbox" id="aplica_termografia" name="aplica_termografia">
+                            <div class="pdm-tecnica-card">
+                                <i class="fa-solid fa-fire pdm-tecnica-icon" style="color:#f97316;"></i>
+                                <span class="pdm-tecnica-name">Termografía</span>
+                                <span class="pdm-tecnica-desc">Inspección infrarroja de puntos calientes</span>
+                                <div class="pdm-tecnica-check"><i class="fa-solid fa-check"></i></div>
+                            </div>
+                        </label>
+                        <label class="pdm-tecnica-toggle" id="toggle-ult">
+                            <input type="checkbox" id="aplica_ultrasonido" name="aplica_ultrasonido">
+                            <div class="pdm-tecnica-card">
+                                <i class="fa-solid fa-satellite-dish pdm-tecnica-icon" style="color:#8b5cf6;"></i>
+                                <span class="pdm-tecnica-name">Ultrasonido</span>
+                                <span class="pdm-tecnica-desc">Detección de fugas, arcos y rodamientos</span>
+                                <div class="pdm-tecnica-check"><i class="fa-solid fa-check"></i></div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- ── Notas ── -->
+                <div class="hdv-section-title"><i class="fa-solid fa-note-sticky"></i> Notas</div>
+                <textarea id="notas" rows="3" placeholder="Observaciones, historial de mantenimiento, notas importantes..." style="width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:var(--radius-md); font-family:inherit; font-size:0.9em; background:var(--bg-surface); color:var(--text-primary); resize:vertical; transition:border-color .15s; box-sizing:border-box;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+
+                <!-- ── Footer modal ── -->
+                <div class="modal-footer">
+                    <button type="button" class="termografia-button" style="background:#64748b;" onclick="document.getElementById('equipo-modal').style.display='none'">
+                        <i class="fa-solid fa-xmark"></i> Cancelar
+                    </button>
+                    <button type="submit" class="termografia-button save-button" id="btn-guardar-equipo">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar en Base de Datos
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Configuración -->
+    <div id="config-modal" class="modal-overlay">
+        <div class="modal-content config-modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-sliders"></i> Configuración del Sistema</h3>
+                <span class="close-modal-config">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="config-group">
+                    <div class="config-sub-title"><i class="fa-solid fa-stamp"></i> Datos Predeterminados</div>
+                    <div style="display:flex; gap:10px;">
+                        <div style="flex:1; text-align:center;">
+                            <label style="font-size:0.85em; font-weight:bold; display:block;">Logo Izquierdo:</label>
+                            <img id="preview-cfg-left" class="config-logo-preview" src="" alt="Vacío">
+                            <label class="monitoreo-button import-button" style="padding:4px 8px; font-size:0.8em; margin-top:5px; cursor:pointer; display:inline-block;">
+                                Subir <input type="file" id="cfg-logo-left" accept="image/*" hidden>
+                            </label>
+                        </div>
+                        <div style="flex:1; text-align:center;">
+                            <label style="font-size:0.85em; font-weight:bold; display:block;">Logo Derecho:</label>
+                            <img id="preview-cfg-right" class="config-logo-preview" src="" alt="Vacío">
+                            <label class="monitoreo-button import-button" style="padding:4px 8px; font-size:0.8em; margin-top:5px; cursor:pointer; display:inline-block;">
+                                Subir <input type="file" id="cfg-logo-right" accept="image/*" hidden>
+                            </label>
+                        </div>
+                    </div>
+                    <label style="font-size:0.9em; font-weight:bold; margin-top:15px; display:block;">Nombre del Analista:</label>
+                    <input type="text" id="cfg-analyst-name" placeholder="Ej: Ing. Juan Pérez" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;">
+                    <label style="font-size:0.9em; font-weight:bold; margin-top:10px; display:block;">Cargo / Certificación:</label>
+                    <input type="text" id="cfg-analyst-role" placeholder="Ej: Analista Nivel II" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;">
+                </div>
+
+                <div class="config-group">
+                    <div class="config-sub-title"><i class="fa-solid fa-signature"></i> Firmas</div>
+                    <p style="font-size:0.82em; color:var(--text-muted); margin-bottom:10px;">
+                        Crea las firmas de los analistas. Podrás seleccionarlas en cada reporte.
+                    </p>
+                    <div id="firmas-manager-container"></div>
+                </div>
+                <div class="config-group">
+                    <div class="config-sub-title"><i class="fa-solid fa-palette"></i> Apariencia</div>
+                    <label for="themeSelect" style="font-weight:bold; font-size:0.9em;">Tema:</label>
+                    <select id="themeSelect" style="width:100%; padding:8px; margin-top:5px; margin-bottom:10px;">
+                        <option value="default">Predeterminado</option>
+                        <option value="dark-1">Oscuro - Océano</option>
+                        <option value="dark-2">Oscuro - Pizarra</option>
+                        <option value="dark-12">Oscuro - Grafito</option>
+                        <option value="custom">Personalizado</option>
+                    </select>
+                    <input type="color" id="customColorPicker" style="display:none; width:100%; margin-bottom:10px;">
+                    <label for="fontSelect" style="font-weight:bold; font-size:0.9em;">Fuente:</label>
+                    <select id="fontSelect" style="width:100%; padding:8px; margin-top:5px;">
+                        <option value="system">System UI</option>
+                        <option value="sans-serif">Segoe UI</option>
+                        <option value="arial">Arial</option>
+                        <option value="monospace">Courier New</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 Edwards PdM Suite</p></footer>
+    <div id="toast-container"></div>
+    <script src="js/script.js"></script>
+    <script src="js/hojas-de-vida.js"></script>
+</body>
+</html>

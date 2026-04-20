@@ -1,0 +1,153 @@
+
+/* ═══════════════════════════════════════════════
+   ANEXO DE TERMOGRAFÍA — Estilos
+═══════════════════════════════════════════════ */
+
+/* Tarjeta de punto termográfico */
+.at-punto-card {
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--bg-surface);
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+}
+
+.at-punto-header {
+    background: var(--bg-color-medium, #1e293b);
+    padding: 10px 16px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.at-punto-name {
+    background: transparent; border: none;
+    font-size: 1em; font-weight: 700; color: var(--text-primary);
+    font-family: inherit; flex: 1; padding: 2px 4px; border-radius: 4px;
+    transition: background .15s;
+}
+.at-punto-name:focus { outline: none; background: rgba(255,255,255,.08); }
+.at-sev-cell { flex-shrink: 0; }
+
+.at-punto-header-btns { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
+.at-sev-btn {
+    width: 36px; height: 30px; border-radius: var(--radius-md);
+    border: 2px solid transparent; background: var(--bg-muted);
+    color: var(--text-muted); font-weight: 800; font-size: 0.82em;
+    cursor: pointer; font-family: inherit; transition: all .15s;
+}
+.at-sev-btn:hover { transform: translateY(-1px); }
+.at-sev-btn.active-b { background: var(--success-light); color: var(--success); border-color: var(--success); }
+.at-sev-btn.active-a { background: #FFFF00; color: #6b5a00; border-color: #ccaa00; }
+.at-sev-btn.active-c { background: var(--danger-light); color: var(--danger); border-color: var(--danger); }
+.at-sev-btn[data-sev="B"]:hover { background: var(--success-light); color: var(--success); }
+.at-sev-btn[data-sev="A"]:hover { background: #FFFF00; color: #6b5a00; }
+.at-sev-btn[data-sev="C"]:hover { background: var(--danger-light); color: var(--danger); }
+
+.at-del-punto-btn {
+    width: 30px; height: 30px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border); background: var(--bg-surface);
+    color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 0.82em; transition: all .15s;
+}
+.at-del-punto-btn:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-light); }
+
+.at-punto-body { padding: 16px; display: flex; flex-direction: column; gap: 18px; }
+
+/* Datos termográficos */
+.at-data-section h5, .at-images-section h5, .at-text-section h5 {
+    font-size: 0.82em; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; color: var(--primary);
+    margin: 0 0 10px 0; display: flex; align-items: center; gap: 6px;
+}
+.at-data-table { width: 100%; border-collapse: collapse; font-size: 0.87em; }
+.at-data-table td { padding: 5px 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.at-data-table td:first-child, .at-data-table td:nth-child(3) { width: 18%; }
+.at-data-table label { font-weight: 600; color: var(--text-secondary); white-space: nowrap; font-size: 0.88em; }
+.at-data-table input {
+    border: none; background: transparent; width: 100%;
+    color: var(--text-primary); font-family: inherit; font-size: 0.92em;
+    border-bottom: 1px solid transparent; padding: 2px 4px; transition: border-color .15s;
+}
+.at-data-table input:focus { outline: none; border-bottom-color: var(--primary); background: var(--primary-light); border-radius: 3px; }
+
+/* Grid de imágenes — igual que espectros de vibraciones */
+.at-imgs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+.at-img-card {
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden; position: relative;
+    transition: border-color .15s, box-shadow .15s;
+}
+.at-img-card:hover { border-color: var(--primary); box-shadow: var(--shadow-md); }
+
+.at-img-label-badge {
+    position: absolute; top: 8px; left: 8px; z-index: 2;
+    background: rgba(0,0,0,.6); color: white;
+    font-size: 0.72em; font-weight: 700; padding: 3px 8px;
+    border-radius: 12px; pointer-events: none;
+    backdrop-filter: blur(4px);
+}
+.at-img-zone {
+    width: 100%; aspect-ratio: 4/3;
+    background: var(--gray-200);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; position: relative; overflow: hidden; user-select: none;
+}
+.at-img-zone img { width: 100%; height: 100%; object-fit: contain; display: block; transition: transform .2s; }
+.at-img-card:hover .at-img-zone img { transform: scale(1.02); }
+.at-img-placeholder {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    color: var(--text-muted); text-align: center; padding: 20px;
+}
+.at-img-placeholder i { font-size: 2.5em; opacity: .35; }
+.at-img-placeholder span { font-size: 0.82em; opacity: .8; font-weight: 600; }
+.at-img-placeholder small { font-size: 0.72em; opacity: .55; }
+.at-img-overlay {
+    position: absolute; inset: 0;
+    background: rgba(3,105,161,.55);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity .2s;
+    color: white; font-size: 0.82em; font-weight: 600; gap: 6px; pointer-events: none;
+}
+.at-img-card:has(img[src]:not([src=""])):hover .at-img-overlay { opacity: 1; }
+.at-img-footer {
+    padding: 8px 12px; border-top: 1px solid var(--border);
+    background: var(--bg-muted); display: flex; align-items: center; gap: 8px;
+}
+.at-img-caption {
+    flex: 1; border: none; background: transparent;
+    font-size: 0.82em; color: var(--text-primary); font-family: inherit;
+    padding: 2px 4px; border-radius: 4px; transition: background .15s;
+}
+.at-img-caption::placeholder { color: var(--text-muted); font-style: italic; }
+.at-img-caption:focus { outline: none; background: var(--bg-surface); }
+.at-img-del-btn {
+    width: 26px; height: 26px; border: 1px solid var(--border);
+    border-radius: var(--radius-sm); background: var(--bg-surface);
+    color: var(--text-muted); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.78em; transition: all .15s; flex-shrink: 0;
+}
+.at-img-del-btn:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-light); }
+
+/* Estado y acciones */
+.at-text-section { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.at-text-col h5 { margin-bottom: 8px; }
+.at-textarea {
+    width: 100%; min-height: 80px; resize: vertical;
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+    padding: 8px 10px; font-family: inherit; font-size: 0.88em;
+    background: var(--bg-muted); color: var(--text-primary); transition: border-color .15s;
+    box-sizing: border-box;
+}
+.at-textarea:focus { outline: none; border-color: var(--primary); background: var(--bg-surface); }
+
+/* Responsive */
+@media (max-width: 700px) {
+    .at-imgs-grid { grid-template-columns: 1fr; }
+    .at-text-section { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suite PdM — Iniciar Sesión</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous"/>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            background: linear-gradient(135deg, #0c4a6e 0%, #0369a1 50%, #0284c7 100%);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-wrap {
+            display: flex;
+            width: 100%;
+            max-width: 860px;
+            min-height: 480px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0,0,0,.35);
+        }
+        .login-left {
+            flex: 1;
+            background: rgba(255,255,255,.06);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,.12);
+            border-right: none;
+            padding: 48px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: white;
+        }
+        .login-left .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+        .login-left .brand-icon {
+            width: 48px; height: 48px;
+            background: rgba(255,255,255,.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4em;
+        }
+        .login-left h1 {
+            font-size: 1.6em;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .login-left p { font-size: 0.85em; opacity: .65; line-height: 1.6; }
+        .modules-list {
+            list-style: none;
+            margin-top: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .modules-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85em;
+            opacity: .75;
+        }
+        .modules-list i {
+            width: 28px; height: 28px;
+            background: rgba(255,255,255,.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85em;
+            flex-shrink: 0;
+        }
+        .login-right {
+            width: 380px;
+            background: white;
+            padding: 48px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .login-right h2 {
+            font-size: 1.3em;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
+        }
+        .login-right .subtitle {
+            font-size: 0.85em;
+            color: #64748b;
+            margin-bottom: 32px;
+        }
+        .field { margin-bottom: 18px; }
+        .field label {
+            display: block;
+            font-size: 0.8em;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 6px;
+        }
+        .field-wrap {
+            display: flex;
+            align-items: center;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: border-color .18s, box-shadow .18s;
+            background: #f8fafc;
+        }
+        .field-wrap:focus-within {
+            border-color: #0369a1;
+            box-shadow: 0 0 0 3px rgba(3,105,161,.1);
+            background: white;
+        }
+        .field-wrap i {
+            padding: 0 12px;
+            color: #94a3b8;
+            font-size: 0.9em;
+            flex-shrink: 0;
+        }
+        .field-wrap input {
+            flex: 1;
+            padding: 12px 12px 12px 0;
+            border: none;
+            background: transparent;
+            font-size: 0.95em;
+            color: #0f172a;
+            outline: none;
+            font-family: inherit;
+        }
+        .btn-login {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #0369a1, #0284c7);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95em;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: opacity .18s, box-shadow .18s;
+            box-shadow: 0 4px 14px rgba(3,105,161,.35);
+            font-family: inherit;
+        }
+        .btn-login:hover { opacity: .92; box-shadow: 0 6px 20px rgba(3,105,161,.4); }
+        .btn-login:disabled { opacity: .6; cursor: not-allowed; }
+        .login-error {
+            color: #dc2626;
+            font-size: 0.82em;
+            font-weight: 600;
+            margin-top: 12px;
+            text-align: center;
+            min-height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        @media (max-width: 640px) {
+            .login-left { display: none; }
+            .login-right { width: 100%; border-radius: 20px; }
+            .login-wrap { max-width: 400px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrap">
+        <div class="login-left">
+            <div class="brand">
+                <div class="brand-icon"><i class="fa-solid fa-gear"></i></div>
+                <div>
+                    <h1>Suite PdM</h1>
+                    <p style="margin:0; font-size:0.8em; opacity:.6;">Mantenimiento Predictivo</p>
+                </div>
+            </div>
+            <p>Sistema integral para la gestión de activos industriales y análisis de condición mediante técnicas predictivas.</p>
+            <ul class="modules-list">
+                <li><i class="fa-solid fa-industry"></i> Gestión de activos y fichas técnicas</li>
+                <li><i class="fa-solid fa-desktop"></i> Monitoreo de condición en tiempo real</li>
+                <li><i class="fa-solid fa-wave-square"></i> Análisis de vibraciones (ISO)</li>
+                <li><i class="fa-solid fa-fire"></i> Termografía infrarroja</li>
+                <li><i class="fa-solid fa-satellite-dish"></i> Ultrasonido industrial</li>
+                <li><i class="fa-solid fa-file-contract"></i> Reportes y documentación</li>
+            </ul>
+        </div>
+        <div class="login-right">
+            <h2>Bienvenido</h2>
+            <p class="subtitle">Ingresa tus credenciales para acceder al sistema</p>
+            <div class="field">
+                <label for="usuario"><i class="fa-solid fa-user"></i> Usuario</label>
+                <div class="field-wrap">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="usuario" placeholder="admin" autocomplete="username">
+                </div>
+            </div>
+            <div class="field">
+                <label for="password"><i class="fa-solid fa-lock"></i> Contraseña</label>
+                <div class="field-wrap">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+                </div>
+            </div>
+            <button class="btn-login" id="btn-login">
+                <i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión
+            </button>
+            <div class="login-error" id="login-error"></div>
+        </div>
+    </div>
+    <script>
+        if (localStorage.getItem('pdm_session_token')) {
+            fetch('/api/me', { headers: { 'x-session-token': localStorage.getItem('pdm_session_token') } })
+                .then(async r => {
+                    if (r.ok) {
+                        const data = await r.json();
+                        localStorage.setItem('pdm_session_user', JSON.stringify(data));
+                        window.location.href = 'index.html';
+                    }
+                });
+        }
+        async function doLogin() {
+            const usuario = document.getElementById('usuario').value.trim();
+            const password = document.getElementById('password').value;
+            const errDiv = document.getElementById('login-error');
+            const btn = document.getElementById('btn-login');
+            errDiv.innerHTML = '';
+            if (!usuario || !password) { errDiv.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Ingresa usuario y contraseña.'; return; }
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando...';
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario, password })
+                });
+                const data = await res.json();
+                if (res.status === 429) {
+                    errDiv.innerHTML = '<i class="fa-solid fa-shield-halved"></i> ' + data.error;
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión';
+                    return;
+                }
+                if (res.ok && data.token) {
+                    localStorage.setItem('pdm_session_token', data.token);
+                    localStorage.setItem('pdm_session_user', JSON.stringify({
+                        usuario: data.usuario || usuario,
+                        nombre:  data.nombre  || usuario,
+                        rol:     data.rol     || 'visor',
+                        plantas: data.plantas || [],
+                    }));
+                    window.location.href = 'index.html';
+                } else {
+                    errDiv.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (data.error || 'Credenciales incorrectas.');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión';
+                }
+            } catch {
+                errDiv.innerHTML = '<i class="fa-solid fa-wifi"></i> No se pudo conectar al servidor.';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión';
+            }
+        }
+        document.getElementById('btn-login').addEventListener('click', doLogin);
+        document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+        document.getElementById('usuario').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('password').focus(); });
+    </script>
+</body>
+</html>

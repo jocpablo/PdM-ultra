@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Usuario — Suite PdM</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <style>
+        .ayuda-layout{display:flex;height:100vh;overflow:hidden}
+        .ayuda-toc{width:290px;min-width:230px;background:var(--bg-surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+        .ayuda-toc-header{padding:18px 16px 14px;border-bottom:1px solid var(--border);background:var(--primary);color:#fff}
+        .ayuda-toc-header h2{margin:0;font-size:1em;font-weight:700;display:flex;align-items:center;gap:8px}
+        .ayuda-toc-header p{margin:4px 0 0;font-size:.78em;opacity:.85}
+        .ayuda-toc-body{flex:1;overflow-y:auto;padding:10px 0}
+        .toc-group-label{font-size:.68em;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);padding:12px 16px 4px}
+        .toc-link{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:.83em;color:var(--text-secondary);text-decoration:none;cursor:pointer;border-left:3px solid transparent;transition:all .12s}
+        .toc-link:hover{background:var(--gray-50);color:var(--primary)}
+        .toc-link.active{background:var(--primary-light);color:var(--primary);border-left-color:var(--primary);font-weight:600}
+        .toc-link i{width:16px;text-align:center;font-size:.9em}
+        .ayuda-main{flex:1;overflow-y:auto;padding:0;background:var(--bg-page)}
+        .ayuda-hero{background:linear-gradient(135deg,var(--primary) 0%,#1e3a5f 100%);color:#fff;padding:40px 48px}
+        .ayuda-hero h1{margin:0 0 8px;font-size:1.8em}
+        .ayuda-hero p{margin:0;opacity:.85;font-size:.95em}
+        .ayuda-content{padding:32px 48px 60px;max-width:940px}
+        .ayuda-section{margin-bottom:56px;scroll-margin-top:20px}
+        .ayuda-section-header{display:flex;align-items:center;gap:12px;padding-bottom:10px;border-bottom:2px solid var(--primary);margin-bottom:22px}
+        .ayuda-section-icon{width:36px;height:36px;border-radius:8px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1em;flex-shrink:0}
+        .ayuda-section-header h2{margin:0;font-size:1.2em;color:var(--text-primary)}
+        .section-badge{margin-left:auto;font-size:.72em;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--primary-light);color:var(--primary);white-space:nowrap}
+        .ayuda-sub{margin-bottom:22px}
+        .ayuda-sub h3{font-size:.95em;font-weight:700;color:var(--text-primary);margin:0 0 8px;display:flex;align-items:center;gap:7px}
+        .ayuda-sub h3 i{color:var(--primary);font-size:.9em}
+        .ayuda-sub p,.ayuda-sub li{font-size:.88em;line-height:1.75;color:var(--text-secondary);margin:0 0 6px}
+        .ayuda-sub ul,.ayuda-sub ol{padding-left:20px;margin:6px 0}
+        .ayuda-tip{background:var(--primary-light);border-left:4px solid var(--primary);border-radius:0 8px 8px 0;padding:10px 14px;font-size:.84em;color:var(--primary);margin:10px 0;display:flex;gap:8px;align-items:flex-start}
+        .ayuda-tip i{margin-top:2px;flex-shrink:0}
+        .ayuda-warn{background:#fef3c7;border-left:4px solid #d97706;border-radius:0 8px 8px 0;padding:10px 14px;font-size:.84em;color:#92400e;margin:10px 0;display:flex;gap:8px;align-items:flex-start}
+        .ayuda-steps{counter-reset:step;list-style:none;padding:0;margin:10px 0}
+        .ayuda-steps li{counter-increment:step;display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;font-size:.88em;line-height:1.65;color:var(--text-secondary)}
+        .ayuda-steps li::before{content:counter(step);width:22px;height:22px;background:var(--primary);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75em;font-weight:800;flex-shrink:0;margin-top:2px}
+        .badge-b{background:#dcfce7;color:#166534;padding:1px 8px;border-radius:20px;font-size:.82em;font-weight:700}
+        .badge-a{background:#FFFF00;color:#6b5a00;padding:1px 8px;border-radius:20px;font-size:.82em;font-weight:700}
+        .badge-c{background:#fee2e2;color:#991b1b;padding:1px 8px;border-radius:20px;font-size:.82em;font-weight:700}
+        .ayuda-table{width:100%;border-collapse:collapse;font-size:.84em;margin:10px 0}
+        .ayuda-table th{background:var(--bg-muted);padding:9px 12px;text-align:left;font-weight:700;color:var(--text-secondary);border-bottom:2px solid var(--border)}
+        .ayuda-table td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-secondary);vertical-align:top}
+        .ayuda-table tr:hover td{background:var(--gray-50)}
+        kbd{background:var(--bg-muted);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:.82em;font-family:monospace;color:var(--text-primary)}
+        .ayuda-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin:14px 0}
+        .ayuda-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;text-decoration:none;transition:box-shadow .15s,transform .15s;cursor:pointer}
+        .ayuda-card:hover{box-shadow:0 4px 14px rgba(0,0,0,.1);transform:translateY(-1px)}
+        .ayuda-card-icon{font-size:1.3em;color:var(--primary);margin-bottom:6px}
+        .ayuda-card-title{font-weight:700;font-size:.88em;color:var(--text-primary);margin-bottom:4px}
+        .ayuda-card-desc{font-size:.78em;color:var(--text-muted);line-height:1.5}
+        .feat-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:.75em;font-weight:700;margin:1px 2px 4px 0;vertical-align:middle}
+        .fp-b{background:#dbeafe;color:#1e40af}
+        .fp-g{background:#dcfce7;color:#166534}
+        .fp-o{background:#fef3c7;color:#92400e}
+        .fp-p{background:#ede9fe;color:#5b21b6}
+        .back-to-top{position:fixed;bottom:24px;right:24px;background:var(--primary);color:#fff;border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:1em;box-shadow:0 4px 12px rgba(0,0,0,.2);display:none;align-items:center;justify-content:center;z-index:999;transition:background .15s}
+        .back-to-top:hover{background:var(--primary-hover)}
+        @media(max-width:768px){.ayuda-toc{display:none}.ayuda-content{padding:20px}.ayuda-hero{padding:24px}}
+    </style>
+</head>
+<body data-theme="default">
+<header>
+    <h1>Suite de Mantenimiento Predictivo</h1>
+    <p class="intro-text">Manual de Usuario</p>
+</header>
+<div class="page-wrapper">
+    <aside id="left-sidebar">
+        <h3><i class="fa-solid fa-toolbox"></i> Suite PdM</h3>
+        <nav class="sidebar-nav">
+            <a href="hojas-de-vida.html" class="nav-link"><i class="fa-solid fa-industry"></i> Gestión de Activos</a>
+            <a href="monitoreo.html" class="nav-link"><i class="fa-solid fa-desktop"></i> Monitoreo de Condición</a>
+            <a href="condicion.html" class="nav-link"><i class="fa-solid fa-wave-square"></i> Tendencias de Condición</a>
+            <a href="analitica.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> Analítica</a>
+            <div class="nav-separator">Gestión</div>
+            <a href="ordenes-trabajo.html" class="nav-link" data-feature="ot"><i class="fa-solid fa-clipboard-list"></i> Órdenes de Trabajo</a>
+            <a href="lubricacion.html" class="nav-link" data-feature="lubricacion"><i class="fa-solid fa-droplet"></i> Lubricación</a>
+            <div class="nav-separator">Reportes</div>
+            <a href="vibraciones.html" class="nav-link"><i class="fa-solid fa-wave-square"></i> Reporte Vibraciones</a>
+            <a href="termografia.html" class="nav-link"><i class="fa-solid fa-fire"></i> Reporte Termografía</a>
+            <a href="ultrasonido.html" class="nav-link"><i class="fa-solid fa-satellite-dish"></i> Reporte Ultrasonido</a>
+            <a href="reportes-generales.html" class="nav-link"><i class="fa-solid fa-file-contract"></i> Reportes Generales</a>
+            <div class="nav-separator">Anexos</div>
+            <a href="anexo-termo.html" class="nav-link"><i class="fa-solid fa-images"></i> Anexo Termografía</a>
+            <a href="anexo-ultra.html" class="nav-link"><i class="fa-solid fa-ear-listen"></i> Anexo Ultrasonido</a>
+            <div class="nav-separator">Sistema</div>
+            <a href="usuarios.html" class="nav-link" data-min-rol="admin"><i class="fa-solid fa-users-gear"></i> Gestión de Usuarios</a>
+            <a href="ayuda.html" class="nav-link active"><i class="fa-solid fa-circle-question"></i> Ayuda</a>
+            <button id="btn-open-config" class="nav-link config-btn"><i class="fa-solid fa-gear"></i> Configuración</button>
+            <button id="btn-logout" class="nav-link config-btn" style="color:#dc3545;"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</button>
+        </nav>
+    </aside>
+
+    <main class="content-container" style="padding:0;overflow:hidden;">
+        <div class="ayuda-layout">
+
+            <nav class="ayuda-toc">
+                <div class="ayuda-toc-header">
+                    <h2><i class="fa-solid fa-book-open"></i> Manual de Usuario</h2>
+                    <p>Suite PdM — Guía completa</p>
+                </div>
+                <div class="ayuda-toc-body">
+                    <div class="toc-group-label">Inicio</div>
+                    <a class="toc-link active" data-target="intro"><i class="fa-solid fa-house"></i> Presentación del sistema</a>
+                    <a class="toc-link" data-target="login"><i class="fa-solid fa-lock"></i> Acceso y roles</a>
+                    <a class="toc-link" data-target="config"><i class="fa-solid fa-gear"></i> Configuración global</a>
+                    <div class="toc-group-label">Módulos principales</div>
+                    <a class="toc-link" data-target="activos"><i class="fa-solid fa-industry"></i> Gestión de Activos</a>
+                    <a class="toc-link" data-target="monitoreo"><i class="fa-solid fa-desktop"></i> Monitoreo de Condición</a>
+                    <a class="toc-link" data-target="vib"><i class="fa-solid fa-wave-square"></i> Tendencias — Vibraciones</a>
+                    <a class="toc-link" data-target="termo"><i class="fa-solid fa-fire"></i> Tendencias — Termografía</a>
+                    <a class="toc-link" data-target="ultra"><i class="fa-solid fa-satellite-dish"></i> Tendencias — Ultrasonido</a>
+                    <a class="toc-link" data-target="analitica"><i class="fa-solid fa-chart-line"></i> Analítica</a>
+                    <div class="toc-group-label">Gestión</div>
+                    <a class="toc-link" data-target="ot"><i class="fa-solid fa-clipboard-list"></i> Órdenes de Trabajo</a>
+                    <a class="toc-link" data-target="lubricacion"><i class="fa-solid fa-droplet"></i> Lubricación</a>
+                    <div class="toc-group-label">Reportes técnicos</div>
+                    <a class="toc-link" data-target="rep-vib"><i class="fa-solid fa-wave-square"></i> Reporte Vibraciones</a>
+                    <a class="toc-link" data-target="rep-termo"><i class="fa-solid fa-fire"></i> Reporte Termografía</a>
+                    <a class="toc-link" data-target="rep-ultra"><i class="fa-solid fa-satellite-dish"></i> Reporte Ultrasonido</a>
+                    <a class="toc-link" data-target="rep-gen"><i class="fa-solid fa-file-contract"></i> Reportes Generales</a>
+                    <a class="toc-link" data-target="anx-termo"><i class="fa-solid fa-images"></i> Anexo Termografía</a>
+                    <a class="toc-link" data-target="anx-ultra"><i class="fa-solid fa-ear-listen"></i> Anexo Ultrasonido</a>
+                    <div class="toc-group-label">Referencia</div>
+                    <a class="toc-link" data-target="estados"><i class="fa-solid fa-circle"></i> Sistema de estados</a>
+                    <a class="toc-link" data-target="features"><i class="fa-solid fa-toggle-on"></i> Módulos opcionales</a>
+                    <a class="toc-link" data-target="usuarios"><i class="fa-solid fa-users-gear"></i> Usuarios y auditoría</a>
+                    <a class="toc-link" data-target="bd"><i class="fa-solid fa-database"></i> Base de datos</a>
+                </div>
+            </nav>
+
+            <div class="ayuda-main" id="ayuda-main">
+                <div class="ayuda-hero">
+                    <h1><i class="fa-solid fa-book-open"></i> Manual de Usuario — Suite PdM</h1>
+                    <p>Sistema integral de Mantenimiento Predictivo · Vibraciones · Termografía · Ultrasonido · Órdenes de Trabajo · Lubricación · Analítica de Flota</p>
+                </div>
+
+                <div class="ayuda-content">
+
+<!-- ══ INTRO ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="intro">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-house"></i></div>
+        <h2>Presentación del sistema</h2>
+    </div>
+    <div class="ayuda-sub">
+        <p>La <strong>Suite PdM</strong> es un sistema de Mantenimiento Predictivo desarrollado sobre Node.js y PostgreSQL, diseñado para operar en red local sin dependencia de servicios en la nube. Centraliza el registro, análisis y reporte de las tres técnicas predictivas principales — vibraciones, termografía e ultrasonido — junto con gestión de órdenes de trabajo, lubricación y analítica de flota.</p>
+        <p>El sistema fue diseñado para ser <strong>autónomo y modular</strong>: funciona sin internet, admite múltiples usuarios simultáneos en red local, y sus módulos de gestión (OTs y lubricación) pueden activarse o desactivarse según el contexto de cada instalación.</p>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-route"></i> Flujo de trabajo del programa PdM</h3>
+        <ol class="ayuda-steps">
+            <li><strong>Registrar los activos</strong> en Gestión de Activos con datos técnicos completos, fotos y habilitación de técnicas PdM.</li>
+            <li><strong>Configurar puntos y límites</strong> en Tendencias de Condición para cada equipo — manual, por norma ISO o calculado estadísticamente.</li>
+            <li><strong>Registrar lecturas periódicas</strong> de vibraciones, temperatura o ultrasonido. El estado B/A/C se calcula automáticamente.</li>
+            <li><strong>Revisar el tablero de Monitoreo</strong> y la Analítica para identificar equipos en atención en toda la flota.</li>
+            <li><strong>Abrir una Orden de Trabajo</strong> ante cualquier anomalía y registrar la intervención realizada.</li>
+            <li><strong>Generar reportes técnicos</strong> formales con imágenes, diagnósticos, acciones y firmas.</li>
+        </ol>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-layer-group"></i> Vista general de módulos</h3>
+        <div class="ayuda-cards">
+            <div class="ayuda-card" onclick="goTo('activos')"><div class="ayuda-card-icon"><i class="fa-solid fa-industry"></i></div><div class="ayuda-card-title">Gestión de Activos</div><div class="ayuda-card-desc">Registro técnico completo de equipos con fotos y configuración PdM.</div></div>
+            <div class="ayuda-card" onclick="goTo('monitoreo')"><div class="ayuda-card-icon"><i class="fa-solid fa-desktop"></i></div><div class="ayuda-card-title">Monitoreo</div><div class="ayuda-card-desc">Tablero de estado general de toda la flota en una sola vista.</div></div>
+            <div class="ayuda-card" onclick="goTo('vib')"><div class="ayuda-card-icon"><i class="fa-solid fa-wave-square"></i></div><div class="ayuda-card-title">Tendencias de Condición</div><div class="ayuda-card-desc">Historial, gráficos, tendencia, validación y exportación Excel de las tres técnicas.</div></div>
+            <div class="ayuda-card" onclick="goTo('analitica')"><div class="ayuda-card-icon"><i class="fa-solid fa-chart-line"></i></div><div class="ayuda-card-title">Analítica</div><div class="ayuda-card-desc">KPIs, distribución, cobertura y equipos en atención a nivel de flota.</div></div>
+            <div class="ayuda-card" onclick="goTo('ot')"><div class="ayuda-card-icon"><i class="fa-solid fa-clipboard-list"></i></div><div class="ayuda-card-title">Órdenes de Trabajo</div><div class="ayuda-card-desc">Gestión interna de OTs con MTTR calculado. Activable/desactivable.</div></div>
+            <div class="ayuda-card" onclick="goTo('lubricacion')"><div class="ayuda-card-icon"><i class="fa-solid fa-droplet"></i></div><div class="ayuda-card-title">Lubricación</div><div class="ayuda-card-desc">Puntos de lubricación, vencimientos, historial y correlación con ultrasonido.</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ LOGIN ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="login">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-lock"></i></div>
+        <h2>Acceso al sistema y roles de usuario</h2>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-arrow-right-to-bracket"></i> Iniciar sesión</h3>
+        <p>Accede desde cualquier navegador de la red local con <kbd>http://IP_SERVIDOR:3000</kbd>. La sesión se mantiene mediante un token JWT almacenado en el navegador. Usa <strong>Cerrar Sesión</strong> en el menú lateral para salir.</p>
+        <div class="ayuda-tip"><i class="fa-solid fa-shield-halved"></i> El sistema bloquea el acceso por 15 minutos tras múltiples intentos fallidos desde la misma IP — protección contra ataques de fuerza bruta incluida de fábrica.</div>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-users"></i> Roles y permisos</h3>
+        <table class="ayuda-table">
+            <thead><tr><th>Rol</th><th>Puede hacer</th><th>Restricciones</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Admin Sistema</strong></td><td>Todo: crear plantas, usuarios de cualquier rol, auditoría, respaldos, eliminar equipos.</td><td>—</td></tr>
+                <tr><td><strong>Admin Planta</strong></td><td>Crear Técnicos y Visores. Gestionar equipos y reportes. Generar snapshots de KPI.</td><td>No puede crear otros admins ni acceder a auditoría global.</td></tr>
+                <tr><td><strong>Técnico</strong></td><td>Registrar equipos, lecturas, componentes, reportes, OTs y lubricaciones.</td><td>No puede gestionar usuarios ni eliminar equipos.</td></tr>
+                <tr><td><strong>Visor</strong></td><td>Ver toda la información del sistema en modo lectura.</td><td>No puede crear, editar ni eliminar ningún dato.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- ══ CONFIG ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="config">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-gear"></i></div>
+        <h2>Configuración global del sistema</h2>
+    </div>
+    <div class="ayuda-sub">
+        <p>Accede desde el engranaje <i class="fa-solid fa-gear"></i> en el menú lateral de cualquier página. Aquí configuras las preferencias visuales y de identidad del sistema:</p>
+        <ul>
+            <li><strong>Logo izquierdo y derecho</strong> — aparecen en el encabezado impreso de todos los reportes.</li>
+            <li><strong>Nombre y cargo del analista</strong> — se autocompleta en los campos de firma al crear un reporte nuevo.</li>
+            <li><strong>Firmas digitales</strong> — crea y guarda firmas de los analistas. Cada reporte tiene un selector de firma.</li>
+            <li><strong>Tema de color</strong> — Predeterminado, Oscuro (Océano / Pizarra / Grafito) o Personalizado con selector de color libre.</li>
+            <li><strong>Fuente global</strong> — System UI, Segoe UI, Arial o Courier New.</li>
+        </ul>
+        <div class="ayuda-warn"><i class="fa-solid fa-triangle-exclamation"></i> La configuración se guarda en el navegador (<kbd>localStorage</kbd>). Si cambias de PC o navegador deberás reconfigurarla. Toda la información operativa (equipos, lecturas, reportes) está siempre en el servidor.</div>
+    </div>
+</section>
+
+<!-- ══ ACTIVOS ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="activos">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-industry"></i></div>
+        <h2>Gestión de Activos</h2>
+        <span class="section-badge">hojas-de-vida.html</span>
+    </div>
+    <div class="ayuda-sub">
+        <p>El <strong>módulo central del sistema</strong>. Todos los demás módulos dependen de los equipos registrados aquí. Un equipo que no existe en Gestión de Activos no puede recibir lecturas, reportes, OTs ni lubricaciones.</p>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-star"></i> Capacidades y prestaciones</h3>
+        <ul>
+            <li><span class="feat-pill fp-b"><i class="fa-solid fa-sliders"></i> Formulario adaptativo</span> El formulario de registro detecta el <strong>Tipo de Sistema</strong> seleccionado (Motor Eléctrico, Bomba Centrífuga, Compresor, Ventilador, Generador, Caja Reductora, Banda Transportadora) y muestra <strong>solo los campos relevantes</strong> para ese tipo. Un motor muestra potencia, voltaje, RPM, amperaje, rodamientos DE/ODE y clase de aislamiento; una bomba agrega caudal nominal, presión nominal y tipo de sello; un compresor agrega presión máxima, caudal y refrigeración.</li>
+            <li><span class="feat-pill fp-b"><i class="fa-solid fa-image"></i> Fotos</span> Hasta <strong>4 fotos por equipo</strong> (Principal, Placa, Componente, Panorámica) almacenadas comprimidas directamente en la base de datos. Un clic pega desde el portapapeles (<kbd>Ctrl+C</kbd> primero), doble clic abre el explorador de archivos.</li>
+            <li><span class="feat-pill fp-g"><i class="fa-solid fa-toggle-on"></i> Técnicas PdM</span> <strong>Habilitación selectiva</strong> de Vibraciones, Termografía y/o Ultrasonido por equipo. Solo los módulos habilitados aparecen en Tendencias, Monitoreo y Analítica para ese equipo.</li>
+            <li><span class="feat-pill fp-g"><i class="fa-solid fa-triangle-exclamation"></i> Criticidad</span> Alta, Media o Baja. Los equipos de mayor criticidad aparecen primero en Monitoreo y en la tabla de atención de Analítica.</li>
+            <li><span class="feat-pill fp-o"><i class="fa-solid fa-magnifying-glass"></i> Búsqueda</span> Filtros en tiempo real por texto libre (Asset ID, descripción, marca, ubicación), criticidad y planta. Todos los filtros son combinables.</li>
+            <li><span class="feat-pill fp-o"><i class="fa-solid fa-map-pin"></i> Ubicación</span> Formato jerárquico <kbd>Planta / Zona</kbd> (Ej: <kbd>Edwards / Sala Máquinas</kbd>). La Planta antes del "/" determina la agrupación en Monitoreo, Analítica, árbol lateral de Tendencias y filtros de Lubricación.</li>
+        </ul>
+        <div class="ayuda-warn"><i class="fa-solid fa-triangle-exclamation"></i> El <strong>Asset ID no puede modificarse</strong> una vez creado. Es la clave primaria que enlaza lecturas, reportes, OTs y lubricación. Define un código claro desde el inicio (Ej: <kbd>M-101</kbd>, <kbd>B-202</kbd>, <kbd>C-301</kbd>).</div>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-plus-circle"></i> Crear un nuevo equipo — paso a paso</h3>
+        <ol class="ayuda-steps">
+            <li>Clic en <strong>+ Nuevo Activo</strong> en la barra superior.</li>
+            <li>Ingresa el <strong>Asset ID</strong> único del equipo.</li>
+            <li>Selecciona el <strong>Tipo de Sistema</strong> — el formulario adapta sus campos automáticamente.</li>
+            <li>Completa los datos técnicos disponibles: marca, modelo, potencia HP, voltaje, RPM, amperaje, rodamientos, clase de aislamiento, tipo de acople, etc.</li>
+            <li>Asigna la <strong>Ubicación</strong> en formato <kbd>Planta / Zona</kbd>.</li>
+            <li>Selecciona la <strong>Criticidad</strong> y activa las técnicas PdM que aplican al equipo.</li>
+            <li>Agrega las fotos disponibles.</li>
+            <li>Clic en <strong>Guardar en Base de Datos</strong>.</li>
+        </ol>
+    </div>
+</section>
+
+<!-- ══ MONITOREO ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="monitoreo">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-desktop"></i></div>
+        <h2>Monitoreo de Condición</h2>
+        <span class="section-badge">monitoreo.html</span>
+    </div>
+    <div class="ayuda-sub">
+        <p>Vista gerencial que muestra el <strong>estado actual de todos los equipos de una planta</strong> en una sola tabla. Es el punto de revisión diaria — permite identificar en segundos qué equipos requieren atención sin necesidad de entrar a cada equipo individualmente.</p>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-star"></i> Capacidades y prestaciones</h3>
+        <ul>
+            <li><strong>Estado unificado por técnica</strong> — una fila por equipo con columnas de Ultrasonido, Vibraciones y Termografía mostrando <span class="badge-b">Bueno</span> <span class="badge-a">Alerta</span> <span class="badge-c">Alarma</span> o N/A si la técnica no aplica a ese equipo.</li>
+            <li><strong>Ordenamiento inteligente automático</strong> — los equipos se ordenan: Alarma primero, luego Alerta, luego Bueno, luego Sin datos. Dentro de cada grupo, los de mayor criticidad van primero. El técnico ve los problemas más urgentes al tope de la tabla sin tener que buscarlos.</li>
+            <li><strong>Comentarios editables por equipo</strong> — campo libre en cada fila para que el técnico anote observaciones de campo. Se guardan con un clic en <strong>Guardar Cambios</strong>.</li>
+            <li><strong>Filtro por planta</strong> — muestra solo los equipos del área seleccionada.</li>
+            <li><strong>Impresión optimizada</strong> — genera un informe de monitoreo mensual listo para archivar, con CSS dedicado que oculta controles y optimiza los colores para impresión.</li>
+        </ul>
+        <div class="ayuda-tip"><i class="fa-solid fa-circle-info"></i> Un equipo que muestra "—" no tiene lecturas registradas aún en Tendencias de Condición. Esto no significa que esté en buen estado — significa que el monitoreo no ha iniciado.</div>
+    </div>
+</section>
+
+<!-- ══ VIBRACIONES ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="vib">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-wave-square"></i></div>
+        <h2>Tendencias de Condición — Vibraciones</h2>
+        <span class="section-badge">condicion.html → Tab Vibraciones</span>
+    </div>
+    <div class="ayuda-sub">
+        <p>El módulo técnico más completo del sistema. Registra y analiza el historial de mediciones de vibraciones de cada equipo con tres parámetros: <strong>Velocidad Overall</strong> (mm/s o in/s), <strong>Envolvente/Demodulación</strong> (G's rms) y <strong>Factor de Cresta</strong> (Pico/RMS). Cada uno configurable por punto de medición.</p>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-star"></i> Capacidades y prestaciones</h3>
+        <ul>
+            <li><span class="feat-pill fp-b"><i class="fa-solid fa-crosshairs"></i> Puntos libres</span> Define los puntos de medición que corresponden a tu equipo (Ej: <kbd>1H</kbd> = Rodamiento DE Horizontal, <kbd>2V</kbd> = Vertical, <kbd>3A</kbd> = Axial, <kbd>4H</kbd> = Rodamiento ODE). Sin límite de cantidad.</li>
+            <li><span class="feat-pill fp-b"><i class="fa-solid fa-book"></i> ISO 10816-3</span> <strong>Límites automáticos por grupo ISO</strong> — selecciona el grupo de máquina y el sistema llena ULC/Median/LCL para velocidad, envolvente y cresta sin cálculo manual.</li>
+            <li><span class="feat-pill fp-b"><i class="fa-solid fa-calculator"></i> Estadístico</span> <strong>Cálculo de límites por historial del equipo</strong> — con mínimo 5 lecturas, calcula los límites por <em>Media ± σ</em> o por <em>percentiles P75/P90/P95</em> del comportamiento real de ese equipo específico.</li>
+            <li><span class="feat-pill fp-b"><i class="fa-solid fa-globe"></i> Límites globales</span> Configura valores base que aplican a todos los equipos sin límites específicos — como red de seguridad para equipos recién ingresados.</li>
+            <li><span class="feat-pill fp-g"><i class="fa-solid fa-chart-line"></i> Gráfico Chart.js</span> Gráfico de línea interactivo con una serie por punto de medición, líneas de referencia ULC y Median superpuestas, hover con valores exactos y notas por punto en el tooltip.</li>
+            <li><span class="feat-pill fp-g"><i class="fa-solid fa-arrow-trend-up"></i> Regresión lineal</span> Calcula automáticamente el <strong>slope en unidades/mes</strong>, clasifica la tendencia como <em>Estable / Creciente / Creciente Rápido / Descendente</em>, y proyecta los <strong>días estimados para cruzar el límite de alarma</strong> si la tendencia continúa. Mínimo 3 lecturas.</li>
+            <li><span class="feat-pill fp-g"><i class="fa-solid fa-scale-balanced"></i> Comparación flota</span> Tabla de <strong>equipos similares</strong> (mismo tipo y rango de potencia ±30%) con sus últimas mediciones promedio. Los equipos que superan el 40% de la media de flota se marcan como outliers automáticamente.</li>
+            <li><span class="feat-pill fp-o"><i class="fa-solid fa-triangle-exclamation"></i> Validación 3σ</span> Antes de guardar, detecta valores a <strong>más de 3 desviaciones estándar</strong> del promedio histórico por punto y solicita confirmación — protege la integridad del historial ante errores de tipeo.</li>
+            <li><span class="feat-pill fp-o"><i class="fa-solid fa-calendar-xmark"></i> Alerta de gap</span> Compara la fecha de la última lectura contra la frecuencia de inspección configurada y muestra un banner visible si el equipo está <em>Atrasado</em> o en estado <em>Crítico</em> de monitoreo.</li>
+            <li><span class="feat-pill fp-o"><i class="fa-solid fa-comment"></i> Notas por punto</span> Además de notas generales por lectura, cada punto de medición tiene su propio campo de observación (Ej: "Ruido metálico intermitente en 1H") que aparece en el tooltip del gráfico.</li>
+            <li><span class="feat-pill fp-p"><i class="fa-solid fa-file-excel"></i> Excel con 3 hojas</span> Exporta en formato <kbd>.xlsx</kbd> con hojas de <em>Historial</em> (celdas coloreadas B/A/C), <em>Configuración y límites</em> y <em>Estadísticas</em> (mín, máx, promedio, última lectura por punto).</li>
+        </ul>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-table"></i> Tabla de tendencias — características</h3>
+        <ul>
+            <li>Filas fijas de límites (ULC en rojo, Median en amarillo, LCL en verde) siempre visibles para comparación inmediata.</li>
+            <li>Celdas de datos coloreadas: <span class="badge-c">Rojo</span> ≥ ULC · <span class="badge-a">Amarillo</span> ≥ Median · <span class="badge-b">Verde</span> en rango normal.</li>
+            <li>Control de cantidad de filas visibles (20/50/100/Todas) sin afectar la exportación.</li>
+            <li>Toggles para mostrar/ocultar columnas de Envolvente y Factor de Cresta.</li>
+            <li>Ícono <i class="fa-solid fa-comment-dots" style="color:var(--primary);"></i> en filas que tienen notas.</li>
+        </ul>
+    </div>
+</section>
+
+<!-- ══ TERMOGRAFÍA ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="termo">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-fire"></i></div>
+        <h2>Tendencias de Condición — Termografía</h2>
+        <span class="section-badge">condicion.html → Tab Termografía</span>
+    </div>
+    <div class="ayuda-sub">
+        <p>Registro histórico de temperatura por componente, implementado según el <strong>estándar Infraspection Institute 2016</strong>. Cada equipo puede tener múltiples componentes termográficos, cada uno con su criterio de evaluación y configuración completamente independiente.</p>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-star"></i> Capacidades y prestaciones</h3>
+        <ul>
+            <li><span class="feat-pill fp-b"><i class="fa-solid fa-list"></i> Catálogo estándar</span> <strong>~80 tipos de componente</strong> del estándar Infraspection — al seleccionar el tipo se cargan automáticamente T<sub>max</sub>, T<sub>rise</sub> y T<sub>amb_rated</sub> del estándar sin necesidad de buscarlos en tablas.</li>
+            <li><span class="feat-pill fp-b"><i class="fa-solid fa-brain"></i> Criterio inteligente</span> El criterio de evaluación se <strong>autoselecciona según el tipo de componente</strong>:
+                <ul>
+                    <li><strong>ΔT</strong> — conexiones eléctricas, breakers, fusibles, conectores, barras de cobre</li>
+                    <li><strong>Temperatura Absoluta</strong> — rodamientos, lubricantes, sellos, bandas de transmisión</li>
+                    <li><strong>Absoluta + Corrección de carga</strong> — motores, transformadores, generadores (usa la fórmula T<sub>maxcorr</sub> = (I<sub>med</sub>/I<sub>nom</sub>)² × T<sub>rise</sub> + T<sub>amb</sub>)</li>
+                </ul>
+            </li>
+            <li><span class="feat-pill fp-b"><i class="fa-solid fa-book"></i> Normas ΔT</span> <strong>Normas precargables</strong> con un selector: NETA entre similares (4/15°C), NETA sobre ambiente (11/40°C), Militar MIL-STD-2194 (25/70°C), Experiencia (10/40°C), Motor cores (10/20°C). Al seleccionar, los límites de Alerta y Alarma se llenan automáticamente.</li>
+            <li><span class="feat-pill fp-g"><i class="fa-solid fa-bolt"></i> Trifásico</span> Hasta <strong>3 fases independientes</strong> (R, S, T) con corriente nominal por fase. El estado del componente refleja la peor fase — si una fase está en Alarma, el componente entero es Alarma aunque las otras estén bien.</li>
+            <li><span class="feat-pill fp-g"><i class="fa-solid fa-eye"></i> Emisividad por lectura</span> Configurada en el componente como valor por defecto, pero <strong>editable individualmente en cada lectura</strong> — si la superficie fue limpiada, pintada o cambió de condición, el valor correcto queda registrado históricamente.</li>
+            <li><span class="feat-pill fp-g"><i class="fa-solid fa-ruler-horizontal"></i> Distancia §9.3.1</span> Campo de distancia de medición requerido por el estándar Infraspection. Se precarga del componente pero es editable por lectura.</li>
+            <li><span class="feat-pill fp-o"><i class="fa-solid fa-image"></i> Trazabilidad §9.2.4</span> Campos de <strong>No. Imagen IR y No. Imagen Visual</strong> requeridos por el estándar para vincular cada lectura con su termograma archivado.</li>
+            <li><span class="feat-pill fp-o"><i class="fa-solid fa-eye"></i> Preview en tiempo real</span> Mientras el técnico escribe las temperaturas, el sistema calcula y muestra el ΔT, el T<sub>maxcorr</sub> y el <strong>estado resultante B/A/C antes de guardar</strong> — el técnico sabe el diagnóstico en el momento de la medición.</li>
+            <li><span class="feat-pill fp-o"><i class="fa-solid fa-triangle-exclamation"></i> Validación estadística</span> Detecta temperaturas a más de 3σ del historial del componente por fase antes de guardar.</li>
+            <li><span class="feat-pill fp-p"><i class="fa-solid fa-chart-line"></i> Gráfico Chart.js</span> Tendencia de temperatura con una línea por fase de cada componente, análisis de pendiente en °C/mes y clasificación Estable/Creciente/Creciente Rápido.</li>
+            <li><span class="feat-pill fp-p"><i class="fa-solid fa-file-excel"></i> Excel por componente</span> Una hoja por componente con fecha, T. ambiente, ε, distancia, temperatura y corriente por fase, ΔT calculado y estado.</li>
+        </ul>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-function"></i> Fórmulas de evaluación</h3>
+        <table class="ayuda-table">
+            <thead><tr><th>Criterio</th><th>Fórmula</th><th>Resultado</th></tr></thead>
+            <tbody>
+                <tr><td><strong>ΔT</strong></td><td>ΔT = T_componente − T_ambiente</td><td>ΔT ≥ alarma → <span class="badge-c">Alarma</span> · ΔT ≥ alerta → <span class="badge-a">Alerta</span> · Si no → <span class="badge-b">Bueno</span></td></tr>
+                <tr><td><strong>Absoluta</strong></td><td>Compara T vs T_max estándar</td><td>T ≥ T_max → <span class="badge-c">Alarma</span> · T ≥ T_max − T_rise → <span class="badge-a">Alerta</span></td></tr>
+                <tr><td><strong>Abs. + Corrección</strong></td><td>T_maxcorr = (I_med/I_nom)² × T_rise + T_amb</td><td>T ≥ T_maxcorr → <span class="badge-c">Alarma</span> · T ≥ T_maxcorr × 0.85 → <span class="badge-a">Alerta</span></td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- ══ ULTRASONIDO ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="ultra">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-satellite-dish"></i></div>
+        <h2>Tendencias de Condición — Ultrasonido</h2>
+        <span class="section-badge">condicion.html → Tab Ultrasonido</span>
+    </div>
+    <div class="ayuda-sub">
+        <p>Registro histórico de mediciones de ultrasonido por punto de inspección. Detecta fallas incipientes en rodamientos, fugas de presión/vacío, descargas eléctricas, deficiencias de lubricación, válvulas y otros defectos antes de que sean detectables por métodos convencionales.</p>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-star"></i> Capacidades y prestaciones</h3>
+        <ul>
+            <li><span class="feat-pill fp-b"><i class="fa-solid fa-list"></i> 12 tipos de defecto</span> Rodamiento, Fuga de Presión, Fuga de Vacío, Eléctrico (Corona/Arco), Lubricación, Válvula, Cavitación, Engranaje, Acople, Motor Eléctrico, Trampa de Vapor, Otro. Cada tipo incluye una descripción del método de evaluación recomendado.</li>
+            <li><span class="feat-pill fp-b"><i class="fa-solid fa-ruler"></i> ISO 29821 automático</span> Si no se configuran límites absolutos, el sistema aplica la norma internacional: <strong>ΔdB +8 = Alerta, ΔdB +16 = Alarma</strong> sobre el nivel base. Si hay límites configurados, los usa en cambio.</li>
+            <li><span class="feat-pill fp-b"><i class="fa-solid fa-microphone"></i> Configuración de sensor</span> Frecuencia del sensor (25 kHz, 40 kHz, 100 kHz o parabólico) y tipo de adaptador (contacto, magnético, parabólico) — mantiene trazabilidad completa del método de medición.</li>
+            <li><span class="feat-pill fp-g"><i class="fa-solid fa-calculator"></i> ΔdB automático</span> El sistema calcula y guarda automáticamente la diferencia entre el nivel medido y el nivel base configurado, tanto al crear como al editar lecturas.</li>
+            <li><span class="feat-pill fp-g"><i class="fa-solid fa-music"></i> Características del sonido</span> Campo de texto libre para describir la naturaleza acústica del defecto (Ej: "Siseo continuo uniforme", "Chisporroteo intermitente", "Rugido periódico"). Esta información es crítica para el diagnóstico.</li>
+            <li><span class="feat-pill fp-g"><i class="fa-solid fa-thermometer"></i> Condiciones de operación</span> RPM del equipo, porcentaje de carga y temperatura durante la medición. Permite comparar lecturas tomadas en condiciones equivalentes y evitar falsas alarmas por variaciones de carga.</li>
+            <li><span class="feat-pill fp-o"><i class="fa-solid fa-triangle-exclamation"></i> Validación estadística</span> Detecta niveles dBµV a más de 3σ del historial del punto antes de guardar.</li>
+            <li><span class="feat-pill fp-o"><i class="fa-solid fa-calendar-xmark"></i> Alerta de gap</span> Banner de inspección atrasada o crítica igual que en vibraciones y termografía.</li>
+            <li><span class="feat-pill fp-p"><i class="fa-solid fa-chart-line"></i> Gráfico Chart.js</span> Líneas de nivel medido por punto con líneas de referencia del nivel base y los límites +8/+16 dB superpuestos. Análisis de pendiente en dB/mes.</li>
+            <li><span class="feat-pill fp-p"><i class="fa-solid fa-file-excel"></i> Excel por componente</span> Nivel medido, nivel base, ΔdB, RPM, carga%, temperatura, características del sonido, No. imagen y estado.</li>
+        </ul>
+        <div class="ayuda-tip"><i class="fa-solid fa-droplet"></i> <strong>Integración con Lubricación:</strong> al registrar un servicio en el módulo de Lubricación, puedes ingresar el nivel dBµV antes y después de lubricar. El sistema muestra en verde el nivel que bajó, demostrando cuantitativamente el efecto de la lubricación.</div>
+    </div>
+</section>
+
+<!-- ══ ANALÍTICA ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="analitica">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-chart-line"></i></div>
+        <h2>Analítica de Flota</h2>
+        <span class="section-badge">analitica.html</span>
+    </div>
+    <div class="ayuda-sub">
+        <p>Dashboard gerencial que consolida el estado de toda la flota en KPIs y gráficos interactivos. Permite al supervisor obtener en segundos una visión completa de la salud del programa PdM sin necesidad de revisar equipo por equipo.</p>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-star"></i> KPIs y visualizaciones disponibles</h3>
+        <ul>
+            <li><strong>5 KPIs principales</strong> con porcentajes — Total activos PdM, En Alarma, En Alerta, Todos Buenos, Sin inspección.</li>
+            <li><strong>Dona de salud general</strong> — distribución B/A/C de toda la flota con porcentajes. Vista inmediata del estado global del programa.</li>
+            <li><strong>Distribución por Criticidad</strong> — equipos Alta/Media/Baja con su estado de condición combinado.</li>
+            <li><strong>Distribución por Tipo de Sistema</strong> — motores, bombas, compresores, ventiladores, etc.</li>
+            <li><strong>Cobertura de inspección por técnica</strong> — barra horizontal mostrando qué % de los equipos habilitados en cada técnica tienen al menos una lectura. Identifica dónde el programa PdM tiene brechas de cobertura.</li>
+            <li><strong>Estado independiente por técnica</strong> — tabs para ver la distribución B/A/C de Vibraciones, Termografía y Ultrasonido por separado.</li>
+            <li><strong>Comparativo de técnicas</strong> — gráfico de barras comparando las tres técnicas lado a lado.</li>
+            <li><strong>Filtro por planta</strong> — todos los gráficos y KPIs se actualizan al seleccionar un área.</li>
+            <li><strong>Tabla de equipos en atención</strong> — lista todos los equipos con al menos una técnica en Alarma o Alerta, con su estado por técnica, para priorizar intervenciones del día.</li>
+        </ul>
+        <div class="ayuda-tip"><i class="fa-solid fa-camera"></i> Usa el botón <strong>Snapshot KPI</strong> (Órdenes de Trabajo, rol Admin) al final de cada mes para guardar el estado actual de la flota en el historial mensual y poder ver la evolución del programa en el tiempo.</div>
+    </div>
+</section>
+
+<!-- ══ OT ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="ot">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+        <h2>Órdenes de Trabajo</h2>
+        <span class="section-badge">ordenes-trabajo.html · Módulo opcional</span>
+    </div>
+    <div class="ayuda-sub">
+        <p>Módulo de gestión interna de OTs, <strong>completamente independiente de cualquier CMMS externo</strong> (Maximo, SAP-PM, etc.). Si tu empresa usa Maximo u otro sistema para la gestión de OTs, puedes desactivarlo con <kbd>MODULO_OT=false</kbd> en el archivo <kbd>.env</kbd> y el módulo desaparece del sistema sin afectar ninguna otra función.</p>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-star"></i> Capacidades y prestaciones</h3>
+        <ul>
+            <li><span class="feat-pill fp-b"><i class="fa-solid fa-hashtag"></i> Código automático</span> Código secuencial único e irreversible (<kbd>OT-00001</kbd>, <kbd>OT-00002</kbd>…) generado por el servidor. Garantiza unicidad y trazabilidad cronológica sin configuración.</li>
+            <li><span class="feat-pill fp-b"><i class="fa-solid fa-link"></i> Vinculación Asset ID</span> Cada OT se asocia al equipo afectado. El campo Asset ID tiene autocompletado con todos los equipos registrados en Gestión de Activos.</li>
+            <li><span class="feat-pill fp-b"><i class="fa-solid fa-satellite-dish"></i> Técnica de origen</span> Registra si la OT surgió de Vibraciones, Termografía, Ultrasonido, Inspección Visual u otro. Permite analizar qué técnica predictiva detecta más fallas en tu planta.</li>
+            <li><span class="feat-pill fp-g"><i class="fa-solid fa-arrow-right"></i> Flujo de estados</span> Pendiente → En Progreso → Cerrada (o Cancelada). El campo de Resultado aparece solo al cerrar la OT para documentar qué se hizo.</li>
+            <li><span class="feat-pill fp-g"><i class="fa-solid fa-exclamation"></i> Prioridades</span> Baja, Normal, Alta, Urgente con indicadores de color. Las OTs urgentes y vencidas se resaltan automáticamente en la tabla con ícono ⚠.</li>
+            <li><span class="feat-pill fp-g"><i class="fa-solid fa-dollar-sign"></i> Control de costos</span> Campos de costo estimado vs costo real para seguimiento presupuestal básico del mantenimiento.</li>
+            <li><span class="feat-pill fp-o"><i class="fa-solid fa-stopwatch"></i> MTTR calculado</span> El <strong>Tiempo Medio de Reparación</strong> en días se calcula automáticamente en tiempo real desde las OTs cerradas (fecha cierre − fecha apertura). Aparece como KPI en el panel superior.</li>
+            <li><span class="feat-pill fp-o"><i class="fa-solid fa-gauge"></i> 7 KPIs en tiempo real</span> Abiertas, Pendientes, En Progreso, Urgentes, Vencidas, Cerradas en 30 días y MTTR — actualizados cada vez que se carga la página.</li>
+            <li><span class="feat-pill fp-o"><i class="fa-solid fa-magnifying-glass"></i> Filtros combinables</span> Búsqueda de texto libre más filtros de estado, prioridad y tipo aplicados simultáneamente sobre la misma tabla.</li>
+            <li><span class="feat-pill fp-p"><i class="fa-solid fa-bell"></i> Notificaciones SSE</span> Al crear una OT urgente o cerrar una OT, el sistema emite una notificación en tiempo real a todos los usuarios conectados (si el módulo de notificaciones está activo).</li>
+        </ul>
+        <div class="ayuda-warn"><i class="fa-solid fa-triangle-exclamation"></i> Este módulo no reemplaza un CMMS completo. No incluye gestión de repuestos, planificación avanzada de trabajos ni integración con ERP. Está diseñado como complemento ágil del programa PdM, no como reemplazo de Maximo.</div>
+    </div>
+</section>
+
+<!-- ══ LUBRICACIÓN ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="lubricacion">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-droplet"></i></div>
+        <h2>Lubricación y PM Preventivo</h2>
+        <span class="section-badge">lubricacion.html · Módulo opcional</span>
+    </div>
+    <div class="ayuda-sub">
+        <p>Control completo de puntos de lubricación, intervalos de servicio y registro histórico. Puede desactivarse con <kbd>MODULO_LUBRICACION=false</kbd>. Es el único módulo que tiene integración directa con ultrasonido — al lubricar, registra los niveles dBµV antes y después para demostrar cuantitativamente el efecto de cada servicio.</p>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-star"></i> Capacidades y prestaciones</h3>
+        <ul>
+            <li><span class="feat-pill fp-b"><i class="fa-solid fa-calendar-check"></i> Vista de Vencimientos</span> Tablero visual con <strong>barra de progreso por punto</strong> que muestra visualmente cuánto del intervalo ha transcurrido. Colores automáticos: <span class="badge-b">Al día</span> <span class="badge-a">Próximo (≥85% del intervalo)</span> <span style="background:#FFFF00;color:#6b5a00;padding:1px 8px;border-radius:20px;font-size:.82em;font-weight:700;">Vencido</span> <span class="badge-c">Crítico (≥130% del intervalo)</span>.</li>
+            <li><span class="feat-pill fp-b"><i class="fa-solid fa-sort"></i> Priorización automática</span> Los puntos más urgentes (más días vencidos) aparecen primero en la lista, sin que el técnico tenga que buscarlos.</li>
+            <li><span class="feat-pill fp-g"><i class="fa-solid fa-flask"></i> Catálogo precargado</span> Lubricantes industriales comunes disponibles como sugerencias: Mobilux EP1/EP2, Mobil SHC 626/639, Shell Gadus S3, SKF LGEP 2, aceites ISO VG 46/68/100/150/220. Campo de texto libre para cualquier otro lubricante.</li>
+            <li><span class="feat-pill fp-g"><i class="fa-solid fa-wrench"></i> Métodos de lubricación</span> Manual (pistola), Automático (lubricador), Sistema de circulación, Baño de aceite, Cambio completo.</li>
+            <li><span class="feat-pill fp-g"><i class="fa-solid fa-oil-can"></i> Botón Lubricar directo</span> Desde la tarjeta de vencimiento, un clic abre directamente el modal de registro para ese punto — sin necesidad de buscarlo en otra pantalla.</li>
+            <li><span class="feat-pill fp-o"><i class="fa-solid fa-satellite-dish"></i> Integración ultrasonido</span> Campos de nivel dBµV antes y después de lubricar. Si el nivel después es menor, se muestra en <span style="color:#16a34a;font-weight:700;">verde</span> automáticamente para confirmar que la lubricación fue efectiva y cuantificar la mejora.</li>
+            <li><span class="feat-pill fp-o"><i class="fa-solid fa-rotate"></i> Actualización automática</span> Al registrar un servicio, el campo "último servicio" del punto y el contador de vencimiento se actualizan sin pasos adicionales.</li>
+            <li><span class="feat-pill fp-p"><i class="fa-solid fa-clock-rotate-left"></i> Historial completo</span> Tabla de todos los servicios realizados con fecha, lubricante usado, cantidad real, técnico, temperatura, niveles dBµV y observaciones. Filtrable por equipo.</li>
+            <li><span class="feat-pill fp-p"><i class="fa-solid fa-list"></i> Tres vistas</span> Tabs de <em>Vencimientos</em> (vista de prioridad), <em>Puntos configurados</em> (vista por equipo) e <em>Historial</em> (registro cronológico).</li>
+        </ul>
+    </div>
+</section>
+
+<!-- ══ REP VIB ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="rep-vib">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-wave-square"></i></div>
+        <h2>Reporte de Vibraciones</h2>
+        <span class="section-badge">vibraciones.html</span>
+    </div>
+    <div class="ayuda-sub">
+        <p>Genera el <strong>reporte técnico formal de análisis de vibraciones</strong> con diagnóstico por componente, imágenes de espectros y firmas digitales. Este reporte es independiente del historial de Tendencias — está diseñado para documentar una inspección completa con el criterio del analista.</p>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-star"></i> Capacidades y prestaciones</h3>
+        <ul>
+            <li><strong>Código automático por fecha</strong> — <kbd>Vib-DD-mmm-AA-NNNN</kbd> (Ej: <kbd>Vib-19-abr-26-0001</kbd>). Garantiza unicidad y orden cronológico. No se puede duplicar ni modificar.</li>
+            <li><strong>Carga automática de ficha técnica</strong> — al escribir el Asset ID, los datos del equipo (marca, modelo, potencia, RPM, ubicación) se cargan automáticamente desde la base de datos.</li>
+            <li><strong>Tabla de componentes analizada</strong> — una fila por componente con nombre, condición encontrada, diagnóstico detallado, acciones recomendadas y severidad B/A/C individual. Sin límite de componentes.</li>
+            <li><strong>Imágenes de espectros</strong> — pega desde portapapeles o busca archivo por componente. Soporta múltiples imágenes (espectro de velocidad, envolvente, forma de onda, tiempo, etc.).</li>
+            <li><strong>Estado EN ORDEN / COMPLETADO</strong> — para seguimiento de recomendaciones en inspecciones mensuales. Permite marcar qué acciones ya fueron ejecutadas.</li>
+            <li><strong>Firma digital seleccionable</strong> — elige entre las firmas guardadas en Configuración o escribe manualmente. Soporta múltiples analistas en el mismo reporte.</li>
+            <li><strong>Persistencia en PostgreSQL</strong> — con todas las imágenes. Se carga por código desde cualquier PC en la red en cualquier momento.</li>
+            <li><strong>Impresión optimizada A4</strong> — CSS de impresión dedicado que oculta controles, mantiene imágenes completas y genera un documento profesional listo para firma física.</li>
+        </ul>
+    </div>
+</section>
+
+<!-- ══ REP TERMO ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="rep-termo">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-fire"></i></div>
+        <h2>Reporte de Termografía</h2>
+        <span class="section-badge">termografia.html</span>
+    </div>
+    <div class="ayuda-sub">
+        <p>Reporte de inspección termográfica en <strong>formato de lista de equipos</strong> inspeccionados en una jornada. Ideal para documentar múltiples equipos de forma ágil cuando no se requiere el nivel de detalle punto a punto del Anexo.</p>
+        <ul>
+            <li><strong>Tabla editable</strong> con columnas: Equipo, Mes, Ubicación, Acciones recomendadas y Severidad B/A/C.</li>
+            <li><strong>Importación desde CSV</strong> — columnas Equipo, Mes, Ubicacion, Acciones, Severidad — para poblar la tabla masivamente.</li>
+            <li><strong>Gestión en lote</strong> — seleccionar todas las filas y eliminar seleccionadas.</li>
+            <li>Código automático, persistencia en BD y carga por código — mismo sistema que Reporte Vibraciones.</li>
+        </ul>
+    </div>
+</section>
+
+<!-- ══ REP ULTRA ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="rep-ultra">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-satellite-dish"></i></div>
+        <h2>Reporte de Ultrasonido</h2>
+        <span class="section-badge">ultrasonido.html</span>
+    </div>
+    <div class="ayuda-sub">
+        <p>Mismo formato que el Reporte de Termografía con columnas adicionales específicas de ultrasonido:</p>
+        <table class="ayuda-table">
+            <thead><tr><th>Columna</th><th>Descripción</th></tr></thead>
+            <tbody>
+                <tr><td>Equipo / Componente</td><td>Punto inspeccionado</td></tr>
+                <tr><td>Tipo de defecto</td><td>Rodamiento, Fuga, Eléctrico, Lubricación, Válvula, Otro</td></tr>
+                <tr><td>Mes</td><td>Periodo de la medición</td></tr>
+                <tr><td>Nivel dB</td><td>Valor medido en dBµV</td></tr>
+                <tr><td>Hallazgo</td><td>Descripción técnica del defecto</td></tr>
+                <tr><td>Acciones recomendadas</td><td>Intervenciones propuestas</td></tr>
+                <tr><td>Severidad</td><td>B / A / C con color</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- ══ REP GEN ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="rep-gen">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-file-contract"></i></div>
+        <h2>Reportes Generales de Medición</h2>
+        <span class="section-badge">reportes-generales.html</span>
+    </div>
+    <div class="ayuda-sub">
+        <p>Genera tablas de medición estructuradas para cualquier tipo de máquina. Al seleccionar el tipo de equipo y los componentes que aplican, el sistema <strong>genera automáticamente todas las filas de puntos de medición estándar</strong> para ese tipo.</p>
+        <ul>
+            <li><strong>Tipos soportados</strong>: Motor Eléctrico, Bomba Centrífuga, Compresor, Ventilador/Fan, Generador, Caja Reductora, Banda Transportadora y más.</li>
+            <li><strong>Flujo</strong>: selecciona tipo → marca componentes aplicables → clic en <em>Generar Tablas</em> → llena valores y estado (OK/Regular/Deficiente) → agrega imágenes → guarda.</li>
+            <li>Código automático, persistencia en BD, impresión optimizada — mismo sistema base que el resto de reportes.</li>
+        </ul>
+    </div>
+</section>
+
+<!-- ══ ANX TERMO ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="anx-termo">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-images"></i></div>
+        <h2>Anexo de Termografía</h2>
+        <span class="section-badge">anexo-termo.html</span>
+    </div>
+    <div class="ayuda-sub">
+        <p>El documento termográfico más detallado del sistema. A diferencia del Reporte Termografía que es una lista de equipos, el Anexo documenta cada punto con su <strong>par de imágenes IR + Visual</strong> y análisis completo.</p>
+        <ul>
+            <li><strong>Por cada punto</strong>: No. imagen IR y Visual, T. Máxima, T. Referencia, ΔT, emisividad, humedad, viento, distancia, amperaje.</li>
+            <li>Imagen infrarroja e imagen visible con clic (portapapeles) o doble clic (archivo).</li>
+            <li>Diagnóstico técnico, acciones recomendadas y severidad B/A/C por punto.</li>
+            <li>Diseñado para ser el anexo formal de los reportes de inspección termográfica.</li>
+        </ul>
+    </div>
+</section>
+
+<!-- ══ ANX ULTRA ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="anx-ultra">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-ear-listen"></i></div>
+        <h2>Anexo de Ultrasonido</h2>
+        <span class="section-badge">anexo-ultra.html</span>
+    </div>
+    <div class="ayuda-sub">
+        <p>Equivalente al Anexo de Termografía para ultrasonido. Cada punto incluye espectro de forma de onda, foto del punto de inspección, valores de medición, diagnóstico y acciones.</p>
+        <ul>
+            <li><strong>Por cada punto</strong>: No. imagen, tipo de inspección, equipo, componente, punto de medición.</li>
+            <li>Nivel medido en dBµV, valor de referencia, ΔdB calculado, RPM durante la medición.</li>
+            <li>Imagen del espectro/forma de onda e imagen visible del punto de contacto.</li>
+            <li>Diagnóstico técnico, acciones recomendadas y severidad B/A/C.</li>
+        </ul>
+    </div>
+</section>
+
+<!-- ══ ESTADOS ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="estados">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-circle"></i></div>
+        <h2>Sistema de estados y semáforos</h2>
+    </div>
+    <div class="ayuda-sub">
+        <table class="ayuda-table">
+            <thead><tr><th>Estado</th><th>Color badge</th><th>Semáforo</th><th>Significado</th><th>Acción recomendada</th></tr></thead>
+            <tbody>
+                <tr><td><span class="badge-b">Bueno (B)</span></td><td>Verde <kbd>#dcfce7</kbd></td><td style="color:#16a34a;font-size:1.2em;">●</td><td>Opera dentro de los límites normales establecidos.</td><td>Continuar el monitoreo con la frecuencia configurada.</td></tr>
+                <tr><td><span class="badge-a">Alerta (A)</span></td><td>Amarillo <kbd>#FFFF00</kbd></td><td style="color:#f59e0b;font-size:1.2em;">●</td><td>Anomalía incipiente detectada. El equipo sigue funcionando pero requiere atención.</td><td>Investigar causa. Aumentar frecuencia de inspección. Considerar abrir OT.</td></tr>
+                <tr><td><span class="badge-c">Alarma (C)</span></td><td>Rojo <kbd>#fee2e2</kbd></td><td style="color:#ef4444;font-size:1.2em;">●</td><td>Anomalía significativa. Riesgo de falla inminente si no se interviene.</td><td>Intervención urgente. Abrir OT correctiva. Evaluar parar el equipo.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-arrows-up-to-line"></i> Propagación del estado</h3>
+        <ul>
+            <li><strong>Punto de medición</strong> → evaluado contra sus límites ULC/Median/LCL → genera B/A/C.</li>
+            <li><strong>Técnica del equipo</strong> → peor estado entre todos sus puntos o componentes de esa técnica.</li>
+            <li><strong>Estado del equipo</strong> → peor estado entre las tres técnicas (vibraciones, termografía, ultrasonido).</li>
+            <li><strong>Monitoreo y Analítica</strong> → consumen el estado del equipo para los dashboards y KPIs.</li>
+        </ul>
+        <div class="ayuda-tip"><i class="fa-solid fa-circle-info"></i> El estado se recalcula automáticamente en el servidor cada vez que se guarda, edita o elimina una lectura. No existe ningún proceso manual de actualización de estados.</div>
+    </div>
+</section>
+
+<!-- ══ FEATURES ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="features">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-toggle-on"></i></div>
+        <h2>Módulos opcionales — Feature Flags</h2>
+    </div>
+    <div class="ayuda-sub">
+        <p>La Suite incluye módulos que pueden activarse o desactivarse cambiando una línea en el archivo <kbd>.env</kbd> del servidor. Al desactivar un módulo, sus enlaces desaparecen del menú y de la página de inicio — los datos existentes no se eliminan y se recuperan al reactivarlo.</p>
+        <table class="ayuda-table">
+            <thead><tr><th>Variable en .env</th><th>Módulo</th><th>Cuándo desactivar</th></tr></thead>
+            <tbody>
+                <tr><td><kbd>MODULO_OT=false</kbd></td><td>Órdenes de Trabajo</td><td>Cuando la empresa usa Maximo, SAP-PM u otro CMMS externo para gestión de OTs.</td></tr>
+                <tr><td><kbd>MODULO_LUBRICACION=false</kbd></td><td>Lubricación</td><td>Cuando la lubricación ya se gestiona en otro sistema o no está en el alcance del programa PdM.</td></tr>
+                <tr><td><kbd>MODULO_NOTIFICACIONES=false</kbd></td><td>Notificaciones SSE</td><td>En instalaciones con muy pocos usuarios donde las notificaciones en tiempo real no agregan valor.</td></tr>
+                <tr><td><kbd>MODULO_KPI_HISTORICO=false</kbd></td><td>KPI Histórico mensual</td><td>En instalaciones nuevas con menos de 3 meses de datos donde aún no tiene sentido el comparativo.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- ══ USUARIOS ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="usuarios">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-users-gear"></i></div>
+        <h2>Gestión de Usuarios y Auditoría</h2>
+        <span class="section-badge">usuarios.html · Solo admins</span>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-building"></i> Plantas</h3>
+        <p>Las plantas agrupan los equipos por área de la empresa. Solo el <strong>Admin Sistema</strong> puede crearlas o eliminarlas. Se crean automáticamente al arrancar si hay equipos con esa ubicación — o manualmente desde esta página.</p>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-user-plus"></i> Gestión de usuarios</h3>
+        <ul>
+            <li>El Admin Planta puede crear Técnicos y Visores. El Admin Sistema puede crear cualquier rol.</li>
+            <li>Para cambiar la contraseña de un usuario, usa el ícono de llave <i class="fa-solid fa-key"></i> en su fila.</li>
+        </ul>
+        <div class="ayuda-warn"><i class="fa-solid fa-triangle-exclamation"></i> No existe recuperación de contraseña por correo. Si un usuario pierde su contraseña, un administrador debe cambiarla desde esta pantalla.</div>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-scroll"></i> Auditoría</h3>
+        <p>El Admin Sistema tiene acceso al log de auditoría que registra todos los accesos, cambios de usuarios, creación y eliminación de equipos y otras acciones sensibles con fecha, hora y usuario responsable. Útil para cumplimiento y trazabilidad.</p>
+    </div>
+</section>
+
+<!-- ══ BD ══════════════════════════════════════════════════ -->
+<section class="ayuda-section" id="bd">
+    <div class="ayuda-section-header">
+        <div class="ayuda-section-icon"><i class="fa-solid fa-database"></i></div>
+        <h2>Base de datos, arquitectura y respaldos</h2>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-server"></i> Arquitectura</h3>
+        <p>Todo el contenido operativo se guarda en <strong>PostgreSQL</strong>: equipos, lecturas de las tres técnicas, componentes termográficos y de ultrasonido, reportes con imágenes, usuarios, OTs, lubricación, KPI histórico y audit log. Las tablas se crean y actualizan automáticamente al arrancar el servidor — no se requieren scripts manuales para nuevas versiones.</p>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-rotate-left"></i> Respaldo y restauración</h3>
+        <ul>
+            <li><kbd>backup_automatico.bat</kbd> — script Windows para respaldos programados mediante Tarea Programada.</li>
+            <li><kbd>restaurar.bat</kbd> — restaura desde un archivo <kbd>.sql</kbd> de respaldo previo.</li>
+            <li>Los respaldos son archivos PostgreSQL estándar compatibles con pg_restore y cualquier herramienta compatible.</li>
+            <li>El Admin Sistema puede gestionar respaldos desde <strong>Gestión de Usuarios → Seguridad y Auditoría</strong>.</li>
+        </ul>
+    </div>
+    <div class="ayuda-sub">
+        <h3><i class="fa-solid fa-network-wired"></i> Acceso en red local</h3>
+        <p>El servidor Node.js escucha en el puerto definido en <kbd>.env</kbd> (por defecto <kbd>3000</kbd>). Cualquier equipo en la misma red LAN accede con <kbd>http://[IP_SERVIDOR]:3000</kbd>. El sistema soporta múltiples usuarios simultáneos con autenticación JWT independiente por sesión. No requiere internet.</p>
+    </div>
+</section>
+
+                </div><!-- /ayuda-content -->
+            </div><!-- /ayuda-main -->
+        </div><!-- /ayuda-layout -->
+    </main>
+</div>
+
+<footer><p>&copy; 2026 Edwards PdM Suite</p></footer>
+<div id="toast-container"></div>
+<button class="back-to-top" id="back-to-top" title="Volver arriba"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script src="js/script.js"></script>
+<script>
+    const main = document.getElementById('ayuda-main');
+    function goTo(id) {
+        const el = document.getElementById(id);
+        if (el) main.scrollTo({ top: el.offsetTop - 20, behavior: 'smooth' });
+    }
+    document.querySelectorAll('.toc-link[data-target]').forEach(link => {
+        link.addEventListener('click', () => {
+            document.querySelectorAll('.toc-link').forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            goTo(link.dataset.target);
+        });
+    });
+    document.querySelectorAll('.ayuda-card[onclick]').forEach(card => {
+        const m = card.getAttribute('onclick').match(/goTo\('(.+?)'\)/);
+        if (m) { card.removeAttribute('onclick'); card.addEventListener('click', () => goTo(m[1])); }
+    });
+    const sections = document.querySelectorAll('.ayuda-section');
+    const tocLinks = document.querySelectorAll('.toc-link[data-target]');
+    main.addEventListener('scroll', () => {
+        let cur = '';
+        sections.forEach(s => { if (main.scrollTop >= s.offsetTop - 60) cur = s.id; });
+        tocLinks.forEach(l => l.classList.toggle('active', l.dataset.target === cur));
+        const btn = document.getElementById('back-to-top');
+        if (btn) btn.style.display = main.scrollTop > 300 ? 'flex' : 'none';
+    });
+    document.getElementById('back-to-top')?.addEventListener('click', () => main.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

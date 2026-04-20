@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Órdenes de Trabajo — Suite PdM</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous"/>
+    <style>
+        /* ── KPI Cards ── */
+        .ot-kpi-row { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; margin-bottom:24px; }
+        .ot-kpi { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg);
+                  padding:14px 16px; text-align:center; border-top:3px solid var(--kpi-color,var(--primary)); }
+        .ot-kpi .num { font-size:2em; font-weight:800; color:var(--kpi-color,var(--primary)); line-height:1; }
+        .ot-kpi .lbl { font-size:.75em; color:var(--text-muted); margin-top:4px; }
+        .ot-kpi-rojo   { --kpi-color:#dc2626; }
+        .ot-kpi-naranja{ --kpi-color:#d97706; }
+        .ot-kpi-verde  { --kpi-color:#16a34a; }
+        .ot-kpi-gris   { --kpi-color:#64748b; }
+        .ot-kpi-azul   { --kpi-color:#2563eb; }
+
+        /* ── Toolbar ── */
+        .ot-toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:16px; }
+        .ot-filter  { padding:7px 12px; border:1px solid var(--border); border-radius:8px;
+                      font-size:.85em; font-family:inherit; background:var(--bg-surface); color:var(--text-primary); }
+        .ot-search  { flex:1; min-width:200px; padding:7px 12px; border:1px solid var(--border);
+                      border-radius:8px; font-size:.85em; font-family:inherit; background:var(--bg-surface); color:var(--text-primary); }
+
+        /* ── Tabla ── */
+        .ot-table-wrap { overflow-x:auto; }
+        .ot-table { width:100%; border-collapse:collapse; font-size:.87em; }
+        .ot-table th { background:var(--bg-muted); padding:10px 12px; text-align:left;
+                       font-weight:700; color:var(--text-secondary); border-bottom:2px solid var(--border); white-space:nowrap; }
+        .ot-table td { padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:middle; }
+        .ot-table tr:hover td { background:var(--gray-50); }
+
+        /* ── Estado badges ── */
+        .ot-estado { display:inline-flex; align-items:center; gap:5px; padding:3px 10px;
+                     border-radius:20px; font-size:.78em; font-weight:700; white-space:nowrap; }
+        .est-pendiente   { background:#fef3c7; color:#92400e; }
+        .est-en_progreso { background:#dbeafe; color:#1e40af; }
+        .est-cerrada     { background:#dcfce7; color:#166534; }
+        .est-cancelada   { background:#f3f4f6; color:#6b7280; }
+
+        /* ── Prioridad dots ── */
+        .prio-dot { width:9px; height:9px; border-radius:50%; display:inline-block; margin-right:5px; }
+        .prio-urgente { background:#dc2626; }
+        .prio-alta    { background:#f59e0b; }
+        .prio-normal  { background:#16a34a; }
+        .prio-baja    { background:#94a3b8; }
+
+        /* ── Modal ── */
+        .ot-modal-body { display:grid; gap:14px; }
+        .ot-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+        .ot-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+        .ot-field label { display:block; font-size:.8em; font-weight:700; color:var(--text-secondary); margin-bottom:4px; }
+        .ot-field input, .ot-field select, .ot-field textarea {
+            width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:8px;
+            font-size:.87em; font-family:inherit; background:var(--bg-surface); color:var(--text-primary);
+            box-sizing:border-box;
+        }
+        .ot-field textarea { resize:vertical; }
+
+        /* ── Vencida highlight ── */
+        tr.ot-vencida td { background:#fff5f5 !important; }
+        tr.ot-vencida td:first-child { border-left:3px solid #dc2626; }
+    </style>
+</head>
+<body data-theme="default">
+<header>
+    <h1>Suite de Mantenimiento Predictivo</h1>
+    <p class="intro-text" id="current-user-display"></p>
+</header>
+<div class="page-wrapper">
+    <aside id="left-sidebar">
+        <h3><i class="fa-solid fa-toolbox"></i> Suite PdM</h3>
+        <nav class="sidebar-nav">
+            <a href="hojas-de-vida.html" class="nav-link"><i class="fa-solid fa-industry"></i> Gestión de Activos</a>
+            <a href="monitoreo.html" class="nav-link"><i class="fa-solid fa-desktop"></i> Monitoreo de Condición</a>
+            <a href="condicion.html" class="nav-link"><i class="fa-solid fa-wave-square"></i> Tendencias de Condición</a>
+            <a href="analitica.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> Analítica</a>
+            <div class="nav-separator">Gestión</div>
+            <a href="ordenes-trabajo.html" class="nav-link active" data-feature="ot"><i class="fa-solid fa-clipboard-list"></i> Órdenes de Trabajo</a>
+            <a href="lubricacion.html" class="nav-link" data-feature="lubricacion"><i class="fa-solid fa-droplet"></i> Lubricación</a>
+            <div class="nav-separator">Reportes</div>
+            <a href="vibraciones.html" class="nav-link"><i class="fa-solid fa-wave-square"></i> Reporte Vibraciones</a>
+            <a href="termografia.html" class="nav-link"><i class="fa-solid fa-fire"></i> Reporte Termografía</a>
+            <a href="ultrasonido.html" class="nav-link"><i class="fa-solid fa-satellite-dish"></i> Reporte Ultrasonido</a>
+            <a href="reportes-generales.html" class="nav-link"><i class="fa-solid fa-file-contract"></i> Reportes Generales</a>
+            <div class="nav-separator">Anexos</div>
+            <a href="anexo-termo.html" class="nav-link"><i class="fa-solid fa-images"></i> Anexo Termografía</a>
+            <a href="anexo-ultra.html" class="nav-link"><i class="fa-solid fa-ear-listen"></i> Anexo Ultrasonido</a>
+            <div class="nav-separator">Sistema</div>
+            <a href="usuarios.html" class="nav-link" data-min-rol="admin"><i class="fa-solid fa-users-gear"></i> Gestión de Usuarios</a>
+            <a href="ayuda.html" class="nav-link"><i class="fa-solid fa-circle-question"></i> Ayuda</a>
+            <button id="btn-open-config" class="nav-link config-btn"><i class="fa-solid fa-gear"></i> Configuración</button>
+            <button id="btn-logout" class="nav-link config-btn" style="color:#dc3545;"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</button>
+        </nav>
+    </aside>
+
+    <main class="content-container">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+            <div>
+                <h2 style="margin:0;font-size:1.2em;"><i class="fa-solid fa-clipboard-list" style="color:var(--primary);"></i> Órdenes de Trabajo</h2>
+                <p style="margin:4px 0 0;font-size:.83em;color:var(--text-muted);">Gestión interna de órdenes de trabajo — Módulo independiente de CMMS externo</p>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <div id="notif-badge" style="display:none;background:#fef3c7;color:#92400e;padding:4px 10px;border-radius:8px;font-size:.8em;font-weight:700;"></div>
+                <button class="termografia-button" id="btn-snapshot-kpi" data-min-rol="admin" style="background:#64748b;font-size:.82em;">
+                    <i class="fa-solid fa-camera"></i> Snapshot KPI
+                </button>
+                <button class="termografia-button save-button" id="btn-nueva-ot">
+                    <i class="fa-solid fa-plus"></i> Nueva OT
+                </button>
+            </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="ot-kpi-row" id="ot-kpi-row">
+            <div class="ot-kpi ot-kpi-azul"><div class="num" id="kpi-abiertas">—</div><div class="lbl">Abiertas</div></div>
+            <div class="ot-kpi ot-kpi-naranja"><div class="num" id="kpi-pendientes">—</div><div class="lbl">Pendientes</div></div>
+            <div class="ot-kpi ot-kpi-azul"><div class="num" id="kpi-en-prog">—</div><div class="lbl">En Progreso</div></div>
+            <div class="ot-kpi ot-kpi-rojo"><div class="num" id="kpi-urgentes">—</div><div class="lbl">Urgentes</div></div>
+            <div class="ot-kpi ot-kpi-rojo"><div class="num" id="kpi-vencidas">—</div><div class="lbl">Vencidas</div></div>
+            <div class="ot-kpi ot-kpi-verde"><div class="num" id="kpi-cerradas-mes">—</div><div class="lbl">Cerradas (30d)</div></div>
+            <div class="ot-kpi ot-kpi-gris"><div class="num" id="kpi-mttr">—</div><div class="lbl">MTTR (días)</div></div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="ot-toolbar">
+            <input type="text" class="ot-search" id="ot-buscar" placeholder="Buscar por código, equipo, título...">
+            <select class="ot-filter" id="filtro-estado">
+                <option value="">Todos los estados</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="En Progreso">En Progreso</option>
+                <option value="Cerrada">Cerrada</option>
+                <option value="Cancelada">Cancelada</option>
+            </select>
+            <select class="ot-filter" id="filtro-prioridad">
+                <option value="">Todas las prioridades</option>
+                <option value="Urgente">Urgente</option>
+                <option value="Alta">Alta</option>
+                <option value="Normal">Normal</option>
+                <option value="Baja">Baja</option>
+            </select>
+            <select class="ot-filter" id="filtro-tipo">
+                <option value="">Todos los tipos</option>
+                <option value="Correctivo">Correctivo</option>
+                <option value="Preventivo">Preventivo</option>
+                <option value="Predictivo">Predictivo</option>
+                <option value="Inspección">Inspección</option>
+            </select>
+        </div>
+
+        <!-- Tabla -->
+        <div class="ot-table-wrap">
+            <table class="ot-table" id="ot-tabla">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Equipo</th>
+                        <th>Título</th>
+                        <th>Tipo</th>
+                        <th>Prioridad</th>
+                        <th>Estado</th>
+                        <th>Técnico</th>
+                        <th>Apertura</th>
+                        <th>Límite</th>
+                        <th class="no-print"></th>
+                    </tr>
+                </thead>
+                <tbody id="ot-tbody">
+                    <tr><td colspan="10" style="text-align:center;padding:32px;color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Cargando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<!-- Modal Nueva/Editar OT -->
+<div class="modal-overlay" id="ot-modal" style="display:none;">
+    <div class="modal-content config-modal-box" style="max-width:680px;width:96%;max-height:92vh;overflow-y:auto;">
+        <div class="modal-header">
+            <h3 id="ot-modal-titulo">Nueva Orden de Trabajo</h3>
+            <span id="ot-modal-close" style="cursor:pointer;font-size:1.4em;color:var(--text-muted);">&times;</span>
+        </div>
+        <div class="modal-body ot-modal-body">
+
+            <div class="ot-grid-2">
+                <div class="ot-field">
+                    <label>Código <span id="ot-codigo-display" style="color:var(--text-muted);font-weight:400;"></span></label>
+                    <input type="text" id="ot-codigo" placeholder="Generado automáticamente" disabled style="background:var(--bg-muted);">
+                </div>
+                <div class="ot-field">
+                    <label>Asset ID del equipo</label>
+                    <input type="text" id="ot-asset-id" placeholder="Ej: M-101" list="ot-equipos-list">
+                    <datalist id="ot-equipos-list"></datalist>
+                </div>
+            </div>
+
+            <div class="ot-field">
+                <label>Título / Descripción breve *</label>
+                <input type="text" id="ot-titulo" placeholder="Ej: Cambio de rodamiento DE, Revisión vibración elevada">
+            </div>
+
+            <div class="ot-field">
+                <label>Descripción detallada / Hallazgo</label>
+                <textarea id="ot-descripcion" rows="3" placeholder="Describe el problema encontrado, valores medidos, síntomas..."></textarea>
+            </div>
+
+            <div class="ot-grid-3">
+                <div class="ot-field">
+                    <label>Tipo</label>
+                    <select id="ot-tipo">
+                        <option value="Correctivo">Correctivo</option>
+                        <option value="Preventivo">Preventivo</option>
+                        <option value="Predictivo" selected>Predictivo</option>
+                        <option value="Inspección">Inspección</option>
+                        <option value="Lubricación">Lubricación</option>
+                        <option value="Alineación">Alineación</option>
+                        <option value="Balanceo">Balanceo</option>
+                    </select>
+                </div>
+                <div class="ot-field">
+                    <label>Prioridad</label>
+                    <select id="ot-prioridad">
+                        <option value="Baja">Baja</option>
+                        <option value="Normal" selected>Normal</option>
+                        <option value="Alta">Alta</option>
+                        <option value="Urgente">Urgente</option>
+                    </select>
+                </div>
+                <div class="ot-field">
+                    <label>Estado</label>
+                    <select id="ot-estado">
+                        <option value="Pendiente" selected>Pendiente</option>
+                        <option value="En Progreso">En Progreso</option>
+                        <option value="Cerrada">Cerrada</option>
+                        <option value="Cancelada">Cancelada</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="ot-grid-2">
+                <div class="ot-field">
+                    <label>Técnico asignado</label>
+                    <input type="text" id="ot-tecnico" placeholder="Nombre del técnico">
+                </div>
+                <div class="ot-field">
+                    <label>Técnica de origen</label>
+                    <select id="ot-tecnica">
+                        <option value="">— Sin técnica asociada —</option>
+                        <option value="vibraciones">Vibraciones</option>
+                        <option value="termografia">Termografía</option>
+                        <option value="ultrasonido">Ultrasonido</option>
+                        <option value="inspeccion_visual">Inspección Visual</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="ot-grid-3">
+                <div class="ot-field">
+                    <label>Fecha de apertura</label>
+                    <input type="date" id="ot-fecha-apertura">
+                </div>
+                <div class="ot-field">
+                    <label>Fecha límite</label>
+                    <input type="date" id="ot-fecha-limite">
+                </div>
+                <div class="ot-field">
+                    <label>Fecha de cierre</label>
+                    <input type="date" id="ot-fecha-cierre">
+                </div>
+            </div>
+
+            <div class="ot-grid-2">
+                <div class="ot-field">
+                    <label>Costo estimado ($)</label>
+                    <input type="number" step="0.01" min="0" id="ot-costo-est" placeholder="0.00">
+                </div>
+                <div class="ot-field">
+                    <label>Costo real ($)</label>
+                    <input type="number" step="0.01" min="0" id="ot-costo-real" placeholder="0.00">
+                </div>
+            </div>
+
+            <div class="ot-field" id="ot-resultado-wrap" style="display:none;">
+                <label>Resultado / Trabajo realizado</label>
+                <textarea id="ot-resultado" rows="3" placeholder="Describe qué se hizo, piezas cambiadas, observaciones post-intervención..."></textarea>
+            </div>
+
+            <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px;">
+                <button class="termografia-button filter-button" id="ot-modal-cancel">Cancelar</button>
+                <button class="termografia-button save-button" id="ot-modal-save">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar OT
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="js/script.js"></script>
+<script>
+(function() {
+    'use strict';
+    const toast = (m, t='info') => window.PdM.showToast(m, t);
+    const api   = (...a) => window.PdM.apiFetch(...a);
+
+    let allOTs = [], allEquipos = [], editingId = null;
+
+    const M = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    const fmtD = s => { if (!s) return '—'; const [y,m,d] = String(s).split('T')[0].split('-'); return `${d}-${M[+m-1]}-${y.slice(-2)}`; };
+
+    const ESTADO_CLASS = { 'Pendiente':'est-pendiente', 'En Progreso':'est-en_progreso', 'Cerrada':'est-cerrada', 'Cancelada':'est-cancelada' };
+    const PRIO_CLASS   = { 'Urgente':'prio-urgente', 'Alta':'prio-alta', 'Normal':'prio-normal', 'Baja':'prio-baja' };
+
+    async function init() {
+        await loadKPIs();
+        await loadOTs();
+        await loadEquipos();
+        setupListeners();
+    }
+
+    async function loadKPIs() {
+        const r = await api('/api/ot/kpis');
+        if (!r?.ok) return;
+        const k = await r.json();
+        document.getElementById('kpi-abiertas').textContent     = k.abiertas ?? '—';
+        document.getElementById('kpi-pendientes').textContent   = k.pendientes ?? '—';
+        document.getElementById('kpi-en-prog').textContent      = k.en_progreso ?? '—';
+        document.getElementById('kpi-urgentes').textContent     = k.urgentes ?? '—';
+        document.getElementById('kpi-vencidas').textContent     = k.vencidas ?? '—';
+        document.getElementById('kpi-cerradas-mes').textContent = k.cerradas_mes ?? '—';
+        document.getElementById('kpi-mttr').textContent         = k.mttr_dias ?? '—';
+        if (k.vencidas > 0) {
+            const nb = document.getElementById('notif-badge');
+            nb.textContent = `${k.vencidas} OT${k.vencidas > 1 ? 's' : ''} vencida${k.vencidas > 1 ? 's' : ''}`;
+            nb.style.display = '';
+        }
+    }
+
+    async function loadOTs() {
+        const r = await api('/api/ot');
+        if (!r?.ok) return;
+        allOTs = await r.json();
+        renderTabla();
+    }
+
+    async function loadEquipos() {
+        const r = await api('/api/equipos');
+        if (!r?.ok) return;
+        allEquipos = await r.json();
+        const dl = document.getElementById('ot-equipos-list');
+        dl.innerHTML = allEquipos.map(e => `<option value="${e.asset_id}" label="${e.asset_id} — ${e.descripcion || ''}"></option>`).join('');
+    }
+
+    function renderTabla() {
+        const q     = document.getElementById('ot-buscar').value.toLowerCase();
+        const est   = document.getElementById('filtro-estado').value;
+        const prio  = document.getElementById('filtro-prioridad').value;
+        const tipo  = document.getElementById('filtro-tipo').value;
+        const hoy   = new Date().toISOString().split('T')[0];
+
+        const filtered = allOTs.filter(ot => {
+            if (est  && ot.estado    !== est)   return false;
+            if (prio && ot.prioridad !== prio)   return false;
+            if (tipo && ot.tipo      !== tipo)   return false;
+            if (q && !`${ot.codigo} ${ot.asset_id} ${ot.titulo} ${ot.tecnico_asignado||''} ${ot.equipo_desc||''}`.toLowerCase().includes(q)) return false;
+            return true;
+        });
+
+        const tbody = document.getElementById('ot-tbody');
+        if (!filtered.length) {
+            tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-muted);">Sin órdenes de trabajo</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = filtered.map(ot => {
+            const vencida = ot.estado !== 'Cerrada' && ot.fecha_limite && ot.fecha_limite.split('T')[0] < hoy;
+            return `<tr class="${vencida ? 'ot-vencida' : ''}">
+                <td style="font-weight:700;white-space:nowrap;">${ot.codigo}</td>
+                <td>
+                    <div style="font-weight:600;">${ot.asset_id || '—'}</div>
+                    <div style="font-size:.78em;color:var(--text-muted);">${(ot.equipo_desc||'').slice(0,30)}</div>
+                </td>
+                <td>
+                    <div>${ot.titulo.slice(0,60)}${ot.titulo.length > 60 ? '…' : ''}</div>
+                    ${ot.tecnica_origen ? `<div style="font-size:.76em;color:var(--primary);">Origen: ${ot.tecnica_origen}</div>` : ''}
+                </td>
+                <td style="font-size:.83em;">${ot.tipo}</td>
+                <td><span class="prio-dot ${PRIO_CLASS[ot.prioridad]||'prio-normal'}"></span>${ot.prioridad}</td>
+                <td><span class="ot-estado ${ESTADO_CLASS[ot.estado]||''}">${ot.estado}</span></td>
+                <td style="font-size:.83em;color:var(--text-muted);">${ot.tecnico_asignado || '—'}</td>
+                <td style="white-space:nowrap;font-size:.83em;">${fmtD(ot.fecha_apertura)}</td>
+                <td style="white-space:nowrap;font-size:.83em;${vencida ? 'color:#dc2626;font-weight:700;' : ''}">
+                    ${fmtD(ot.fecha_limite)}${vencida ? ' ⚠' : ''}
+                </td>
+                <td class="no-print" style="white-space:nowrap;">
+                    <button class="termo-btn-icon btn-edit-ot" data-id="${ot.id}" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                    <button class="termo-btn-icon btn-del-ot" data-id="${ot.id}" title="Eliminar" style="color:var(--danger);" data-min-rol="admin"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>`;
+        }).join('');
+
+        tbody.querySelectorAll('.btn-edit-ot').forEach(b => b.addEventListener('click', () => openModal(parseInt(b.dataset.id))));
+        tbody.querySelectorAll('.btn-del-ot').forEach(b => b.addEventListener('click', () => deleteOT(parseInt(b.dataset.id))));
+    }
+
+    function openModal(id = null) {
+        editingId = id;
+        const ot  = id ? allOTs.find(o => o.id === id) : null;
+        document.getElementById('ot-modal-titulo').textContent = ot ? `Editar OT — ${ot.codigo}` : 'Nueva Orden de Trabajo';
+        document.getElementById('ot-codigo').value           = ot?.codigo || '';
+        document.getElementById('ot-asset-id').value         = ot?.asset_id || '';
+        document.getElementById('ot-titulo').value           = ot?.titulo || '';
+        document.getElementById('ot-descripcion').value      = ot?.descripcion || '';
+        document.getElementById('ot-tipo').value             = ot?.tipo || 'Predictivo';
+        document.getElementById('ot-prioridad').value        = ot?.prioridad || 'Normal';
+        document.getElementById('ot-estado').value           = ot?.estado || 'Pendiente';
+        document.getElementById('ot-tecnico').value          = ot?.tecnico_asignado || '';
+        document.getElementById('ot-tecnica').value          = ot?.tecnica_origen || '';
+        document.getElementById('ot-fecha-apertura').value   = ot?.fecha_apertura?.split('T')[0] || new Date().toISOString().split('T')[0];
+        document.getElementById('ot-fecha-limite').value     = ot?.fecha_limite?.split('T')[0] || '';
+        document.getElementById('ot-fecha-cierre').value     = ot?.fecha_cierre?.split('T')[0] || '';
+        document.getElementById('ot-costo-est').value        = ot?.costo_estimado || '';
+        document.getElementById('ot-costo-real').value       = ot?.costo_real || '';
+        document.getElementById('ot-resultado').value        = ot?.resultado || '';
+        toggleResultado();
+        document.getElementById('ot-modal').style.display = 'flex';
+    }
+
+    function toggleResultado() {
+        const est = document.getElementById('ot-estado').value;
+        document.getElementById('ot-resultado-wrap').style.display = (est === 'Cerrada' || est === 'Cancelada') ? '' : 'none';
+    }
+
+    async function saveOT() {
+        const titulo = document.getElementById('ot-titulo').value.trim();
+        if (!titulo) { toast('El título es obligatorio.', 'error'); return; }
+        const body = {
+            asset_id:         document.getElementById('ot-asset-id').value.trim() || null,
+            titulo,
+            descripcion:      document.getElementById('ot-descripcion').value.trim() || null,
+            tipo:             document.getElementById('ot-tipo').value,
+            prioridad:        document.getElementById('ot-prioridad').value,
+            estado:           document.getElementById('ot-estado').value,
+            tecnico_asignado: document.getElementById('ot-tecnico').value.trim() || null,
+            tecnica_origen:   document.getElementById('ot-tecnica').value || null,
+            fecha_apertura:   document.getElementById('ot-fecha-apertura').value || null,
+            fecha_limite:     document.getElementById('ot-fecha-limite').value || null,
+            fecha_cierre:     document.getElementById('ot-fecha-cierre').value || null,
+            costo_estimado:   parseFloat(document.getElementById('ot-costo-est').value) || null,
+            costo_real:       parseFloat(document.getElementById('ot-costo-real').value) || null,
+            resultado:        document.getElementById('ot-resultado').value.trim() || null,
+        };
+        const url    = editingId ? `/api/ot/${editingId}` : '/api/ot';
+        const method = editingId ? 'PUT' : 'POST';
+        const r = await api(url, { method, body: JSON.stringify(body) });
+        if (r?.ok) {
+            toast(editingId ? '✅ OT actualizada.' : '✅ OT creada.', 'success');
+            document.getElementById('ot-modal').style.display = 'none';
+            await loadKPIs(); await loadOTs();
+        } else { toast('Error al guardar OT.', 'error'); }
+    }
+
+    async function deleteOT(id) {
+        if (!confirm('¿Eliminar esta OT permanentemente?')) return;
+        const r = await api(`/api/ot/${id}`, { method: 'DELETE' });
+        if (r?.ok) { toast('OT eliminada.', 'info'); await loadKPIs(); await loadOTs(); }
+        else toast('Error al eliminar.', 'error');
+    }
+
+    function setupListeners() {
+        document.getElementById('btn-nueva-ot').addEventListener('click', () => openModal());
+        document.getElementById('ot-modal-save').addEventListener('click', saveOT);
+        document.getElementById('ot-modal-cancel').addEventListener('click', () => document.getElementById('ot-modal').style.display = 'none');
+        document.getElementById('ot-modal-close').addEventListener('click', () => document.getElementById('ot-modal').style.display = 'none');
+        document.getElementById('ot-modal').addEventListener('click', e => { if (e.target === document.getElementById('ot-modal')) document.getElementById('ot-modal').style.display = 'none'; });
+        document.getElementById('ot-estado').addEventListener('change', toggleResultado);
+        ['ot-buscar','filtro-estado','filtro-prioridad','filtro-tipo'].forEach(id =>
+            document.getElementById(id)?.addEventListener('input', renderTabla));
+        document.getElementById('btn-snapshot-kpi')?.addEventListener('click', async () => {
+            const r = await api('/api/kpi-historico/snapshot', { method: 'POST', body: '{}' });
+            if (r?.ok) toast('✅ Snapshot KPI guardado.', 'success');
+            else toast('Error al guardar snapshot.', 'error');
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+</body>
+</html>

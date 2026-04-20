@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios — Suite PdM</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
+    <style>
+        /* ── Layout ───────────────────────────────────────────── */
+        .usr-layout { display:flex; min-height:100vh; background:var(--bg-page); }
+        .usr-sidebar {
+            width:200px; background:var(--sidebar-bg); color:#fff;
+            display:flex; flex-direction:column; flex-shrink:0;
+        }
+        .usr-sidebar-logo {
+            padding:20px 16px 14px;
+            border-bottom:1px solid rgba(255,255,255,.12);
+            font-size:.92em; font-weight:700; display:flex; align-items:center; gap:8px;
+        }
+        .usr-nav { flex:1; padding:8px 0; }
+        .usr-nav-item {
+            display:flex; align-items:center; gap:9px;
+            padding:10px 16px; cursor:pointer; font-size:.87em;
+            border-left:3px solid transparent; transition:all .12s;
+            color:rgba(255,255,255,.7); text-decoration:none;
+        }
+        .usr-nav-item:hover { background:rgba(255,255,255,.08); color:#fff; }
+        .usr-nav-item.active { background:rgba(255,255,255,.13); color:#fff; border-left-color:#fff; font-weight:700; }
+        .usr-nav-item i { width:16px; text-align:center; }
+        .usr-sidebar-footer { padding:12px 14px; border-top:1px solid rgba(255,255,255,.12); }
+        .usr-back { color:rgba(255,255,255,.6); text-decoration:none; font-size:.82em; display:flex; align-items:center; gap:7px; }
+        .usr-back:hover { color:#fff; }
+
+        /* ── Main ─────────────────────────────────────────────── */
+        .usr-main { flex:1; padding:28px; overflow-y:auto; }
+        .usr-page { display:none; }
+        .usr-page.active { display:block; }
+        .usr-page-header {
+            display:flex; align-items:center; justify-content:space-between;
+            margin-bottom:20px; flex-wrap:wrap; gap:12px;
+        }
+        .usr-page-title { font-size:1.2em; font-weight:800; color:var(--text-primary); display:flex; align-items:center; gap:10px; }
+        .usr-page-title i { color:var(--primary); }
+
+        /* ── Table ────────────────────────────────────────────── */
+        .usr-table-wrap { background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; box-shadow:var(--shadow-sm); }
+        .usr-table { width:100%; border-collapse:collapse; font-size:.87em; }
+        .usr-table thead th { background:var(--gray-800); color:#fff; padding:10px 14px; text-align:left; font-size:.78em; text-transform:uppercase; letter-spacing:.5px; }
+        .usr-table tbody tr { border-bottom:1px solid var(--border); transition:background .1s; }
+        .usr-table tbody tr:last-child { border-bottom:none; }
+        .usr-table tbody tr:hover { background:var(--gray-50); }
+        .usr-table tbody td { padding:10px 14px; vertical-align:middle; }
+
+        /* ── Badges ────────────────────────────────────────────── */
+        .rol-badge {
+            display:inline-flex; align-items:center; gap:5px;
+            padding:3px 10px; border-radius:12px; font-size:.75em; font-weight:700;
+        }
+        .rol-sysadmin { background:#7c3aed20; color:#7c3aed; border:1px solid #7c3aed40; }
+        .rol-admin    { background:var(--info-light); color:var(--brand-700); border:1px solid var(--brand-200); }
+        .rol-tecnico  { background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; }
+        .rol-visor    { background:var(--gray-100); color:var(--gray-600); border:1px solid var(--gray-300); }
+        .activo-badge { width:8px;height:8px;border-radius:50%;display:inline-block; }
+        .activo-si { background:#22c55e; }
+        .activo-no { background:#ef4444; }
+        .planta-chip {
+            display:inline-block; padding:2px 8px; border-radius:10px; font-size:.74em;
+            background:var(--primary-light); color:var(--primary); margin:1px; font-weight:600;
+        }
+
+        /* ── Modal ─────────────────────────────────────────────── */
+        .usr-modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(3px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px; }
+        .usr-modal { background:var(--bg-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-xl);width:100%;max-width:560px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;animation:modalIn .18s ease; }
+        @keyframes modalIn { from{transform:scale(.96) translateY(8px);opacity:0} to{transform:scale(1);opacity:1} }
+        .usr-modal-header { display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);background:var(--bg-muted);flex-shrink:0; }
+        .usr-modal-header h3 { font-size:.95em;font-weight:700;display:flex;align-items:center;gap:7px; }
+        .usr-modal-close { background:none;border:none;font-size:1.4em;cursor:pointer;color:var(--text-muted);padding:0 4px;transition:color .12s; }
+        .usr-modal-close:hover { color:var(--danger); }
+        .usr-modal-body { padding:18px;overflow-y:auto;flex:1; }
+        .usr-modal-footer { display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid var(--border);background:var(--bg-muted);flex-shrink:0; }
+
+        /* ── Form fields ──────────────────────────────────────── */
+        .usr-form-grid { display:grid;grid-template-columns:1fr 1fr;gap:14px; }
+        .usr-form-field { display:flex;flex-direction:column;gap:5px; }
+        .usr-form-field label { font-size:.8em;font-weight:600;color:var(--text-secondary); }
+        .usr-form-field input, .usr-form-field select {
+            padding:8px 10px;border:1px solid var(--border);border-radius:6px;
+            font-size:.88em;font-family:inherit;color:var(--text-primary);background:var(--bg-surface);transition:border-color .15s;
+        }
+        .usr-form-field input:focus, .usr-form-field select:focus { outline:none;border-color:var(--primary); }
+        .usr-form-field.full { grid-column:1/-1; }
+        .plantas-checkbox-grid { display:flex;flex-wrap:wrap;gap:8px;margin-top:4px; }
+        .planta-cb-label {
+            display:flex;align-items:center;gap:6px;padding:6px 10px;
+            border:1px solid var(--border);border-radius:6px;cursor:pointer;
+            font-size:.84em;transition:all .12s;background:var(--bg-surface);
+        }
+        .planta-cb-label:has(input:checked) { border-color:var(--primary);background:var(--primary-light);color:var(--primary); }
+        .planta-cb-label input { accent-color:var(--primary); }
+
+        /* ── Buttons ──────────────────────────────────────────── */
+        .usr-btn { display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:7px;font-size:.84em;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s; }
+        .usr-btn-primary { background:var(--primary);color:#fff; }
+        .usr-btn-primary:hover { background:var(--primary-hover); }
+        .usr-btn-ghost { background:transparent;color:var(--text-secondary);border:1px solid var(--border); }
+        .usr-btn-ghost:hover { background:var(--gray-100); }
+        .usr-btn-danger { background:var(--danger);color:#fff; }
+        .usr-btn-sm { padding:4px 9px;font-size:.78em; }
+
+        /* ── Audit ─────────────────────────────────────────────── */
+        .audit-row { display:grid;grid-template-columns:160px 120px 1fr 120px;gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border);font-size:.84em; }
+        .audit-row:last-child { border-bottom:none; }
+        .audit-accion { font-weight:700;color:var(--primary); }
+        .audit-ts { color:var(--text-muted);font-size:.78em; }
+
+        /* ── Seguridad info ────────────────────────────────────── */
+        .sec-card { background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;box-shadow:var(--shadow-sm); }
+        .sec-card-title { font-weight:700;font-size:.92em;margin-bottom:10px;display:flex;align-items:center;gap:8px;color:var(--text-primary); }
+        .sec-card-title i { color:var(--primary); }
+        .sec-item { display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-100);font-size:.86em; }
+        .sec-item:last-child { border-bottom:none; }
+        .sec-item i { color:var(--success);margin-top:2px;flex-shrink:0; }
+        .sec-item .sec-desc { color:var(--text-secondary);font-size:.85em;margin-top:2px; }
+
+        /* ── Responsive ────────────────────────────────────────── */
+        @media(max-width:640px) { .usr-layout{flex-direction:column} .usr-sidebar{width:100%;flex-direction:row;overflow-x:auto} .usr-nav{display:flex;padding:4px} .usr-form-grid{grid-template-columns:1fr} }
+    </style>
+</head>
+<body data-theme="default">
+<div class="usr-layout">
+
+    <!-- Sidebar -->
+    <aside class="usr-sidebar">
+        <div class="usr-sidebar-logo">
+            <i class="fa-solid fa-shield-halved"></i> Admin
+        </div>
+        <nav class="usr-nav">
+            <a class="usr-nav-item active" data-page="usuarios" href="#">
+                <i class="fa-solid fa-users"></i> Usuarios
+            </a>
+            <a class="usr-nav-item" data-page="plantas" href="#">
+                <i class="fa-solid fa-industry"></i> Plantas
+            </a>
+            <a class="usr-nav-item" href="ayuda.html">
+                <i class="fa-solid fa-circle-question"></i> Ayuda
+            </a>
+            <a class="usr-nav-item" href="index.html">
+                <i class="fa-solid fa-house"></i> Inicio
+            </a>
+            <a class="usr-nav-item" data-page="audit" href="#">
+                <i class="fa-solid fa-scroll"></i> Auditoría
+            </a>
+            <a class="usr-nav-item" data-page="backup" href="#">
+                <i class="fa-solid fa-database"></i> Respaldos
+            </a>
+            <a class="usr-nav-item" data-page="seguridad" href="#">
+                <i class="fa-solid fa-lock"></i> Seguridad
+            </a>
+        </nav>
+        <div class="usr-sidebar-footer">
+            <a href="index.html" class="usr-back">
+                <i class="fa-solid fa-arrow-left"></i> Menú Principal
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="usr-main">
+
+        <!-- ── Página: Usuarios ── -->
+        <div class="usr-page active" id="page-usuarios">
+            <div class="usr-page-header">
+                <div class="usr-page-title"><i class="fa-solid fa-users"></i> Gestión de Usuarios</div>
+                <button class="usr-btn usr-btn-primary" id="btn-nuevo-usuario">
+                    <i class="fa-solid fa-user-plus"></i> Nuevo Usuario
+                </button>
+            </div>
+            <div class="usr-table-wrap">
+                <table class="usr-table">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Nombre</th>
+                            <th>Rol</th>
+                            <th>Plantas Asignadas</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usuarios-tbody">
+                        <tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted);">
+                            <i class="fa-solid fa-spinner fa-spin"></i> Cargando...
+                        </td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ── Página: Plantas ── -->
+        <div class="usr-page" id="page-plantas">
+            <div class="usr-page-header">
+                <div class="usr-page-title"><i class="fa-solid fa-industry"></i> Gestión de Plantas</div>
+                <button class="usr-btn usr-btn-primary" id="btn-nueva-planta">
+                    <i class="fa-solid fa-plus"></i> Nueva Planta
+                </button>
+            </div>
+            <p style="font-size:.85em;color:var(--text-muted);margin-bottom:16px;">
+                Las plantas son los nodos raíz del árbol de activos. Cada equipo pertenece a una planta. 
+                Solo el Admin Sistema puede crear plantas.
+            </p>
+            <div class="usr-table-wrap">
+                <table class="usr-table">
+                    <thead>
+                        <tr><th>Nombre</th><th>Descripción</th><th>Creada</th><th>Acciones</th></tr>
+                    </thead>
+                    <tbody id="plantas-tbody">
+                        <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-muted);">
+                            <i class="fa-solid fa-spinner fa-spin"></i> Cargando...
+                        </td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- ─── Página: Respaldos ─── -->
+        <div class="usr-page" id="page-backup">
+            <div class="usr-page-header">
+                <div class="usr-page-title"><i class="fa-solid fa-database"></i> Gestión de Respaldos</div>
+                <div style="display:flex;gap:10px;">
+                    <button class="usr-btn usr-btn-ghost" id="btn-refresh-backups">
+                        <i class="fa-solid fa-rotate"></i> Actualizar
+                    </button>
+                    <button class="usr-btn usr-btn-primary" id="btn-crear-backup">
+                        <i class="fa-solid fa-download"></i> Crear Respaldo Ahora
+                    </button>
+                </div>
+            </div>
+            <div style="background:var(--info-light);border:1px solid var(--brand-200);border-radius:8px;padding:14px 16px;margin-bottom:18px;font-size:.85em;display:flex;gap:10px;align-items:flex-start;">
+                <i class="fa-solid fa-circle-info" style="color:var(--primary);margin-top:2px;flex-shrink:0;"></i>
+                <div>
+                    <strong>Directorio:</strong> <code id="backup-dir-display">C:\Respaldos\PDM</code>
+                    &nbsp;&middot;&nbsp;
+                    <strong>Retención:</strong> 30 días
+                    <div style="margin-top:4px;color:var(--text-secondary);">Formato <code>.backup</code> — incluye estructura y datos completos. Para restaurar: detén el servidor, ejecuta pg_restore, reinicia.</div>
+                </div>
+            </div>
+            <div id="backup-status" style="display:none;background:var(--bg-surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:18px;font-size:.85em;"></div>
+            <div class="usr-table-wrap">
+                <table class="usr-table">
+                    <thead><tr><th>Archivo</th><th>Tamaño</th><th>Fecha</th><th>Acciones</th></tr></thead>
+                    <tbody id="backups-tbody">
+                        <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top:20px;">
+                <div style="font-size:.82em;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:10px;">Cómo Restaurar</div>
+                <div class="sec-card" style="margin-bottom:0;">
+                    <div class="sec-item">
+                        <i class="fa-solid fa-circle-1" style="color:var(--primary);font-size:1.1em;"></i>
+                        <div><strong>Detener el servidor PDM</strong><div class="sec-desc">Cierra la ventana de Node.js o presiona Ctrl+C en la terminal.</div></div>
+                    </div>
+                    <div class="sec-item">
+                        <i class="fa-solid fa-circle-2" style="color:var(--primary);font-size:1.1em;"></i>
+                        <div>
+                            <strong>Ejecutar restauración (CMD como Administrador)</strong>
+                            <code id="restore-cmd-example" style="display:block;background:var(--gray-900);color:#a3e635;padding:10px 12px;border-radius:6px;font-size:.82em;margin-top:6px;word-break:break-all;"></code>
+                        </div>
+                    </div>
+                    <div class="sec-item">
+                        <i class="fa-solid fa-circle-3" style="color:var(--primary);font-size:1.1em;"></i>
+                        <div><strong>Reiniciar el servidor PDM</strong><div class="sec-desc">Ejecuta <code>INICIAR.bat</code>. El servidor reparará la estructura automáticamente.</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Página: Auditoría ── -->
+        <div class="usr-page" id="page-audit">
+            <div class="usr-page-header">
+                <div class="usr-page-title"><i class="fa-solid fa-scroll"></i> Registro de Auditoría</div>
+                <button class="usr-btn usr-btn-ghost" id="btn-refresh-audit">
+                    <i class="fa-solid fa-rotate"></i> Actualizar
+                </button>
+            </div>
+            <p style="font-size:.85em;color:var(--text-muted);margin-bottom:16px;">Últimas 200 acciones del sistema registradas automáticamente.</p>
+            <div class="usr-table-wrap">
+                <div id="audit-list" style="max-height:70vh;overflow-y:auto;">
+                    <div style="padding:24px;text-align:center;color:var(--text-muted);">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Cargando...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Página: Seguridad ── -->
+        <div class="usr-page" id="page-seguridad">
+            <div class="usr-page-title" style="margin-bottom:20px;"><i class="fa-solid fa-lock"></i> Capas de Seguridad Implementadas</div>
+
+            <div class="sec-card">
+                <div class="sec-card-title"><i class="fa-solid fa-key"></i> Autenticación</div>
+                <div class="sec-item"><i class="fa-solid fa-check-circle"></i><div><strong>JWT con firma HMAC-SHA256</strong><div class="sec-desc">Tokens con expiración de 8 horas. Sin estado en servidor — revocación por expiración.</div></div></div>
+                <div class="sec-item"><i class="fa-solid fa-check-circle"></i><div><strong>Contraseñas con scrypt + salt aleatorio</strong><div class="sec-desc">Función de derivación de clave resistente a GPU. Cada contraseña tiene un salt único de 16 bytes.</div></div></div>
+                <div class="sec-item"><i class="fa-solid fa-check-circle"></i><div><strong>Rate limiting en login</strong><div class="sec-desc">Máximo 10 intentos por IP en ventana de 15 minutos. Previene ataques de fuerza bruta.</div></div></div>
+                <div class="sec-item"><i class="fa-solid fa-check-circle"></i><div><strong>Comparación de tokens resistente a timing attacks</strong><div class="sec-desc">Se usa <code>crypto.timingSafeEqual()</code> para evitar timing oracles en verificación de contraseñas y JWT.</div></div></div>
+            </div>
+
+            <div class="sec-card">
+                <div class="sec-card-title"><i class="fa-solid fa-shield-halved"></i> Control de Acceso (RBAC)</div>
+                <div class="sec-item"><i class="fa-solid fa-check-circle"></i><div><strong>4 niveles de rol: Admin Sistema / Admin Planta / Técnico / Visor</strong><div class="sec-desc">Cada endpoint verifica el rol mínimo requerido antes de ejecutar.</div></div></div>
+                <div class="sec-item"><i class="fa-solid fa-check-circle"></i><div><strong>Aislamiento de datos por planta</strong><div class="sec-desc">Cada query filtra automáticamente por las plantas asignadas al usuario. Un visor de Planta A nunca recibe datos de Planta B.</div></div></div>
+                <div class="sec-item"><i class="fa-solid fa-check-circle"></i><div><strong>Jerarquía de administración</strong><div class="sec-desc">Admin Planta solo puede crear Técnicos/Visores en sus plantas. Solo el Admin Sistema puede crear plantas y admins.</div></div></div>
+                <div class="sec-item"><i class="fa-solid fa-check-circle"></i><div><strong>UI oculta por rol</strong><div class="sec-desc">Botones y secciones con <code>data-min-rol</code> son ocultados automáticamente si el rol no es suficiente.</div></div></div>
+            </div>
+
+            <div class="sec-card">
+                <div class="sec-card-title"><i class="fa-solid fa-file-shield"></i> Auditoría y Trazabilidad</div>
+                <div class="sec-item"><i class="fa-solid fa-check-circle"></i><div><strong>Registro automático de acciones críticas</strong><div class="sec-desc">Login, logout, creación/edición de usuarios, eliminación de equipos y plantas quedan registrados con timestamp e IP.</div></div></div>
+                <div class="sec-item"><i class="fa-solid fa-check-circle"></i><div><strong>Audit log visible solo por Admin Sistema</strong><div class="sec-desc">El historial de acciones no es accesible por admins de planta ni técnicos.</div></div></div>
+            </div>
+
+            <div class="sec-card">
+                <div class="sec-card-title"><i class="fa-solid fa-triangle-exclamation" style="color:#f59e0b;"></i> Recomendaciones Adicionales (producción)</div>
+                <div class="sec-item"><i class="fa-solid fa-circle-dot" style="color:#f59e0b;"></i><div><strong>HTTPS obligatorio</strong><div class="sec-desc">En producción, servir la app detrás de nginx/Caddy con certificado TLS. Sin HTTPS los JWT viajan en claro.</div></div></div>
+                <div class="sec-item"><i class="fa-solid fa-circle-dot" style="color:#f59e0b;"></i><div><strong>Cambiar JWT_SECRET en .env</strong><div class="sec-desc">Usar un string aleatorio de al menos 64 caracteres. Rotarlo si hay sospecha de compromiso.</div></div></div>
+                <div class="sec-item"><i class="fa-solid fa-circle-dot" style="color:#f59e0b;"></i><div><strong>Firewall en PostgreSQL</strong><div class="sec-desc">La BD debe ser accesible solo desde localhost o la red interna, nunca desde internet.</div></div></div>
+                <div class="sec-item"><i class="fa-solid fa-circle-dot" style="color:#f59e0b;"></i><div><strong>Headers de seguridad HTTP</strong><div class="sec-desc">Añadir <code>Helmet.js</code> al servidor para Content-Security-Policy, X-Frame-Options, etc.</div></div></div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- ── Modal: Usuario ── -->
+<div class="usr-modal-overlay" id="modal-usuario" style="display:none;">
+    <div class="usr-modal">
+        <div class="usr-modal-header">
+            <h3 id="modal-usr-title"><i class="fa-solid fa-user-plus"></i> Nuevo Usuario</h3>
+            <button class="usr-modal-close" id="close-modal-usr">&times;</button>
+        </div>
+        <div class="usr-modal-body">
+            <div class="usr-form-grid">
+                <div class="usr-form-field">
+                    <label>Usuario <span style="color:var(--danger)">*</span></label>
+                    <input type="text" id="usr-usuario" placeholder="ej: juan.perez" autocomplete="off">
+                </div>
+                <div class="usr-form-field">
+                    <label>Nombre Completo <span style="color:var(--danger)">*</span></label>
+                    <input type="text" id="usr-nombre" placeholder="ej: Juan Pérez">
+                </div>
+                <div class="usr-form-field">
+                    <label>Contraseña <span style="color:var(--danger)" id="pass-required">*</span></label>
+                    <input type="password" id="usr-password" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
+                </div>
+                <div class="usr-form-field">
+                    <label>Rol <span style="color:var(--danger)">*</span></label>
+                    <select id="usr-rol">
+                        <option value="visor">Visor — Solo lectura</option>
+                        <option value="tecnico">Técnico — Crear lecturas y reportes</option>
+                        <option value="admin">Admin Planta — Gestión de activos</option>
+                        <option value="sysadmin" id="rol-sysadmin-opt" style="display:none;">Admin Sistema</option>
+                    </select>
+                </div>
+                <div class="usr-form-field full">
+                    <label>Plantas Asignadas <span style="color:var(--danger)">*</span></label>
+                    <div class="plantas-checkbox-grid" id="plantas-checkboxes">
+                        <span style="color:var(--text-muted);font-size:.85em;">Cargando plantas...</span>
+                    </div>
+                </div>
+                <div class="usr-form-field full" id="activo-field" style="display:none;">
+                    <label class="planta-cb-label" style="width:fit-content;">
+                        <input type="checkbox" id="usr-activo" checked>
+                        Usuario activo
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="usr-modal-footer">
+            <button class="usr-btn usr-btn-ghost" id="cancel-modal-usr">Cancelar</button>
+            <button class="usr-btn usr-btn-primary" id="save-modal-usr">
+                <i class="fa-solid fa-floppy-disk"></i> Guardar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Modal: Planta ── -->
+<div class="usr-modal-overlay" id="modal-planta" style="display:none;">
+    <div class="usr-modal" style="max-width:420px;">
+        <div class="usr-modal-header">
+            <h3><i class="fa-solid fa-industry"></i> Nueva Planta</h3>
+            <button class="usr-modal-close" id="close-modal-planta">&times;</button>
+        </div>
+        <div class="usr-modal-body">
+            <div class="usr-form-field" style="margin-bottom:14px;">
+                <label>Nombre de la Planta <span style="color:var(--danger)">*</span></label>
+                <input type="text" id="planta-nombre" placeholder="ej: Planta Norte, TLS, Edificio A">
+            </div>
+            <div class="usr-form-field">
+                <label>Descripción (opcional)</label>
+                <input type="text" id="planta-desc" placeholder="ej: Planta de producción principal">
+            </div>
+        </div>
+        <div class="usr-modal-footer">
+            <button class="usr-btn usr-btn-ghost" id="cancel-modal-planta">Cancelar</button>
+            <button class="usr-btn usr-btn-primary" id="save-modal-planta">
+                <i class="fa-solid fa-floppy-disk"></i> Crear Planta
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Modal: Confirmar eliminar ── -->
+<div class="usr-modal-overlay" id="modal-confirm" style="display:none;">
+    <div class="usr-modal" style="max-width:380px;">
+        <div class="usr-modal-header">
+            <h3><i class="fa-solid fa-triangle-exclamation" style="color:var(--danger)"></i> Confirmar</h3>
+            <button class="usr-modal-close" id="close-modal-confirm">&times;</button>
+        </div>
+        <div class="usr-modal-body">
+            <p id="confirm-msg" style="font-size:.9em;line-height:1.6;"></p>
+        </div>
+        <div class="usr-modal-footer">
+            <button class="usr-btn usr-btn-ghost" id="cancel-confirm">Cancelar</button>
+            <button class="usr-btn usr-btn-danger" id="do-confirm"><i class="fa-solid fa-trash"></i> Eliminar</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="js/script.js"></script>
+<script src="js/usuarios.js"></script>
+</body>
+</html>

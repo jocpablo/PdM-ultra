@@ -1,0 +1,511 @@
+/* hojas-de-vida.css — Gestión de Activos */
+
+/* ── Barra de acciones ── */
+.hdv-actions-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+.hdv-filter-select {
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-size: 0.88em;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color var(--transition);
+}
+.hdv-filter-select:focus { outline: none; border-color: var(--primary); }
+.hdv-counter {
+    font-size: 0.8em;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 16px;
+    letter-spacing: 0.2px;
+}
+
+/* ── Grid de tarjetas ── */
+.equipos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* ── Tarjeta de equipo ── */
+.hdv-equipo-card {
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    display: flex;
+    flex-direction: column;
+    cursor: default;
+}
+.hdv-equipo-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary);
+}
+
+/* ── Zona foto ── */
+.hdv-card-foto {
+    position: relative;
+    height: 170px;
+    cursor: pointer;
+    overflow: hidden;
+    background: var(--gray-200);
+}
+.hdv-card-foto img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+    transition: transform 0.3s;
+}
+.hdv-equipo-card:hover .hdv-card-foto img { transform: scale(1.05); }
+
+.hdv-foto-placeholder {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 8px;
+    color: var(--gray-400);
+    background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
+}
+.hdv-foto-placeholder i { font-size: 2.8em; opacity: .35; }
+.hdv-foto-placeholder span { font-size: 0.75em; font-weight: 600; opacity: .5; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* Overlay foto hover */
+.hdv-foto-overlay {
+    position: absolute; inset: 0;
+    background: rgba(3,105,161,.45);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity .2s;
+    color: white; font-size: 0.85em; font-weight: 700; gap: 6px;
+}
+.hdv-equipo-card:hover .hdv-foto-overlay { opacity: 1; }
+
+/* Badge criticidad */
+.hdv-crit-badge {
+    position: absolute;
+    top: 10px; left: 10px;
+    font-size: 0.7em !important;
+    padding: 3px 9px !important;
+    border-radius: 20px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.3px;
+    backdrop-filter: blur(4px);
+}
+
+/* Tipo de sistema tag */
+.hdv-tipo-tag {
+    position: absolute;
+    bottom: 10px; right: 10px;
+    background: rgba(0,0,0,.5);
+    color: white;
+    font-size: 0.68em; font-weight: 700;
+    padding: 3px 8px; border-radius: 12px;
+    backdrop-filter: blur(4px);
+    text-transform: uppercase; letter-spacing: 0.4px;
+}
+
+/* ── Cuerpo de tarjeta ── */
+.hdv-card-body {
+    padding: 14px 16px;
+    flex-grow: 1;
+    display: flex; flex-direction: column; gap: 8px;
+}
+
+/* Header: ID + desc */
+.hdv-card-header-row {
+    display: flex; flex-direction: column; gap: 2px;
+}
+.hdv-card-id {
+    font-size: 0.7em;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--primary);
+}
+.hdv-card-desc {
+    font-size: 0.97em;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.3;
+}
+
+/* Divider */
+.hdv-card-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0;
+}
+
+/* Meta info en chips */
+.hdv-card-chips {
+    display: flex; flex-wrap: wrap; gap: 5px;
+}
+.hdv-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--bg-muted);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 9px;
+    font-size: 0.74em;
+    color: var(--text-secondary);
+    font-weight: 500;
+    white-space: nowrap;
+}
+.hdv-chip i { color: var(--primary); opacity: .8; }
+.hdv-chip.hdv-chip-loc i { color: #ccaa00; }
+
+/* Semáforos */
+.hdv-semaforos-row {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 10px;
+    background: var(--bg-muted);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    margin-top: auto;
+}
+.hdv-sem-label {
+    font-size: 0.68em; font-weight: 700;
+    color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 0.4px; min-width: 20px;
+}
+.hdv-semaforos {
+    display: flex; align-items: center; gap: 5px; flex: 1;
+}
+.hdv-sem-group {
+    display: flex; align-items: center; gap: 4px;
+    flex: 1; justify-content: center;
+}
+.hdv-sem-group-label {
+    font-size: 0.65em; font-weight: 700; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.3px;
+}
+
+/* ── Footer ── */
+.hdv-card-footer {
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+}
+.hdv-card-footer-left {
+    font-size: 0.72em;
+    color: var(--text-muted);
+    font-weight: 500;
+    display: flex; align-items: center; gap: 5px;
+}
+.hdv-card-footer-right { display: flex; gap: 5px; }
+.hdv-btn-icon {
+    width: 32px; height: 32px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.82em;
+    transition: all .15s;
+}
+.hdv-btn-icon:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.hdv-btn-edit:hover { border-color: #0369a1; color: #0369a1; background: #e0f2fe; }
+.hdv-btn-print:hover { border-color: #7c3aed; color: #7c3aed; background: #ede9fe; }
+.hdv-btn-delete:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-light); }
+
+/* ── Estado vacío ── */
+.hdv-empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+}
+.hdv-empty-state i { font-size: 3em; display: block; margin-bottom: 14px; opacity: .35; }
+.hdv-empty-state p { font-size: 0.95em; }
+
+/* ── Modal ── */
+.hdv-modal-box {
+    background: var(--bg-surface);
+    border-radius: var(--radius-xl);
+    width: 720px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border);
+    animation: slideUp .22s ease-out;
+}
+
+/* ── Secciones del formulario ── */
+.hdv-section-title {
+    font-size: 0.72em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--primary);
+    padding: 9px 20px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-muted);
+    margin: 12px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+.hdv-section-title:first-of-type { margin-top: 8px; }
+
+/* ── Form grid ── */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px 20px;
+    padding: 0 20px 8px;
+}
+.form-grid.four-col { grid-template-columns: repeat(4, 1fr); }
+.form-grid.three-col { grid-template-columns: repeat(3, 1fr); }
+.form-grid .full { grid-column: 1 / -1; }
+
+/* ── Form group ── */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.form-group label {
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-secondary);
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 0.9em;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-family: inherit;
+    transition: border-color .15s, box-shadow .15s;
+    line-height: 1.4;
+}
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(3,105,161,.12);
+}
+.form-group input:disabled {
+    background: var(--gray-100);
+    color: var(--text-muted);
+    cursor: not-allowed;
+}
+.form-group input::placeholder { color: var(--text-muted); opacity: .7; }
+
+/* field hint */
+.field-hint { font-size: 0.7em; color: var(--text-muted); }
+
+/* ── Tipo sistema radios ── */
+.tipo-sistema-radios {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 0 20px 12px;
+}
+.tipo-sistema-radios label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.85em;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-weight: 600;
+    padding: 7px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-surface);
+    transition: all .15s;
+    user-select: none;
+}
+.tipo-sistema-radios label:has(input:checked) {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+}
+.tipo-sistema-radios input[type=radio] { accent-color: var(--primary); }
+
+/* Fields hvac/bomba */
+#fields-hvac, #fields-bomba { padding-bottom: 4px; }
+
+/* ════════════════════════════════════════════
+   FOTOS — Estilo espectro-card
+════════════════════════════════════════════ */
+.fotos-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    padding: 0 20px 16px;
+}
+.foto-slot {
+    position: relative;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--bg-surface);
+    transition: border-color .15s, box-shadow .15s;
+}
+.foto-slot:hover { border-color: var(--primary); box-shadow: var(--shadow-md); }
+
+.foto-label-badge {
+    position: absolute; top: 7px; left: 7px; z-index: 3;
+    background: rgba(0,0,0,.55); color: white;
+    font-size: 0.65em; font-weight: 700; padding: 2px 7px;
+    border-radius: 10px; pointer-events: none;
+    backdrop-filter: blur(3px);
+}
+.foto-preview-wrap {
+    width: 100%;
+    aspect-ratio: 4/3;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; overflow: hidden; position: relative;
+    background: var(--gray-200);
+}
+.foto-preview-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+    transition: transform .2s;
+}
+.foto-slot:hover .foto-preview-wrap img { transform: scale(1.03); }
+
+.foto-placeholder {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 5px;
+    color: var(--text-muted); text-align: center; padding: 12px;
+}
+.foto-placeholder i     { font-size: 1.8em; opacity: .35; }
+.foto-placeholder span  { font-size: 0.78em; font-weight: 600; opacity: .75; }
+.foto-placeholder small { font-size: 0.68em; opacity: .5; }
+
+.foto-overlay {
+    position: absolute; inset: 0;
+    background: rgba(3,105,161,.52);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity .2s;
+    color: white; font-size: 0.75em; font-weight: 700; gap: 5px;
+    pointer-events: none;
+}
+.foto-slot:has(img[src]:not([src=""])):hover .foto-overlay { opacity: 1; }
+
+.foto-clear-btn {
+    position: absolute; top: 6px; right: 6px; z-index: 4;
+    width: 24px; height: 24px;
+    background: rgba(220,38,38,.85); color: white;
+    border: none; border-radius: 50%; cursor: pointer;
+    font-size: 0.72em; display: flex; align-items: center; justify-content: center;
+    transition: background .15s; backdrop-filter: blur(3px);
+}
+.foto-clear-btn:hover { background: #b91c1c; }
+
+/* ════════════════════════════════════════════
+   SECCIÓN PdM TÉCNICAS
+════════════════════════════════════════════ */
+.pdm-tecnicas-wrap { padding: 0 20px 20px; }
+.pdm-tecnicas-hint {
+    font-size: 0.82em; color: var(--text-muted);
+    margin: 0 0 12px 0; font-style: italic;
+}
+.pdm-tecnicas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+.pdm-tecnica-toggle { cursor: pointer; user-select: none; }
+.pdm-tecnica-toggle input[type="checkbox"] { display: none; }
+.pdm-tecnica-card {
+    position: relative;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 6px; padding: 16px 12px 14px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--bg-surface);
+    transition: all .18s;
+    text-align: center;
+}
+.pdm-tecnica-toggle:hover .pdm-tecnica-card {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+.pdm-tecnica-toggle input:checked + .pdm-tecnica-card {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(3,105,161,.15);
+}
+.pdm-tecnica-icon { font-size: 1.8em; transition: transform .18s; }
+.pdm-tecnica-toggle:hover .pdm-tecnica-icon { transform: scale(1.1); }
+.pdm-tecnica-toggle input:checked + .pdm-tecnica-card .pdm-tecnica-icon { transform: scale(1.12); }
+
+.pdm-tecnica-name {
+    font-size: 0.88em; font-weight: 800;
+    color: var(--text-primary); letter-spacing: 0.2px;
+}
+.pdm-tecnica-toggle input:checked + .pdm-tecnica-card .pdm-tecnica-name { color: var(--primary); }
+
+.pdm-tecnica-desc {
+    font-size: 0.72em; color: var(--text-muted);
+    line-height: 1.3; max-width: 160px;
+}
+.pdm-tecnica-check {
+    position: absolute; top: 8px; right: 8px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--border); color: transparent;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7em; font-weight: 900;
+    transition: all .18s;
+}
+.pdm-tecnica-toggle input:checked + .pdm-tecnica-card .pdm-tecnica-check {
+    background: var(--primary); color: white;
+}
+
+/* ── Modal footer buttons ── */
+.modal-footer {
+    display: flex; justify-content: flex-end; gap: 10px;
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-muted);
+    margin-top: 12px;
+}
+
+@media (max-width: 640px) {
+    .fotos-grid { grid-template-columns: repeat(2, 1fr); }
+    .pdm-tecnicas-grid { grid-template-columns: 1fr; }
+    .form-grid.four-col { grid-template-columns: repeat(2, 1fr); }
+    .form-grid.three-col { grid-template-columns: repeat(2, 1fr); }
+    .hdv-actions-bar { flex-direction: column; align-items: stretch; }
+}
+
+
+
+/* PdM técnicas chips en tarjeta */
+.hdv-card-pdm-chips { display: flex; gap: 5px; flex-wrap: wrap; }
+.hdv-chip-pdm {
+    background: var(--bg-muted) !important;
+    border: 1px solid var(--border) !important;
+    font-weight: 700 !important;
+    font-size: 0.72em !important;
+    padding: 3px 8px !important;
+}
+
+.hdv-btn-reportes:hover { border-color: #0ea5e9; color: #0ea5e9; background: #e0f7ff; }

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Vibraciones — Suite PdM</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="vibraciones_style.css">
+    <link rel="stylesheet" href="vibraciones_print.css" media="print">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <style>
+        /* ── Código de reporte ── */
+        .codigo-reporte-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--primary-light);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.88em;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            margin-bottom: 18px;
+        }
+        .codigo-reporte-badge i { font-size: 0.9em; }
+
+        /* ── Asset lookup ── */
+        .asset-lookup-wrap { position: relative; }
+        .asset-suggestions {
+            position: absolute;
+            top: 100%; left: 0;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            z-index: 200;
+            min-width: 280px;
+            max-height: 220px;
+            overflow-y: auto;
+            display: none;
+        }
+        .asset-suggestion-item {
+            padding: 9px 14px;
+            cursor: pointer;
+            font-size: 0.88em;
+            border-bottom: 1px solid var(--border);
+            transition: background .15s;
+        }
+        .asset-suggestion-item:hover { background: var(--primary-light); color: var(--primary); }
+        .asset-suggestion-item .asi-id { font-weight: 700; }
+        .asset-suggestion-item .asi-desc { color: var(--text-muted); font-size: 0.9em; }
+
+        /* ── Equipment photos section ── */
+        .equipo-fotos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+        .equipo-foto-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            background: var(--bg-muted);
+        }
+        .equipo-foto-card img {
+            width: 100%; height: 130px;
+            object-fit: cover;
+            display: block;
+        }
+        .equipo-foto-card .foto-lbl {
+            padding: 5px 8px;
+            font-size: 0.75em;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-align: center;
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border);
+        }
+        .equipo-info-strip {
+            background: var(--bg-muted);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 14px 18px;
+            margin-top: 14px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 8px;
+            font-size: 0.85em;
+        }
+        .equipo-info-strip .eif {
+            display: flex;
+            flex-direction: column;
+        }
+        .equipo-info-strip .eif-label {
+            font-size: 0.72em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--text-muted);
+        }
+        .equipo-info-strip .eif-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .equipo-not-found {
+            color: var(--danger);
+            font-size: 0.82em;
+            display: none;
+            align-items: center;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        /* ── Component details ── */
+        .details-subsection { margin-bottom: 14px; }
+        .details-subsection label {
+            display: block;
+            font-size: 0.78em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+        .details-subsection textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.9em;
+            resize: vertical;
+            background: var(--bg-surface);
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+        .details-subsection textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(3,105,161,.1);
+        }
+    </style>
+</head>
+<body data-theme="default">
+    <header>
+        <h1>Suite de Mantenimiento Predictivo</h1>
+        <p class="intro-text">Sistema integral de gestión de activos y monitoreo predictivo.</p>
+    </header>
+
+    <div class="page-wrapper">
+        <aside id="left-sidebar">
+            <h3><i class="fa-solid fa-toolbox"></i> Suite PdM</h3>
+            <nav class="sidebar-nav">
+                <a href="hojas-de-vida.html" class="nav-link"><i class="fa-solid fa-industry"></i> Gestión de Activos</a>
+                <a href="monitoreo.html" class="nav-link"><i class="fa-solid fa-desktop"></i> Monitoreo de Condición</a>
+                <a href="condicion.html" class="nav-link"><i class="fa-solid fa-wave-square"></i> Tendencias de Condición</a>
+                <a href="analitica.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> Analítica</a>
+                <div class="nav-separator">Gestión</div>
+            <a href="ordenes-trabajo.html" class="nav-link" data-feature="ot"><i class="fa-solid fa-clipboard-list"></i> Órdenes de Trabajo</a>
+            <a href="lubricacion.html" class="nav-link" data-feature="lubricacion"><i class="fa-solid fa-droplet"></i> Lubricación</a>
+            <div class="nav-separator">Reportes</div>
+                <a href="vibraciones.html" class="nav-link active"><i class="fa-solid fa-wave-square"></i> Reporte Vibraciones</a>
+                <a href="termografia.html" class="nav-link"><i class="fa-solid fa-fire"></i> Reporte Termografía</a>
+                <a href="ultrasonido.html" class="nav-link"><i class="fa-solid fa-satellite-dish"></i> Reporte Ultrasonido</a>
+                <a href="reportes-generales.html" class="nav-link"><i class="fa-solid fa-file-contract"></i> Reportes Generales</a>
+                <div class="nav-separator">Anexos</div>
+                <a href="anexo-termo.html" class="nav-link"><i class="fa-solid fa-images"></i> Anexo Termografía</a>
+                <a href="anexo-ultra.html" class="nav-link"><i class="fa-solid fa-ear-listen"></i> Anexo Ultrasonido</a>
+                <div class="nav-separator">Sistema</div>
+                <a href="usuarios.html" class="nav-link" data-min-rol="admin"><i class="fa-solid fa-users-gear"></i> Gestión de Usuarios</a>
+                <a href="ayuda.html" class="nav-link"><i class="fa-solid fa-circle-question"></i> Ayuda</a>
+                <button id="btn-open-config" class="nav-link config-btn"><i class="fa-solid fa-gear"></i> Configuración</button>
+                <button id="btn-logout" class="nav-link config-btn" style="color:#dc3545;"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</button>
+            </nav>
+            <div class="sidebar-footer">
+                <button onclick="window.print();" class="control-button print-main-btn">
+                    <i class="fa-solid fa-print"></i> Imprimir PDF
+                </button>
+            </div>
+        </aside>
+
+        <main class="content-container">
+            <div class="breadcrumb">
+                <a href="index.html"><i class="fa-solid fa-arrow-left"></i> Volver al Inicio</a>
+            </div>
+
+            <!-- Toolbar guardar/cargar -->
+            <div class="reporte-toolbar no-print">
+                <div class="reporte-toolbar-left">
+                    <button id="btn-guardar-reporte" class="termografia-button save-button">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar
+                    </button>
+                    <button id="btn-cargar-reporte" class="termografia-button import-button">
+                        <i class="fa-solid fa-folder-open"></i> Mis Reportes
+                    </button>
+                    <button id="btn-nuevo-reporte" class="termografia-button" style="background:#64748b;">
+                        <i class="fa-solid fa-file-circle-plus"></i> Nuevo
+                    </button>
+                    <div class="buscar-codigo-wrap">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="buscar-codigo-input" placeholder="Buscar por código Vib-..." autocomplete="off">
+                        <button id="btn-buscar-codigo" class="termografia-button" style="background:#475569; padding:7px 12px;">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+                <span id="reporte-estado" class="reporte-estado-label"></span>
+            </div>
+
+            <!-- Encabezado del reporte (sin logos) -->
+            <div id="report-header" style="justify-content:center; border-bottom:2px solid var(--border); padding-bottom:16px; margin-bottom:20px;">
+                <div style="text-align:center;">
+                    <h2 class="report-title" style="margin-bottom:8px;">
+                        <i class="fa-solid fa-wave-square"></i> Reporte de Análisis de Vibraciones
+                    </h2>
+                    <div class="codigo-reporte-badge">
+                        <i class="fa-solid fa-hashtag"></i>
+                        <span id="visual-report-id">Generando código...</span>
+                    </div>
+                    <input type="hidden" id="current_report_id">
+                    <input type="hidden" id="db_report_id">
+                </div>
+            </div>
+
+            <!-- SECCIÓN 1: Información General -->
+            <section id="info-general">
+                <h3>Información General del Reporte</h3>
+                <table id="info-table">
+                    <tbody>
+                        <tr>
+                            <td><label for="equipo-utilizado-1" data-label-id="equipo-utilizado-1">Equipo Utilizado:</label></td>
+                            <td><input type="text" id="equipo-utilizado-1" name="equipo-utilizado[]" placeholder="Ej: Analizador SKF Microlog"></td>
+                            <td><label for="equipo-inspeccionado-1" data-label-id="equipo-inspeccionado-1">Equipo Inspeccionado:</label></td>
+                            <td>
+                                <div class="asset-lookup-wrap">
+                                    <input type="text" id="equipo-inspeccionado-1" name="equipo-inspeccionado[]"
+                                        placeholder="Nombre / descripción del equipo"
+                                        autocomplete="off">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="asset-1" data-label-id="asset-1">Asset / Tag:</label></td>
+                            <td>
+                                <div class="asset-lookup-wrap">
+                                    <input type="text" id="asset-1" name="asset[]"
+                                        placeholder="Ej: M-101"
+                                        autocomplete="off"
+                                        style="width:95%;">
+                                    <div id="asset-suggestions" class="asset-suggestions"></div>
+                                    <div id="asset-not-found" class="equipo-not-found">
+                                        <i class="fa-solid fa-circle-exclamation"></i> Asset no encontrado en la base de datos
+                                    </div>
+                                </div>
+                            </td>
+                            <td><label for="fecha-inspeccion-1" data-label-id="fecha-inspeccion-1">Fecha Inspección:</label></td>
+                            <td><input type="date" id="fecha-inspeccion-1" name="fecha-inspeccion[]"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="fecha-reporte-1" data-label-id="fecha-reporte-1">Fecha Reporte:</label></td>
+                            <td><input type="date" id="fecha-reporte-1" name="fecha-reporte[]"></td>
+                            <td><label for="analista-1" data-label-id="analista-1">Analista:</label></td>
+                            <td><input type="text" id="analista-1" name="analista[]"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="extra1-1" data-label-id="extra1-1">RPM Operación:</label></td>
+                            <td><input type="text" id="extra1-1" name="extra1[]" placeholder="Ej: 1780 RPM"></td>
+                            <td><label for="extra2-1" data-label-id="extra2-1">Carga de Operación:</label></td>
+                            <td><input type="text" id="extra2-1" name="extra2[]" placeholder="Ej: 85%">
+                                <td class="action-cell"><button class="delete-row-btn" title="Eliminar fila"><i class="fa-solid fa-trash-can"></i></button></td>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button id="add-row-btn" class="add-row-button"><i class="fa-solid fa-plus"></i> Añadir Fila</button>
+            </section>
+
+            <hr class="section-separator">
+
+            <!-- SECCIÓN 2: Información adicional del equipo (fotos desde BD) -->
+            <section id="info-adicional-equipo">
+                <h3>Información Adicional del Equipo</h3>
+                <div class="page-content">
+                    <!-- Panel de datos del equipo (se llena automáticamente) -->
+                    <div id="equipo-data-panel" style="display:none;">
+                        <div id="equipo-info-strip" class="equipo-info-strip"></div>
+                        <p style="font-size:0.75em; color:var(--text-muted); margin:10px 0 6px; display:flex; align-items:center; gap:5px;">
+                            <i class="fa-solid fa-database"></i> Fotos registradas en Gestión de Activos:
+                        </p>
+                        <div id="equipo-fotos-grid" class="bd-fotos-grid"></div>
+                        <hr style="margin:16px 0; border-color:var(--border);">
+                    </div>
+                    <!-- Imágenes adicionales manuales -->
+                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:8px;">
+                        Imágenes adicionales del sitio (placa de datos, instalación, etc.):
+                    </p>
+                    <div id="image-container-area" class="espectro-grid"></div>
+                    <button id="add-image-btn" class="btn-add-espectro no-print" style="margin-top:10px;">
+                        <i class="fa-solid fa-plus"></i> Añadir Imagen
+                    </button>
+                </div>
+            </section>
+
+            <hr class="section-separator">
+
+            <!-- SECCIÓN 3: Normativa -->
+            <section id="normativa">
+                <h3>Normativa Aplicable</h3>
+                <div class="page-content">
+                    <p>Las pruebas se realizaron con base en la normatividad ISO y las normas específicas para definir los criterios, niveles de vibración, tecnología y variables de aceptación son:</p>
+                    <ul>
+                        <li><strong>ISO 10816-1:</strong> Vibraciones mecánicas - Evaluación de la vibración de máquinas por mediciones en partes no rotativas - Parte 1: Directrices generales.</li>
+                        <li><strong>ISO 10816-3:</strong> Vibraciones mecánicas - Evaluación de la vibración de máquinas por mediciones en partes no rotativas - Parte 3: Máquinas industriales con potencia nominal superior a 15 kW y velocidades nominales entre 120 r/min y 15 000 r/min cuando se miden in situ.</li>
+                        <li><strong>ISO 2954:</strong> Vibración mecánica de maquinaria rotativa y alternativa - Requisitos para los instrumentos de medición de la severidad de la vibración.</li>
+                        <li><strong>ISO 5348:</strong> Vibraciones y choques mecánicos - Montaje mecánico de acelerómetros.</li>
+                        <li><strong>ISO 13373-2:</strong> Monitorización de condición y diagnóstico de máquinas - Monitorización de condición de vibraciones - Parte 2: Procesamiento, análisis y presentación de datos de vibración.</li>
+                        <li><strong>ISO 13374:</strong> Monitorización de condición y diagnóstico de máquinas - Procesamiento, comunicación y presentación de datos - Parte 1: Directrices generales.</li>
+                        <li><strong>ISO 13379:</strong> Monitorización de condición y diagnóstico de máquinas - Directrices generales sobre técnicas de interpretación de datos y diagnóstico.</li>
+                        <li><strong>ISO 17359:</strong> Monitorización de condición y diagnóstico de máquinas - Directrices generales.</li>
+                        <li><strong>ISO 18436-1:</strong> Monitorización de condición y diagnóstico de máquinas - Requisitos para la formación y certificación del personal - Parte 1: Requisitos para los organismos de certificación y el proceso de certificación.</li>
+                        <li><strong>ISO 18436-2:</strong> Monitorización de condición y diagnóstico de máquinas - Requisitos para la formación y certificación del personal - Parte 2: Monitorización de condición y diagnóstico de vibraciones.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <hr class="section-separator">
+
+            <!-- SECCIÓN 4: Puntos de medición -->
+            <section id="puntos-medicion">
+                <h3>Puntos de Medición</h3>
+                <div class="page-content">
+                    <p>La siguiente sección describe los puntos de medición utilizados para evaluar la severidad de vibración de acuerdo con la norma ISO 10816.</p>
+                    <p style="margin-top:10px;">Cada punto se identifica por:</p>
+                    <ul style="margin-top:8px;">
+                        <li>Una letra que indica la <strong>unidad de medición</strong>: <code>V</code> (Velocidad), <code>A</code> (Aceleración) o <code>Demod</code> (Demodulación).</li>
+                        <li>Una letra que señala la <strong>dirección de la medición</strong>: <code>H</code> (Horizontal), <code>V</code> (Vertical) o <code>A</code> (Axial).</li>
+                        <li>Un número que determina la <strong>posición de los soportes o rodamientos</strong> en el sentido de transmisión (por ejemplo, 1, 2, 3, …).</li>
+                    </ul>
+                    <p style="margin-top:10px;">La numeración inicia desde el lado libre del motor o máquina conductora.</p>
+                </div>
+            </section>
+
+            <hr class="section-separator">
+
+            <!-- SECCIÓN 5: Resultado del análisis -->
+            <section id="resultado-analisis">
+                <h3>Resultado del Análisis</h3>
+                <div class="page-content">
+                    <p>Resumen del estado y acciones recomendadas para cada componente analizado.</p>
+                    <table id="resultado-table">
+                        <thead>
+                            <tr>
+                                <th>Componente</th>
+                                <th>Estado</th>
+                                <th>Acciones Recomendadas</th>
+                                <th style="width:70px;">Sev.</th>
+                                <th class="no-print" style="width:40px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultado-tbody"></tbody>
+                    </table>
+                    <button id="add-resultado-row-btn" class="add-row-button no-print">
+                        <i class="fa-solid fa-plus"></i> Añadir Componente
+                    </button>
+                </div>
+            </section>
+
+            <hr class="section-separator">
+
+            <!-- SECCIÓN 6: Espectros -->
+            <section id="espectros-seccion">
+                <h3>Espectros de Vibración / Onda de Tiempo</h3>
+                <div id="espectros-details-area" class="page-content"></div>
+            </section>
+
+            <hr class="section-separator">
+
+            <!-- SECCIÓN 7: Firmas -->
+            <section id="firmas">
+                <h3>Firmas y Validación</h3>
+                <div class="firmas-container page-content">
+                    <div class="firma-box">
+                        <!-- El selector de firmas se inyecta aquí por JS -->
+                        <div class="firma-img-slot" style="min-height:64px; display:flex; align-items:flex-end; justify-content:center; margin-bottom:4px;">
+                            <img class="firma-img-preview" src="" style="display:none; max-height:60px; max-width:180px; object-fit:contain;">
+                        </div>
+                        <div class="linea-firma"></div>
+                        <p class="nombre-analista"><strong>Analista</strong></p>
+                        <input type="text" class="cargo-analista" placeholder="Nombre / Cargo">
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Modal configuración -->
+    <div id="config-modal" class="modal-overlay">
+        <div class="modal-content config-modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-sliders"></i> Configuración del Sistema</h3>
+                <span class="close-modal-config">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="config-group">
+                    <div class="config-sub-title"><i class="fa-solid fa-stamp"></i> Datos Predeterminados</div>
+                    <p style="font-size:0.85em; color:#666; margin-bottom:15px;">Estos datos aparecerán automáticamente en tus reportes.</p>
+                    <div style="display:flex; justify-content:space-between; gap:10px;">
+                        <div style="flex:1; text-align:center;">
+                            <label style="font-size:0.85em; font-weight:bold; display:block;">Logo Izquierdo:</label>
+                            <img id="preview-cfg-left" class="config-logo-preview" src="" alt="Vacío">
+                            <label class="monitoreo-button import-button" style="padding:4px 8px; font-size:0.8em; margin-top:5px; cursor:pointer; display:inline-block;">
+                                Subir <input type="file" id="cfg-logo-left" accept="image/*" hidden>
+                            </label>
+                        </div>
+                        <div style="flex:1; text-align:center;">
+                            <label style="font-size:0.85em; font-weight:bold; display:block;">Logo Derecho:</label>
+                            <img id="preview-cfg-right" class="config-logo-preview" src="" alt="Vacío">
+                            <label class="monitoreo-button import-button" style="padding:4px 8px; font-size:0.8em; margin-top:5px; cursor:pointer; display:inline-block;">
+                                Subir <input type="file" id="cfg-logo-right" accept="image/*" hidden>
+                            </label>
+                        </div>
+                    </div>
+                    <label style="font-size:0.9em; font-weight:bold; margin-top:15px; display:block;">Nombre del Analista:</label>
+                    <input type="text" id="cfg-analyst-name" placeholder="Ej: Ing. Juan Pérez" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;">
+                    <label style="font-size:0.9em; font-weight:bold; margin-top:10px; display:block;">Cargo / Certificación:</label>
+                    <input type="text" id="cfg-analyst-role" placeholder="Ej: Analista Nivel II" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;">
+                </div>
+
+                <div class="config-group">
+                    <div class="config-sub-title"><i class="fa-solid fa-signature"></i> Firmas</div>
+                    <p style="font-size:0.82em; color:var(--text-muted); margin-bottom:10px;">
+                        Crea las firmas de los analistas. Podrás seleccionarlas en cada reporte.
+                    </p>
+                    <div id="firmas-manager-container"></div>
+                </div>
+                <div class="config-group">
+                    <div class="config-sub-title"><i class="fa-solid fa-palette"></i> Apariencia</div>
+                    <label for="themeSelect" style="font-weight:bold; font-size:0.9em;">Tema:</label>
+                    <select id="themeSelect" style="width:100%; padding:8px; margin-top:5px; margin-bottom:10px;">
+                        <option value="default">Predeterminado</option>
+                        <option value="dark-1">Oscuro - Océano</option>
+                        <option value="dark-2">Oscuro - Pizarra</option>
+                        <option value="dark-12">Oscuro - Grafito</option>
+                        <option value="custom">Personalizado</option>
+                    </select>
+                    <input type="color" id="customColorPicker" style="display:none; width:100%; margin-bottom:10px;">
+                    <label for="fontSelect" style="font-weight:bold; font-size:0.9em;">Fuente:</label>
+                    <select id="fontSelect" style="width:100%; padding:8px; margin-top:5px;">
+                        <option value="system">System UI</option>
+                        <option value="sans-serif">Segoe UI</option>
+                        <option value="arial">Arial</option>
+                        <option value="monospace">Courier New</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 Edwards PdM Suite</p></footer>
+    <div id="toast-container"></div>
+    <script src="js/script.js"></script>
+    <script src="js/vibraciones_script.js"></script>
+</body>
+</html>

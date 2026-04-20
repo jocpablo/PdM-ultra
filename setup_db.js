@@ -1,32 +1,37 @@
 const { Client } = require('pg');
+
+// Intentar obtener la conexión desde la variable de entorno de Render
+const connectionString = process.env.DATABASE_URL;
+
+// Si no hay variable de entorno, intentar leer de los argumentos (para uso local)
 const [,, user, password, host, port, database] = process.argv;
 
-if (!user || !password || !host || !port || !database) {
-    console.error('Uso: node setup_db.js [user] [password] [host] [port] [database]');
-    process.exit(1);
-}
-
 async function setup() {
-    // 1. Crear BD
-    const admin = new Client({ user, password, host, port: parseInt(port), database: 'postgres' });
-    try { await admin.connect(); console.log('  [OK] Conectado a PostgreSQL.'); }
-    catch (err) { console.error('  [ERROR] Conexión fallida:', err.message); process.exit(1); }
+    let db;
+
+    if (connectionString) {
+        console.log('  [INFO] Usando DATABASE_URL para la conexión.');
+        db = new Client({
+            connectionString: connectionString,
+            ssl: { rejectUnauthorized: false } // Requerido para conexiones seguras en Render
+        });
+    } else {
+        // Validación para uso local con argumentos
+        if (!user || !password || !host || !port || !database) {
+            console.error('Uso local: node setup_db.js [user] [password] [host] [port] [database]');
+            console.error('Uso en nube: Asegúrese de que DATABASE_URL esté configurada.');
+            process.exit(1);
+        }
+        db = new Client({ user, password, host, port: parseInt(port), database });
+    }
 
     try {
-        const exists = await admin.query(`SELECT 1 FROM pg_database WHERE datname=$1`, [database]);
-        if (!exists.rowCount) {
-            await admin.query(`CREATE DATABASE "${database}" ENCODING 'UTF8'`);
-            console.log(`  [OK] Base de datos '${database}' creada.`);
-        } else {
-            console.log(`  [OK] Base de datos '${database}' ya existe.`);
-        }
-    } catch (err) { console.error('  [ERROR] Crear BD:', err.message); await admin.end(); process.exit(1); }
-    await admin.end();
-
-    // 2. Conectar a la BD del proyecto
-    const db = new Client({ user, password, host, port: parseInt(port), database });
-    try { await db.connect(); }
-    catch (err) { console.error('  [ERROR] Conectar a', database, ':', err.message); process.exit(1); }
+        await db.connect();
+        console.log('  [OK] Conectado a la base de datos.');
+    } catch (err) {
+        console.error('  [ERROR] Conexión fallida:', err.message);
+        process.exit(1);
+    }
 
     // 3. Tabla equipos
     try {
@@ -45,7 +50,7 @@ async function setup() {
             ultimo_estado_vibraciones CHAR(1), ultimo_estado_termografia CHAR(1), ultimo_estado_ultrasonido CHAR(1),
             notas TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW()
         )`);
-        // Migraciones: columnas nuevos tipos de máquina
+
         const newCols = [
             'caudal_nominal VARCHAR(50)', 'presion_nominal VARCHAR(50)', 'tipo_sello VARCHAR(100)',
             'tipo_compresor VARCHAR(50)', 'presion_max_comp VARCHAR(50)', 'caudal_comp VARCHAR(50)',
@@ -62,10 +67,11 @@ async function setup() {
             'velocidad_banda VARCHAR(50)', 'capacidad_banda VARCHAR(50)',
             'material_banda VARCHAR(100)', 'accionamiento_banda VARCHAR(100)',
         ];
+
         for (const col of newCols) {
             await db.query(`ALTER TABLE equipos ADD COLUMN IF NOT EXISTS ${col}`).catch(()=>{});
         }
-        // Migraciones: nuevas columnas PdM si tabla ya existe
+
         await db.query(`ALTER TABLE equipos ADD COLUMN IF NOT EXISTS aplica_vibraciones BOOLEAN DEFAULT false`).catch(()=>{});
         await db.query(`ALTER TABLE equipos ADD COLUMN IF NOT EXISTS aplica_termografia BOOLEAN DEFAULT false`).catch(()=>{});
         await db.query(`ALTER TABLE equipos ADD COLUMN IF NOT EXISTS aplica_ultrasonido BOOLEAN DEFAULT false`).catch(()=>{});
@@ -75,7 +81,7 @@ async function setup() {
         console.log('  [OK] Tabla equipos lista.');
     } catch (err) { console.error('  [ERROR] Tabla equipos:', err.message); await db.end(); process.exit(1); }
 
-        // 4. Tabla reportes
+    // 4. Tabla reportes
     try {
         await db.query(`CREATE TABLE IF NOT EXISTS reportes (
             id SERIAL PRIMARY KEY, tecnica VARCHAR(50) NOT NULL DEFAULT 'general',
@@ -83,7 +89,6 @@ async function setup() {
             datos TEXT NOT NULL DEFAULT '{}',
             fecha_creacion TIMESTAMPTZ DEFAULT NOW(), fecha_modificacion TIMESTAMPTZ DEFAULT NOW()
         )`);
-        // Migraciones: añadir columnas faltantes si la tabla ya existia de version anterior
         await db.query(`ALTER TABLE reportes ADD COLUMN IF NOT EXISTS tecnica VARCHAR(50) NOT NULL DEFAULT 'general'`).catch(()=>{});
         await db.query(`ALTER TABLE reportes ADD COLUMN IF NOT EXISTS titulo VARCHAR(200)`).catch(()=>{});
         await db.query(`ALTER TABLE reportes ADD COLUMN IF NOT EXISTS codigo_reporte VARCHAR(50) UNIQUE`).catch(()=>{});
@@ -93,7 +98,6 @@ async function setup() {
         await db.query(`CREATE INDEX IF NOT EXISTS idx_reportes_tecnica ON reportes (tecnica)`).catch(()=>{});
         console.log('  [OK] Tabla reportes lista.');
     } catch (err) { console.error('  [ERROR] Tabla reportes:', err.message); }
-
 
     // 5. Trigger updated_at
     try {
@@ -129,5 +133,3 @@ async function setup() {
 }
 
 setup();
-
-// This code appended - run separately if needed after initial setup

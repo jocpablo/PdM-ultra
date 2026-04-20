@@ -1,294 +1,1111 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio — Suite PdM</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"/>
-    <style>
-        .welcome-banner {
-            background: linear-gradient(135deg, var(--brand-900) 0%, var(--brand-700) 100%);
-            border-radius: 16px;
-            padding: 28px 32px;
-            margin-bottom: 28px;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-        .welcome-banner::after {
-            content: '⚙';
-            position: absolute;
-            right: 28px;
-            font-size: 7em;
-            opacity: .06;
-            line-height: 1;
-        }
-        .welcome-banner h2 {
-            margin: 0 0 6px;
-            font-size: 1.4em;
-            font-weight: 800;
-            letter-spacing: -0.3px;
-        }
-        .welcome-banner p {
-            margin: 0;
-            font-size: 0.88em;
-            opacity: .75;
-            max-width: 480px;
-        }
-        .welcome-actions {
-            display: flex;
-            gap: 10px;
-            flex-shrink: 0;
-            flex-wrap: wrap;
-        }
-        .welcome-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            padding: 10px 18px;
-            border-radius: 10px;
-            font-size: 0.85em;
-            font-weight: 700;
-            text-decoration: none;
-            cursor: pointer;
-            border: none;
-            font-family: inherit;
-            transition: all .18s;
-            white-space: nowrap;
-        }
-        .welcome-btn-primary {
-            background: white;
-            color: var(--brand-800);
-        }
-        .welcome-btn-primary:hover { opacity: .9; transform: translateY(-1px); }
-        .welcome-btn-secondary {
-            background: rgba(255,255,255,.15);
-            color: white;
-            border: 1px solid rgba(255,255,255,.25);
-        }
-        .welcome-btn-secondary:hover { background: rgba(255,255,255,.22); }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Suite PdM · Inicio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+<style>
+  /* ---------- tokens ---------- */
+  :root{
+    --accent: #22d3ee;
+    --accent-2: #3b82f6;
+    --ok: #34d399;
+    --warn: #f59e0b;
+    --bad: #f43f5e;
 
-        .section-label {
-            font-size: 0.72em;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--text-secondary);
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .section-label::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border);
-        }
-    </style>
+    /* dark defaults */
+    --bg: #070a12;
+    --bg-2: #0b1020;
+    --panel: rgba(17,23,41,.72);
+    --panel-solid: #0f1629;
+    --panel-hi: #131b33;
+    --line: rgba(148,163,184,.12);
+    --line-2: rgba(148,163,184,.22);
+    --text: #e7ecf5;
+    --text-dim: #9aa6bd;
+    --text-mute: #6b7896;
+    --grid-color: rgba(148,163,184,.055);
+
+    --radius: 14px;
+    --radius-sm: 10px;
+    --radius-lg: 20px;
+    --shadow: 0 1px 0 rgba(255,255,255,.04) inset, 0 8px 28px -8px rgba(0,0,0,.55);
+    --ease: cubic-bezier(.2,.7,.2,1);
+
+    /* density */
+    --pad: 22px;
+    --gap: 16px;
+    --card-pad: 20px;
+  }
+
+  html[data-theme="light"]{
+    --bg: #f6f7fb;
+    --bg-2: #eef1f7;
+    --panel: rgba(255,255,255,.85);
+    --panel-solid: #ffffff;
+    --panel-hi: #f4f6fb;
+    --line: rgba(15,23,42,.08);
+    --line-2: rgba(15,23,42,.14);
+    --text: #0b1220;
+    --text-dim: #475569;
+    --text-mute: #64748b;
+    --grid-color: rgba(15,23,42,.05);
+    --shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 6px 20px -8px rgba(15,23,42,.12);
+  }
+
+  html[data-density="compact"]{ --pad: 16px; --gap: 12px; --card-pad: 14px; }
+  html[data-density="comfortable"]{ --pad: 28px; --gap: 22px; --card-pad: 24px; }
+
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "ss01","cv11";
+    letter-spacing: -0.005em;
+    overflow-x: hidden;
+  }
+  body::before{
+    /* ambient gradient glow */
+    content:'';
+    position: fixed; inset:0;
+    background:
+      radial-gradient(900px 500px at 85% -10%, color-mix(in oklab, var(--accent) 18%, transparent), transparent 60%),
+      radial-gradient(700px 400px at -10% 100%, color-mix(in oklab, var(--accent-2) 14%, transparent), transparent 60%),
+      linear-gradient(180deg, var(--bg), var(--bg-2));
+    pointer-events:none;
+    z-index:-2;
+  }
+  body::after{
+    /* grid */
+    content:'';
+    position: fixed; inset:0;
+    background-image:
+      linear-gradient(var(--grid-color) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse at 50% 30%, #000 40%, transparent 80%);
+    pointer-events:none;
+    z-index:-1;
+  }
+
+  .mono{ font-family: 'JetBrains Mono', ui-monospace, monospace; font-feature-settings:"tnum"; }
+
+  /* ---------- layout ---------- */
+  .app{
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+  }
+  .sidebar{
+    position: sticky; top:0;
+    height: 100vh;
+    border-right: 1px solid var(--line);
+    background: color-mix(in oklab, var(--bg) 70%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    display: flex; flex-direction: column;
+    padding: 20px 14px;
+    gap: 10px;
+    z-index: 5;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    padding: 6px 10px 16px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 6px;
+  }
+  .brand-mark{
+    width: 34px; height: 34px; border-radius: 10px;
+    background:
+      conic-gradient(from 210deg, var(--accent), var(--accent-2), var(--accent));
+    display:grid; place-items:center;
+    box-shadow: 0 6px 20px -6px color-mix(in oklab, var(--accent) 40%, transparent);
+    position: relative;
+  }
+  .brand-mark::after{
+    content:''; position:absolute; inset:3px;
+    border-radius: 8px;
+    background: var(--panel-solid);
+  }
+  .brand-mark i{
+    position: relative; z-index:1;
+    color: var(--accent); font-size: 14px;
+  }
+  .brand-name{ display:flex; flex-direction:column; line-height:1.1; }
+  .brand-name b{ font-size: 14px; letter-spacing:-0.01em;}
+  .brand-name span{ font-size: 11px; color: var(--text-mute); letter-spacing: .02em; text-transform: uppercase;}
+
+  .nav-group-label{
+    font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--text-mute); padding: 14px 12px 6px;
+  }
+  .nav a, .nav button{
+    all: unset;
+    display:flex; align-items:center; gap:11px;
+    padding: 9px 12px; border-radius: 10px;
+    font-size: 13.5px; color: var(--text-dim);
+    cursor: pointer; position: relative;
+    transition: background .15s var(--ease), color .15s var(--ease);
+  }
+  .nav a i, .nav button i{ width: 16px; text-align:center; font-size: 13px; color: var(--text-mute); }
+  .nav a:hover, .nav button:hover{
+    background: color-mix(in oklab, var(--accent) 7%, transparent);
+    color: var(--text);
+  }
+  .nav a:hover i{ color: var(--accent); }
+  .nav a.is-active{
+    background: color-mix(in oklab, var(--accent) 12%, transparent);
+    color: var(--text);
+  }
+  .nav a.is-active i{ color: var(--accent); }
+  .nav a.is-active::before{
+    content:''; position:absolute; left:-14px; top:8px; bottom:8px;
+    width: 2px; background: var(--accent); border-radius: 2px;
+  }
+  .nav-kbd{
+    margin-left:auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    padding: 1px 6px; border-radius: 5px;
+    background: var(--panel-hi); color: var(--text-mute);
+    border: 1px solid var(--line);
+  }
+
+  .sidebar-footer{
+    margin-top: auto;
+    padding: 12px;
+    border-top: 1px solid var(--line);
+    display:flex; align-items:center; gap:10px;
+  }
+  .avatar{
+    width: 32px; height:32px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display:grid; place-items:center; color:#0b1220; font-weight:700; font-size: 13px;
+  }
+  .sf-meta{ display:flex; flex-direction:column; line-height:1.2; min-width: 0;}
+  .sf-meta b{ font-size: 13px; }
+  .sf-meta span{ font-size: 11px; color: var(--text-mute);}
+  .sf-btn{
+    margin-left:auto;
+    width: 30px; height: 30px; border-radius: 8px;
+    display:grid; place-items:center;
+    background: var(--panel-hi); border:1px solid var(--line);
+    color: var(--text-dim); cursor:pointer;
+    transition: all .15s var(--ease);
+  }
+  .sf-btn:hover{ color: var(--accent); border-color: color-mix(in oklab, var(--accent) 30%, var(--line));}
+
+  /* ---------- main ---------- */
+  main{ padding: 20px 32px 64px; min-width: 0; }
+
+  .topbar{
+    display:flex; align-items:center; gap: 12px;
+    margin-bottom: 22px;
+  }
+  .search{
+    flex: 1;
+    max-width: 520px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    display:flex; align-items:center; gap: 10px;
+    padding: 0 12px;
+    color: var(--text-dim);
+    backdrop-filter: blur(8px);
+    transition: border-color .15s var(--ease);
+  }
+  .search:focus-within{ border-color: color-mix(in oklab, var(--accent) 45%, var(--line));}
+  .search i{ color: var(--text-mute);}
+  .search input{
+    all: unset; flex:1; font-size: 13.5px; color: var(--text);
+    font-family: inherit;
+  }
+  .search input::placeholder{ color: var(--text-mute);}
+  .search kbd{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    padding: 2px 6px; border-radius: 5px;
+    background: var(--panel-hi); color: var(--text-mute);
+    border: 1px solid var(--line);
+  }
+  .top-actions{ display:flex; gap: 8px; margin-left:auto; align-items: center;}
+  .icon-btn{
+    width:40px; height:40px; border-radius: 10px;
+    background: var(--panel); border: 1px solid var(--line);
+    display:grid; place-items:center; color: var(--text-dim);
+    cursor: pointer; position: relative;
+    transition: all .15s var(--ease);
+  }
+  .icon-btn:hover{ color: var(--text); border-color: var(--line-2);}
+  .icon-btn .dot{
+    position:absolute; top:9px; right:9px;
+    width: 7px; height:7px; border-radius:50%;
+    background: var(--bad); box-shadow: 0 0 0 2px var(--bg);
+  }
+
+  .page-head{
+    display:flex; align-items: flex-end; justify-content: space-between;
+    gap: 24px; margin-bottom: 22px;
+  }
+  .page-head h1{
+    font-size: 30px; line-height:1.05; letter-spacing: -0.022em;
+    margin: 0 0 6px; font-weight: 600;
+  }
+  .page-head .eyebrow{
+    font-size: 11.5px; color: var(--text-mute);
+    text-transform: uppercase; letter-spacing: .18em;
+    margin-bottom: 10px; display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow .live{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px; letter-spacing:.08em;
+    color: var(--ok);
+    padding: 3px 8px; border-radius: 999px;
+    background: color-mix(in oklab, var(--ok) 14%, transparent);
+    border: 1px solid color-mix(in oklab, var(--ok) 35%, transparent);
+  }
+  .eyebrow .live::before{
+    content:''; width:6px; height:6px; border-radius:50%;
+    background: var(--ok); box-shadow: 0 0 8px var(--ok);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.4;}}
+  .page-head p{ margin: 0; color: var(--text-dim); font-size: 14px; max-width: 560px;}
+
+  .quick-actions{ display:flex; gap: 8px; flex-shrink:0; }
+  .btn{
+    all: unset;
+    display:inline-flex; align-items:center; gap: 8px;
+    height: 40px; padding: 0 16px; border-radius: 10px;
+    font-size: 13.5px; font-weight: 500; cursor: pointer;
+    border: 1px solid var(--line);
+    color: var(--text); background: var(--panel);
+    transition: all .15s var(--ease);
+  }
+  .btn:hover{ border-color: var(--line-2); background: var(--panel-hi);}
+  .btn.primary{
+    color: #061018;
+    background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 95%, #fff 10%), var(--accent));
+    border-color: transparent;
+    box-shadow: 0 6px 24px -10px color-mix(in oklab, var(--accent) 60%, transparent);
+  }
+  .btn.primary:hover{ filter: brightness(1.05);}
+
+  /* ---------- KPI strip ---------- */
+  .kpi-row{
+    display:grid; grid-template-columns: repeat(4, 1fr);
+    gap: var(--gap); margin-bottom: 22px;
+  }
+  .kpi{
+    position: relative; overflow: hidden;
+    padding: var(--card-pad);
+    border-radius: var(--radius);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+  }
+  .kpi-label{
+    display:flex; align-items:center; gap: 8px;
+    font-size: 11.5px; color: var(--text-mute);
+    text-transform: uppercase; letter-spacing: .12em;
+  }
+  .kpi-label i{ color: var(--accent);}
+  .kpi-value{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 32px; line-height:1.05; margin-top: 10px;
+    letter-spacing: -0.02em; font-weight: 500;
+  }
+  .kpi-value small{ font-size: 14px; color: var(--text-mute); margin-left: 4px; font-weight: 400;}
+  .kpi-delta{
+    margin-top: 6px; font-size: 12px;
+    display:inline-flex; align-items:center; gap:5px;
+    color: var(--text-dim);
+  }
+  .kpi-delta.up{ color: var(--ok); }
+  .kpi-delta.down{ color: var(--bad); }
+  .kpi-spark{
+    position: absolute; right: 10px; bottom: 10px; width: 90px; height: 32px;
+    opacity: .9;
+  }
+
+  /* ---------- main grid ---------- */
+  .main-grid{
+    display:grid; grid-template-columns: 2fr 1fr; gap: var(--gap);
+  }
+  .panel{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .panel-head{
+    display:flex; align-items:center; gap: 10px;
+    padding: 16px var(--card-pad) 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .panel-head h3{
+    margin:0; font-size: 13px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .14em;
+    color: var(--text-dim);
+  }
+  .panel-head .tag{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px; color: var(--text-mute);
+    padding: 2px 7px; border-radius: 5px;
+    background: var(--panel-hi); border:1px solid var(--line);
+  }
+  .panel-head .more{
+    margin-left:auto; font-size: 12px; color: var(--text-dim);
+    cursor: pointer;
+  }
+  .panel-head .more:hover{ color: var(--accent);}
+
+  /* module cards */
+  .modules{
+    padding: 14px;
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .mod-card{
+    all: unset;
+    cursor: pointer; display: block;
+    position: relative;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, var(--panel-hi), color-mix(in oklab, var(--panel-hi) 88%, transparent));
+    transition: transform .2s var(--ease), border-color .2s var(--ease), background .2s var(--ease);
+    overflow: hidden;
+  }
+  .mod-card::before{
+    content: '';
+    position: absolute; left:0; top:0; bottom:0; width: 3px;
+    background: var(--card-accent, var(--accent));
+    opacity: 0;
+    transition: opacity .2s var(--ease);
+  }
+  .mod-card:hover{
+    transform: translateY(-2px);
+    border-color: color-mix(in oklab, var(--card-accent, var(--accent)) 50%, var(--line));
+  }
+  .mod-card:hover::before{ opacity: 1; }
+  .mod-top{ display:flex; align-items:center; gap: 10px; margin-bottom: 10px;}
+  .mod-icon{
+    width: 36px; height:36px; border-radius: 10px;
+    display:grid; place-items:center;
+    background: color-mix(in oklab, var(--card-accent, var(--accent)) 14%, transparent);
+    color: var(--card-accent, var(--accent));
+    font-size: 14px;
+    border: 1px solid color-mix(in oklab, var(--card-accent, var(--accent)) 24%, transparent);
+  }
+  .mod-title{ font-size: 14.5px; font-weight: 600; color: var(--text); letter-spacing: -0.005em;}
+  .mod-sub{ font-size: 12.5px; color: var(--text-dim); line-height: 1.45; margin-bottom: 12px;}
+  .mod-foot{
+    display:flex; align-items:center; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--text-mute);
+  }
+  .mod-foot .chip{
+    padding: 2px 7px; border-radius: 5px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+  }
+  .mod-foot .chip.warn{ color: var(--warn); border-color: color-mix(in oklab, var(--warn) 30%, var(--line));}
+  .mod-foot .chip.ok  { color: var(--ok);   border-color: color-mix(in oklab, var(--ok) 30%, var(--line));}
+  .mod-foot .chip.bad { color: var(--bad);  border-color: color-mix(in oklab, var(--bad) 30%, var(--line));}
+  .mod-foot .arrow{
+    width: 22px; height:22px; border-radius: 6px;
+    display:grid; place-items:center;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    transition: all .15s var(--ease);
+  }
+  .mod-card:hover .arrow{
+    background: var(--card-accent, var(--accent));
+    color: #06101a;
+    border-color: transparent;
+  }
+
+  /* group label inside modules panel */
+  .mod-group-label{
+    grid-column: 1 / -1;
+    font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--text-mute);
+    padding: 10px 4px 2px; display:flex; align-items:center; gap:10px;
+  }
+  .mod-group-label::after{ content:''; flex:1; height:1px; background: var(--line);}
+  .mod-group-label:first-child{ padding-top: 2px; }
+
+  /* alerts */
+  .alerts{ padding: 10px 10px 12px; display:flex; flex-direction: column; gap: 4px;}
+  .alert{
+    display: grid;
+    grid-template-columns: 8px 1fr auto;
+    gap: 12px;
+    padding: 12px 12px 12px 14px;
+    border-radius: 10px;
+    align-items: center;
+    transition: background .15s var(--ease);
+    cursor: pointer;
+  }
+  .alert:hover{ background: var(--panel-hi);}
+  .alert .sev{
+    width: 8px; height: 8px; border-radius: 50%;
+    justify-self: center;
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--sev) 20%, transparent);
+    background: var(--sev);
+  }
+  .alert.c .sev{ --sev: var(--bad);}
+  .alert.b .sev{ --sev: var(--warn);}
+  .alert.a .sev{ --sev: var(--ok);}
+  .alert-body{ min-width: 0;}
+  .alert-title{ font-size: 13.5px; font-weight: 500; line-height:1.3;}
+  .alert-meta{ font-size: 11.5px; color: var(--text-mute); margin-top: 3px;}
+  .alert-meta .mono{ color: var(--text-dim);}
+  .alert-time{ font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-mute);}
+
+  /* fleet health band */
+  .fleet{
+    padding: var(--card-pad);
+  }
+  .fleet-head{ display:flex; align-items: baseline; gap: 14px; margin-bottom: 14px;}
+  .fleet-head .val{ font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 500;}
+  .fleet-head .lbl{ color: var(--text-dim); font-size: 13px;}
+  .fleet-bar{
+    display:flex; height: 10px; border-radius: 6px; overflow: hidden;
+    background: var(--panel-hi);
+    border: 1px solid var(--line);
+  }
+  .fleet-bar span{ display:block; height: 100%;}
+  .fleet-legend{ display:flex; gap: 16px; margin-top: 12px; font-size: 12px; color: var(--text-dim);}
+  .fleet-legend .swatch{ width: 8px; height: 8px; border-radius: 2px; display:inline-block; margin-right:6px; vertical-align: middle;}
+
+  /* ---------- tweaks panel ---------- */
+  .tweaks{
+    position: fixed; right: 20px; bottom: 20px;
+    width: 280px;
+    background: var(--panel-solid);
+    border: 1px solid var(--line-2);
+    border-radius: var(--radius);
+    box-shadow: 0 20px 50px -20px rgba(0,0,0,.6), var(--shadow);
+    padding: 14px;
+    z-index: 100;
+    display: none;
+  }
+  .tweaks.is-open{ display:block; }
+  .tweaks h4{
+    margin: 0 0 12px; font-size: 11.5px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .14em; color: var(--text-dim);
+    display:flex; align-items:center; gap:8px;
+  }
+  .tweak-row{ margin-bottom: 14px;}
+  .tweak-row > label{ display:block; font-size: 11px; color: var(--text-mute); margin-bottom: 6px; text-transform:uppercase; letter-spacing:.1em;}
+  .seg{ display:flex; background: var(--panel-hi); border:1px solid var(--line); border-radius: 8px; padding: 3px;}
+  .seg button{
+    all: unset; flex:1; text-align:center;
+    padding: 6px 8px; font-size: 12px; color: var(--text-dim);
+    border-radius: 6px; cursor: pointer;
+  }
+  .seg button.on{ background: var(--panel-solid); color: var(--text); box-shadow: 0 1px 0 rgba(255,255,255,.05) inset, 0 1px 4px rgba(0,0,0,.2);}
+  .swatches{ display:flex; gap: 8px;}
+  .swatches button{
+    all: unset; cursor: pointer;
+    width: 26px; height: 26px; border-radius: 8px;
+    background: var(--sw);
+    border: 2px solid transparent;
+    box-shadow: 0 2px 8px -2px var(--sw);
+  }
+  .swatches button.on{ border-color: var(--text); }
+
+  /* ---------- modal ---------- */
+  .modal-overlay{
+    position: fixed; inset:0; background: rgba(5,8,16,.65);
+    backdrop-filter: blur(4px);
+    display: none; align-items:center; justify-content: center;
+    z-index: 200;
+  }
+  .modal-overlay.is-open{ display:flex; }
+  .modal{
+    background: var(--panel-solid);
+    border: 1px solid var(--line-2);
+    border-radius: 16px;
+    width: min(560px, 92vw);
+    max-height: 84vh; overflow: auto;
+    box-shadow: 0 40px 80px -30px rgba(0,0,0,.7);
+  }
+  .modal-head{ display:flex; align-items:center; padding: 18px 20px; border-bottom: 1px solid var(--line);}
+  .modal-head h3{ margin:0; font-size: 15px; display:flex; align-items:center; gap: 10px;}
+  .modal-head .x{ margin-left:auto; cursor:pointer; color: var(--text-mute); font-size: 20px;}
+  .modal-body{ padding: 20px; display:flex; flex-direction:column; gap: 20px;}
+  .modal-body label{ display:block; font-size: 11.5px; color: var(--text-mute); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 6px; }
+  .modal-body input[type=text], .modal-body select{
+    width:100%; background: var(--panel-hi); border: 1px solid var(--line);
+    border-radius: 8px; padding: 9px 11px; color: var(--text); font-family: inherit; font-size: 13.5px;
+  }
+  .modal-body input:focus, .modal-body select:focus{ outline: none; border-color: color-mix(in oklab, var(--accent) 45%, var(--line));}
+  .cfg-section{ padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel-hi);}
+  .cfg-section h4{ margin: 0 0 10px; font-size: 12px; color: var(--text-dim); letter-spacing: .1em; text-transform: uppercase;}
+
+  footer{
+    margin-top: 40px; padding: 20px 32px;
+    color: var(--text-mute); font-size: 12px;
+    border-top: 1px solid var(--line);
+  }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 1200px){
+    .kpi-row{ grid-template-columns: repeat(2, 1fr);}
+    .main-grid{ grid-template-columns: 1fr;}
+  }
+  @media (max-width: 860px){
+    .app{ grid-template-columns: 1fr; }
+    .sidebar{ position: fixed; left:-280px; width: 260px; transition: left .2s var(--ease);}
+    .sidebar.is-open{ left: 0; box-shadow: 0 0 0 1px var(--line-2);}
+    .modules{ grid-template-columns: 1fr;}
+    main{ padding: 16px; }
+    .page-head{ flex-direction: column; align-items: stretch; }
+  }
+</style>
 </head>
-<body data-theme="default">
-    <header>
-        <h1>Suite de Mantenimiento Predictivo</h1>
-        <p class="intro-text">Sistema integral de gestión de activos y monitoreo predictivo.</p>
-    </header>
+<body>
 
-    <div class="page-wrapper dashboard-wrapper">
-        <main class="content-container" style="background:transparent; border:none; box-shadow:none; padding:28px 0;">
-
-            <!-- Banner de bienvenida -->
-            <div class="welcome-banner">
-                <div>
-                    <h2>Bienvenido a Suite PdM</h2>
-                    <p>Gestiona activos industriales, registra inspecciones y genera reportes de mantenimiento predictivo desde un solo lugar.</p>
-                </div>
-                <div class="welcome-actions">
-                    <a href="analitica.html" class="welcome-btn welcome-btn-primary">
-                        <i class="fa-solid fa-chart-line"></i> Ver Analítica
-                    </a>
-                    <a href="monitoreo.html" class="welcome-btn welcome-btn-secondary">
-                        <i class="fa-solid fa-desktop"></i> Monitoreo
-                    </a>
-                </div>
-            </div>
-
-            <!-- Módulos principales -->
-            <div class="section-label"><i class="fa-solid fa-th-large"></i> Módulos</div>
-            <div class="dashboard-grid" style="margin-bottom:28px;">
-                <a href="hojas-de-vida.html" class="dashboard-card card-activos">
-                    <i class="fa-solid fa-industry"></i>
-                    <h3>Gestión de Activos</h3>
-                    <p>Inventario, fichas técnicas y registro de máquinas.</p>
-                </a>
-                <a href="monitoreo.html" class="dashboard-card card-monitoreo">
-                    <i class="fa-solid fa-desktop"></i>
-                    <h3>Monitoreo de Condición</h3>
-                    <p>Tablero de estado general y semáforos B/A/C.</p>
-                </a>
-                <a href="condicion.html" class="dashboard-card" style="--card-accent:#0891b2;">
-                    <i class="fa-solid fa-wave-square" style="color:#0891b2;"></i>
-                    <h3>Tendencias de Condición</h3>
-                    <p>Overall, Envelope/Demod y Factor de Cresta por activo.</p>
-                </a>
-                <a href="analitica.html" class="dashboard-card" style="--card-accent:#7c3aed;">
-                    <i class="fa-solid fa-chart-line" style="color:#7c3aed;"></i>
-                    <h3>Analítica</h3>
-                    <p>Gráficos interactivos y métricas de flota en tiempo real.</p>
-                </a>
-            </div>
-
-            <!-- Gestión -->
-            <div class="section-label" data-feature="ot" id="idx-gestión-label"><i class="fa-solid fa-tasks"></i> Gestión</div>
-            <div class="dashboard-grid" id="idx-gestión-grid">
-                <a href="ordenes-trabajo.html" class="dashboard-card" style="--card-accent:#d97706;" data-feature="ot">
-                    <i class="fa-solid fa-clipboard-list" style="color:#d97706;"></i>
-                    <h3>Órdenes de Trabajo</h3>
-                    <p>Gestión interna de OTs correctivas, preventivas y predictivas.</p>
-                </a>
-                <a href="lubricacion.html" class="dashboard-card" style="--card-accent:#0891b2;" data-feature="lubricacion">
-                    <i class="fa-solid fa-droplet" style="color:#0891b2;"></i>
-                    <h3>Lubricación</h3>
-                    <p>Control de puntos de lubricación, intervalos y vencimientos.</p>
-                </a>
-            </div>
-
-            <!-- Reportes -->
-            <div class="section-label"><i class="fa-solid fa-file-lines"></i> Reportes</div>
-            <div class="dashboard-grid" style="margin-bottom:28px;">
-                <a href="vibraciones.html" class="dashboard-card card-vib">
-                    <i class="fa-solid fa-wave-square"></i>
-                    <h3>Análisis de Vibraciones</h3>
-                    <p>Reportes detallados, espectros y normas ISO.</p>
-                </a>
-                <a href="termografia.html" class="dashboard-card card-termo">
-                    <i class="fa-solid fa-fire"></i>
-                    <h3>Termografía</h3>
-                    <p>Análisis térmico y detección de puntos calientes.</p>
-                </a>
-                <a href="ultrasonido.html" class="dashboard-card card-ultra">
-                    <i class="fa-solid fa-satellite-dish"></i>
-                    <h3>Ultrasonido</h3>
-                    <p>Detección de fugas y lubricación asistida por dBµV.</p>
-                </a>
-                <a href="reportes-generales.html" class="dashboard-card card-rep-gen">
-                    <i class="fa-solid fa-file-contract"></i>
-                    <h3>Reportes Generales</h3>
-                    <p>Informes multiparamétricos y eléctricos.</p>
-                </a>
-            </div>
-
-            <!-- Anexos -->
-            <div class="section-label"><i class="fa-solid fa-paperclip"></i> Anexos</div>
-            <div class="dashboard-grid" style="margin-bottom:28px;">
-                <a href="anexo-termo.html" class="dashboard-card card-anexo-termo">
-                    <i class="fa-solid fa-images"></i>
-                    <h3>Anexo Termografía</h3>
-                    <p>Carga masiva de imágenes y análisis detallado.</p>
-                </a>
-                <a href="anexo-ultra.html" class="dashboard-card card-anexo-ultra">
-                    <i class="fa-solid fa-ear-listen"></i>
-                    <h3>Anexo Ultrasonido</h3>
-                    <p>Espectros, archivos de audio y notas.</p>
-                </a>
-            </div>
-
-            <!-- Sistema -->
-            <div class="section-label"><i class="fa-solid fa-gear"></i> Sistema</div>
-            <div class="dashboard-grid">
-                <a href="usuarios.html" class="dashboard-card" style="--card-accent:#7c3aed;" data-min-rol="admin">
-                    <i class="fa-solid fa-users-gear" style="color:#7c3aed;"></i>
-                    <h3>Usuarios y Accesos</h3>
-                    <p>Gestión de usuarios, roles y plantas del sistema.</p>
-                </a>
-                <a href="ayuda.html" class="dashboard-card" style="--card-accent:#0369a1;">
-                    <i class="fa-solid fa-circle-question" style="color:#0369a1;"></i>
-                    <h3>Ayuda</h3>
-                    <p>Manual de usuario y guía completa del sistema.</p>
-                </a>
-                <button id="btn-open-config" class="dashboard-card card-config" style="cursor:pointer; width:100%; text-align:center;">
-                    <i class="fa-solid fa-sliders"></i>
-                    <h3>Configuración</h3>
-                    <p>Temas, fuentes, logos y opciones del sistema.</p>
-                </button>
-                <button id="btn-logout" class="dashboard-card" style="cursor:pointer; width:100%; --card-accent:#dc2626; text-align:center;">
-                    <i class="fa-solid fa-right-from-bracket" style="color:#dc2626;"></i>
-                    <h3 style="color:#dc2626;">Cerrar Sesión</h3>
-                    <p>Salir del sistema de forma segura.</p>
-                </button>
-            </div>
-
-        </main>
+<div class="app">
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark"><i class="fa-solid fa-bolt"></i></div>
+      <div class="brand-name">
+        <b>Suite PdM</b>
+        <span>v4.2 · Edwards</span>
+      </div>
     </div>
 
-    <div id="config-modal" class="modal-overlay">
-        <div class="modal-content config-modal-box">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-sliders"></i> Configuración del Sistema</h3>
-                <span class="close-modal-config">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="config-group">
-                    <div class="config-sub-title"><i class="fa-solid fa-stamp"></i> Datos Predeterminados</div>
-                    <p style="font-size:0.85em; color:#666; margin-bottom:15px;">Estos datos aparecerán automáticamente en tus reportes.</p>
-                    <div style="display:flex; justify-content:space-between; gap:10px;">
-                        <div style="flex:1; text-align:center;">
-                            <label style="font-size:0.85em; font-weight:bold; display:block;">Logo Izquierdo:</label>
-                            <img id="preview-cfg-left" class="config-logo-preview" src="" alt="Vacío">
-                            <label class="monitoreo-button import-button" style="padding:4px 8px; font-size:0.8em; margin-top:5px; cursor:pointer; display:inline-block;">
-                                Subir <input type="file" id="cfg-logo-left" accept="image/*" hidden>
-                            </label>
-                        </div>
-                        <div style="flex:1; text-align:center;">
-                            <label style="font-size:0.85em; font-weight:bold; display:block;">Logo Derecho:</label>
-                            <img id="preview-cfg-right" class="config-logo-preview" src="" alt="Vacío">
-                            <label class="monitoreo-button import-button" style="padding:4px 8px; font-size:0.8em; margin-top:5px; cursor:pointer; display:inline-block;">
-                                Subir <input type="file" id="cfg-logo-right" accept="image/*" hidden>
-                            </label>
-                        </div>
-                    </div>
-                    <label style="font-size:0.9em; font-weight:bold; margin-top:15px; display:block;">Nombre del Analista:</label>
-                    <input type="text" id="cfg-analyst-name" placeholder="Ej: Ing. Juan Pérez" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;">
-                    <label style="font-size:0.9em; font-weight:bold; margin-top:10px; display:block;">Cargo / Certificación:</label>
-                    <input type="text" id="cfg-analyst-role" placeholder="Ej: Analista Nivel II" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;">
-                </div>
+    <nav class="nav">
+      <div class="nav-group-label">General</div>
+      <a href="index.html" class="is-active"><i class="fa-solid fa-house"></i> Inicio <span class="nav-kbd">G H</span></a>
+      <a href="monitoreo.html"><i class="fa-solid fa-desktop"></i> Monitoreo</a>
+      <a href="analitica.html"><i class="fa-solid fa-chart-line"></i> Analítica</a>
+      <a href="condicion.html"><i class="fa-solid fa-wave-square"></i> Tendencias</a>
 
-                <div class="config-group">
-                    <div class="config-sub-title"><i class="fa-solid fa-signature"></i> Firmas</div>
-                    <p style="font-size:0.82em; color:var(--text-muted); margin-bottom:10px;">
-                        Crea las firmas de los analistas. Podrás seleccionarlas en cada reporte.
-                    </p>
-                    <div id="firmas-manager-container"></div>
-                </div>
-                <div class="config-group">
-                    <div class="config-sub-title"><i class="fa-solid fa-palette"></i> Apariencia</div>
-                    <label for="themeSelect" style="font-weight:bold; font-size:0.9em;">Tema de Color:</label>
-                    <select id="themeSelect" style="width:100%; padding:8px; margin-top:5px; margin-bottom:10px;">
-                        <option value="default">Predeterminado</option>
-                        <option value="dark-1">Oscuro - Océano</option>
-                        <option value="dark-2">Oscuro - Pizarra</option>
-                        <option value="dark-12">Oscuro - Grafito</option>
-                        <option value="custom">Personalizado</option>
-                    </select>
-                    <input type="color" id="customColorPicker" style="display:none; width:100%; margin-bottom:10px;">
-                    <label for="fontSelect" style="font-weight:bold; font-size:0.9em;">Fuente Global:</label>
-                    <select id="fontSelect" style="width:100%; padding:8px; margin-top:5px;">
-                        <option value="system">System UI (Default)</option>
-                        <option value="sans-serif">Segoe UI</option>
-                        <option value="arial">Arial</option>
-                        <option value="monospace">Courier New (Mono)</option>
-                    </select>
-                </div>
-            </div>
+      <div class="nav-group-label">Operaciones</div>
+      <a href="hojas-de-vida.html"><i class="fa-solid fa-industry"></i> Activos</a>
+      <a href="ordenes-trabajo.html"><i class="fa-solid fa-clipboard-list"></i> Órdenes de Trabajo</a>
+      <a href="lubricacion.html"><i class="fa-solid fa-droplet"></i> Lubricación</a>
+
+      <div class="nav-group-label">Reportes</div>
+      <a href="vibraciones.html"><i class="fa-solid fa-wave-square"></i> Vibraciones</a>
+      <a href="termografia.html"><i class="fa-solid fa-fire"></i> Termografía</a>
+      <a href="ultrasonido.html"><i class="fa-solid fa-satellite-dish"></i> Ultrasonido</a>
+      <a href="reportes-generales.html"><i class="fa-solid fa-file-contract"></i> Reportes Generales</a>
+
+      <div class="nav-group-label">Sistema</div>
+      <a href="usuarios.html"><i class="fa-solid fa-users-gear"></i> Usuarios</a>
+      <a href="ayuda.html"><i class="fa-solid fa-circle-question"></i> Ayuda</a>
+      <button id="btn-open-config"><i class="fa-solid fa-sliders"></i> Configuración</button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="avatar">JP</div>
+      <div class="sf-meta">
+        <b>Juan Pérez</b>
+        <span>Analista · Nivel II</span>
+      </div>
+      <button class="sf-btn" id="btn-logout" title="Cerrar sesión"><i class="fa-solid fa-right-from-bracket"></i></button>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main>
+    <!-- topbar -->
+    <div class="topbar">
+      <div class="search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input placeholder="Buscar activos, órdenes, reportes…" />
+        <kbd>⌘K</kbd>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" title="Notificaciones">
+          <i class="fa-solid fa-bell"></i>
+          <span class="dot"></span>
+        </button>
+        <button class="icon-btn" id="btn-toggle-tweaks" title="Apariencia">
+          <i class="fa-solid fa-sliders"></i>
+        </button>
+        <button class="btn primary"><i class="fa-solid fa-plus"></i> Nueva inspección</button>
+      </div>
+    </div>
+
+    <!-- page head -->
+    <div class="page-head">
+      <div>
+        <div class="eyebrow">
+          <span>Dashboard</span>
+          <span class="live">Live · sync 14s</span>
         </div>
+        <h1>Buenos días, Juan.</h1>
+        <p>Tu flota reporta <b style="color:var(--text);">3 alertas críticas</b> y 8 inspecciones pendientes esta semana.</p>
+      </div>
+      <div class="quick-actions">
+        <a href="monitoreo.html" class="btn"><i class="fa-solid fa-desktop"></i> Monitoreo</a>
+        <a href="analitica.html" class="btn"><i class="fa-solid fa-chart-line"></i> Analítica</a>
+      </div>
     </div>
 
-    <footer><p>&copy; 2026 Edwards PdM Suite</p></footer>
-    <div id="toast-container"></div>
-    <script src="js/script.js"></script>
+    <!-- KPI strip -->
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-label"><i class="fa-solid fa-industry"></i> Activos monitoreados</div>
+        <div class="kpi-value">248<small>/260</small></div>
+        <div class="kpi-delta up"><i class="fa-solid fa-arrow-up"></i> +4 esta semana</div>
+        <svg class="kpi-spark" viewBox="0 0 100 34" preserveAspectRatio="none">
+          <polyline fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+            points="0,22 10,20 20,21 30,18 40,16 50,14 60,15 70,11 80,10 90,7 100,6"/>
+          <polyline fill="url(#gsp1)" stroke="none"
+            points="0,22 10,20 20,21 30,18 40,16 50,14 60,15 70,11 80,10 90,7 100,6 100,34 0,34"/>
+          <defs>
+            <linearGradient id="gsp1" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stop-color="var(--accent)" stop-opacity=".35"/>
+              <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+      <div class="kpi">
+        <div class="kpi-label"><i class="fa-solid fa-triangle-exclamation"></i> Alertas abiertas</div>
+        <div class="kpi-value">12</div>
+        <div class="kpi-delta down"><i class="fa-solid fa-arrow-up"></i> +3 vs ayer</div>
+        <svg class="kpi-spark" viewBox="0 0 100 34" preserveAspectRatio="none">
+          <polyline fill="none" stroke="var(--bad)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+            points="0,24 10,22 20,20 30,22 40,19 50,16 60,18 70,13 80,15 90,10 100,8"/>
+        </svg>
+      </div>
+
+      <div class="kpi">
+        <div class="kpi-label"><i class="fa-solid fa-clipboard-list"></i> Órdenes de trabajo</div>
+        <div class="kpi-value">34<small>/42</small></div>
+        <div class="kpi-delta up"><i class="fa-solid fa-check"></i> 81% en plazo</div>
+        <svg class="kpi-spark" viewBox="0 0 100 34" preserveAspectRatio="none">
+          <polyline fill="none" stroke="var(--ok)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+            points="0,25 10,23 20,20 30,18 40,20 50,15 60,13 70,14 80,10 90,9 100,6"/>
+        </svg>
+      </div>
+
+      <div class="kpi">
+        <div class="kpi-label"><i class="fa-solid fa-bolt"></i> Disponibilidad</div>
+        <div class="kpi-value">97.4<small>%</small></div>
+        <div class="kpi-delta up"><i class="fa-solid fa-arrow-up"></i> +0.8 pts</div>
+        <svg class="kpi-spark" viewBox="0 0 100 34" preserveAspectRatio="none">
+          <polyline fill="none" stroke="var(--accent-2)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+            points="0,18 10,17 20,18 30,15 40,16 50,13 60,11 70,12 80,9 90,8 100,7"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- main grid -->
+    <div class="main-grid">
+      <!-- MODULES -->
+      <section class="panel">
+        <div class="panel-head">
+          <h3>Módulos</h3>
+          <span class="tag mono">13</span>
+          <span class="more">Ver todos →</span>
+        </div>
+
+        <div class="modules">
+          <div class="mod-group-label">Núcleo</div>
+
+          <a href="hojas-de-vida.html" class="mod-card" style="--card-accent:#22d3ee;">
+            <div class="mod-top">
+              <div class="mod-icon"><i class="fa-solid fa-industry"></i></div>
+              <div class="mod-title">Gestión de Activos</div>
+            </div>
+            <div class="mod-sub">Inventario, fichas técnicas y registro de máquinas.</div>
+            <div class="mod-foot">
+              <span class="mono">248 activos</span>
+              <span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+          </a>
+
+          <a href="monitoreo.html" class="mod-card" style="--card-accent:#3b82f6;">
+            <div class="mod-top">
+              <div class="mod-icon"><i class="fa-solid fa-desktop"></i></div>
+              <div class="mod-title">Monitoreo de Condición</div>
+            </div>
+            <div class="mod-sub">Tablero de estado general y semáforos B/A/C.</div>
+            <div class="mod-foot">
+              <span class="chip bad">3 en C</span>
+              <span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+          </a>
+
+          <a href="condicion.html" class="mod-card" style="--card-accent:#0891b2;">
+            <div class="mod-top">
+              <div class="mod-icon"><i class="fa-solid fa-wave-square"></i></div>
+              <div class="mod-title">Tendencias de Condición</div>
+            </div>
+            <div class="mod-sub">Overall, Envelope/Demod y Factor de Cresta por activo.</div>
+            <div class="mod-foot">
+              <span class="mono">Actualizado · 14s</span>
+              <span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+          </a>
+
+          <a href="analitica.html" class="mod-card" style="--card-accent:#7c3aed;">
+            <div class="mod-top">
+              <div class="mod-icon"><i class="fa-solid fa-chart-line"></i></div>
+              <div class="mod-title">Analítica</div>
+            </div>
+            <div class="mod-sub">Gráficos interactivos y métricas de flota en tiempo real.</div>
+            <div class="mod-foot">
+              <span class="chip ok">MTBF ↑ 12%</span>
+              <span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+          </a>
+
+          <div class="mod-group-label">Gestión</div>
+
+          <a href="ordenes-trabajo.html" class="mod-card" style="--card-accent:#f59e0b;">
+            <div class="mod-top">
+              <div class="mod-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+              <div class="mod-title">Órdenes de Trabajo</div>
+            </div>
+            <div class="mod-sub">OTs correctivas, preventivas y predictivas.</div>
+            <div class="mod-foot">
+              <span class="chip warn">8 pendientes</span>
+              <span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+          </a>
+
+          <a href="lubricacion.html" class="mod-card" style="--card-accent:#0891b2;">
+            <div class="mod-top">
+              <div class="mod-icon"><i class="fa-solid fa-droplet"></i></div>
+              <div class="mod-title">Lubricación</div>
+            </div>
+            <div class="mod-sub">Puntos, intervalos y vencimientos.</div>
+            <div class="mod-foot">
+              <span class="chip warn">5 vencen</span>
+              <span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+          </a>
+
+          <div class="mod-group-label">Reportes</div>
+
+          <a href="vibraciones.html" class="mod-card" style="--card-accent:#22d3ee;">
+            <div class="mod-top">
+              <div class="mod-icon"><i class="fa-solid fa-wave-square"></i></div>
+              <div class="mod-title">Análisis de Vibraciones</div>
+            </div>
+            <div class="mod-sub">Reportes detallados, espectros y normas ISO.</div>
+            <div class="mod-foot">
+              <span class="mono">ISO 10816</span>
+              <span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+          </a>
+
+          <a href="termografia.html" class="mod-card" style="--card-accent:#f43f5e;">
+            <div class="mod-top">
+              <div class="mod-icon"><i class="fa-solid fa-fire"></i></div>
+              <div class="mod-title">Termografía</div>
+            </div>
+            <div class="mod-sub">Análisis térmico y puntos calientes.</div>
+            <div class="mod-foot">
+              <span class="mono">47 imágenes</span>
+              <span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+          </a>
+
+          <a href="ultrasonido.html" class="mod-card" style="--card-accent:#a3e635;">
+            <div class="mod-top">
+              <div class="mod-icon"><i class="fa-solid fa-satellite-dish"></i></div>
+              <div class="mod-title">Ultrasonido</div>
+            </div>
+            <div class="mod-sub">Detección de fugas y lubricación asistida (dBµV).</div>
+            <div class="mod-foot">
+              <span class="mono">dBµV</span>
+              <span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+          </a>
+
+          <a href="reportes-generales.html" class="mod-card" style="--card-accent:#64748b;">
+            <div class="mod-top">
+              <div class="mod-icon"><i class="fa-solid fa-file-contract"></i></div>
+              <div class="mod-title">Reportes Generales</div>
+            </div>
+            <div class="mod-sub">Informes multiparamétricos y eléctricos.</div>
+            <div class="mod-foot">
+              <span class="mono">PDF · XLSX</span>
+              <span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+          </a>
+
+          <div class="mod-group-label">Anexos</div>
+
+          <a href="anexo-termo.html" class="mod-card" style="--card-accent:#f97316;">
+            <div class="mod-top">
+              <div class="mod-icon"><i class="fa-solid fa-images"></i></div>
+              <div class="mod-title">Anexo Termografía</div>
+            </div>
+            <div class="mod-sub">Carga masiva de imágenes y análisis detallado.</div>
+            <div class="mod-foot">
+              <span class="mono">—</span>
+              <span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+          </a>
+
+          <a href="anexo-ultra.html" class="mod-card" style="--card-accent:#84cc16;">
+            <div class="mod-top">
+              <div class="mod-icon"><i class="fa-solid fa-ear-listen"></i></div>
+              <div class="mod-title">Anexo Ultrasonido</div>
+            </div>
+            <div class="mod-sub">Espectros, archivos de audio y notas.</div>
+            <div class="mod-foot">
+              <span class="mono">—</span>
+              <span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN -->
+      <div style="display:flex; flex-direction: column; gap: var(--gap);">
+
+        <!-- Fleet health -->
+        <section class="panel">
+          <div class="panel-head">
+            <h3>Estado de flota</h3>
+            <span class="tag mono">B/A/C</span>
+          </div>
+          <div class="fleet">
+            <div class="fleet-head">
+              <div class="val">248</div>
+              <div class="lbl">activos monitoreados en 4 plantas</div>
+            </div>
+            <div class="fleet-bar">
+              <span style="width:78%; background: var(--ok);"></span>
+              <span style="width:17%; background: var(--warn);"></span>
+              <span style="width:5%;  background: var(--bad);"></span>
+            </div>
+            <div class="fleet-legend">
+              <span><i class="swatch" style="background:var(--ok);"></i>Buena · 193</span>
+              <span><i class="swatch" style="background:var(--warn);"></i>Alerta · 42</span>
+              <span><i class="swatch" style="background:var(--bad);"></i>Crítico · 13</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Alerts -->
+        <section class="panel">
+          <div class="panel-head">
+            <h3>Alertas recientes</h3>
+            <span class="tag mono">3 nuevas</span>
+            <span class="more">Ver todas →</span>
+          </div>
+          <div class="alerts">
+            <div class="alert c">
+              <span class="sev"></span>
+              <div class="alert-body">
+                <div class="alert-title">Vibración Overall fuera de zona D</div>
+                <div class="alert-meta"><span class="mono">MB-204</span> · Bomba centrífuga · Planta Norte</div>
+              </div>
+              <div class="alert-time">12m</div>
+            </div>
+            <div class="alert c">
+              <span class="sev"></span>
+              <div class="alert-body">
+                <div class="alert-title">Temperatura rodamiento +14 °C</div>
+                <div class="alert-meta"><span class="mono">MT-018</span> · Motor eléctrico · Planta Sur</div>
+              </div>
+              <div class="alert-time">41m</div>
+            </div>
+            <div class="alert b">
+              <span class="sev"></span>
+              <div class="alert-body">
+                <div class="alert-title">Factor de cresta en tendencia ascendente</div>
+                <div class="alert-meta"><span class="mono">CM-071</span> · Compresor · Planta Este</div>
+              </div>
+              <div class="alert-time">2h</div>
+            </div>
+            <div class="alert b">
+              <span class="sev"></span>
+              <div class="alert-body">
+                <div class="alert-title">Fuga ultrasónica detectada (18 dBµV)</div>
+                <div class="alert-meta"><span class="mono">VL-412</span> · Red de aire comprimido</div>
+              </div>
+              <div class="alert-time">3h</div>
+            </div>
+            <div class="alert a">
+              <span class="sev"></span>
+              <div class="alert-body">
+                <div class="alert-title">Lubricación dentro de rango</div>
+                <div class="alert-meta"><span class="mono">LB-009</span> · Ruta semanal completada</div>
+              </div>
+              <div class="alert-time">6h</div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <footer>© 2026 Edwards PdM Suite · v4.2</footer>
+  </main>
+</div>
+
+<!-- ============ TWEAKS PANEL ============ -->
+<div class="tweaks" id="tweaks">
+  <h4><i class="fa-solid fa-sliders"></i> Apariencia</h4>
+
+  <div class="tweak-row">
+    <label>Tema</label>
+    <div class="seg" data-tweak="theme">
+      <button data-val="dark">Oscuro</button>
+      <button data-val="light">Claro</button>
+    </div>
+  </div>
+
+  <div class="tweak-row">
+    <label>Acento</label>
+    <div class="swatches" data-tweak="accent">
+      <button data-accent="#22d3ee" data-accent2="#3b82f6" style="--sw:#22d3ee" title="Cyan"></button>
+      <button data-accent="#a3e635" data-accent2="#059669" style="--sw:#a3e635" title="Lime"></button>
+      <button data-accent="#f59e0b" data-accent2="#ef4444" style="--sw:#f59e0b" title="Amber"></button>
+      <button data-accent="#6366f1" data-accent2="#8b5cf6" style="--sw:#6366f1" title="Indigo"></button>
+      <button data-accent="#ec4899" data-accent2="#8b5cf6" style="--sw:#ec4899" title="Pink"></button>
+    </div>
+  </div>
+
+  <div class="tweak-row">
+    <label>Densidad</label>
+    <div class="seg" data-tweak="density">
+      <button data-val="compact">Densa</button>
+      <button data-val="normal">Normal</button>
+      <button data-val="comfortable">Amplia</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CONFIG MODAL ============ -->
+<div class="modal-overlay" id="config-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3><i class="fa-solid fa-sliders" style="color:var(--accent);"></i> Configuración del Sistema</h3>
+      <span class="x" id="cfg-close">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="cfg-section">
+        <h4>Datos del analista</h4>
+        <label>Nombre</label>
+        <input type="text" placeholder="Ing. Juan Pérez" value="Juan Pérez"/>
+        <label style="margin-top:12px;">Cargo / Certificación</label>
+        <input type="text" placeholder="Analista Nivel II" value="Analista Nivel II"/>
+      </div>
+      <div class="cfg-section">
+        <h4>Apariencia</h4>
+        <label>Tema</label>
+        <select>
+          <option>Oscuro (predeterminado)</option>
+          <option>Claro</option>
+        </select>
+        <label style="margin-top:12px;">Fuente</label>
+        <select>
+          <option>Geist (predeterminada)</option>
+          <option>System UI</option>
+          <option>JetBrains Mono</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- Tweaks ---
+  const TWEAKS = /*EDITMODE-BEGIN*/{
+    "theme": "dark",
+    "accent": "#22d3ee",
+    "accent2": "#3b82f6",
+    "density": "normal"
+  }/*EDITMODE-END*/;
+
+  function applyTweaks(t){
+    document.documentElement.setAttribute('data-theme', t.theme);
+    document.documentElement.setAttribute('data-density', t.density);
+    document.documentElement.style.setProperty('--accent', t.accent);
+    document.documentElement.style.setProperty('--accent-2', t.accent2);
+
+    // mark active segs
+    document.querySelectorAll('.seg').forEach(seg=>{
+      const key = seg.dataset.tweak;
+      seg.querySelectorAll('button').forEach(b=>{
+        b.classList.toggle('on', b.dataset.val === t[key]);
+      });
+    });
+    document.querySelectorAll('.swatches button').forEach(b=>{
+      b.classList.toggle('on', b.dataset.accent === t.accent);
+    });
+  }
+
+  function setTweak(patch){
+    Object.assign(TWEAKS, patch);
+    applyTweaks(TWEAKS);
+    try{
+      window.parent.postMessage({type:'__edit_mode_set_keys', edits: patch}, '*');
+    }catch(e){}
+  }
+
+  // seg buttons
+  document.querySelectorAll('.seg').forEach(seg=>{
+    const key = seg.dataset.tweak;
+    seg.querySelectorAll('button').forEach(b=>{
+      b.addEventListener('click', ()=> setTweak({ [key]: b.dataset.val }));
+    });
+  });
+  // swatch buttons
+  document.querySelectorAll('.swatches button').forEach(b=>{
+    b.addEventListener('click', ()=> setTweak({ accent: b.dataset.accent, accent2: b.dataset.accent2 }));
+  });
+
+  applyTweaks(TWEAKS);
+
+  // --- Tweaks toggle (local button) ---
+  const tweaksEl = document.getElementById('tweaks');
+  document.getElementById('btn-toggle-tweaks').addEventListener('click', ()=>{
+    tweaksEl.classList.toggle('is-open');
+  });
+
+  // --- Edit-mode protocol (host toolbar) ---
+  window.addEventListener('message', (e)=>{
+    const d = e.data || {};
+    if (d.type === '__activate_edit_mode') tweaksEl.classList.add('is-open');
+    if (d.type === '__deactivate_edit_mode') tweaksEl.classList.remove('is-open');
+  });
+  try { window.parent.postMessage({type:'__edit_mode_available'}, '*'); } catch(e){}
+
+  // --- Config modal ---
+  const cfg = document.getElementById('config-modal');
+  document.getElementById('btn-open-config').addEventListener('click', ()=> cfg.classList.add('is-open'));
+  document.getElementById('cfg-close').addEventListener('click', ()=> cfg.classList.remove('is-open'));
+  cfg.addEventListener('click', (e)=>{ if(e.target===cfg) cfg.classList.remove('is-open'); });
+
+  // --- Logout (demo) ---
+  document.getElementById('btn-logout').addEventListener('click', ()=>{
+    alert('Cerrar sesión');
+  });
+</script>
 </body>
 </html>
